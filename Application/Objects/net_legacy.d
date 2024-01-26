@@ -1,0 +1,10 @@
+.\objects\net_legacy.o: C:\Users\Mohammad\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Lib\Net_Legacy.c
+.\objects\net_legacy.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\net_legacy.o: C:\Users\Mohammad\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\rl_net_lib.h
+.\objects\net_legacy.o: C:\Users\Mohammad\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\rl_net_ds.h
+.\objects\net_legacy.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\net_legacy.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\net_legacy.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\net_legacy.o: .\RTE\_Main\RTE_Components.h
+.\objects\net_legacy.o: C:\Users\Mohammad\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\Network\Include\rl_net_legacy.h
+.\objects\net_legacy.o: .\RTE\Network\Net_Config_Legacy.h

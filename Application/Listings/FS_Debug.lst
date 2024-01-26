@@ -1,0 +1,126 @@
+L 1 "RTE\File_System\FS_Debug.c"
+N/*------------------------------------------------------------------------------
+N * MDK Middleware - Component ::File System
+N * Copyright (c) 2004-2019 Arm Limited (or its affiliates). All rights reserved.
+N *------------------------------------------------------------------------------
+N * Name:    FS_Debug.c
+N * Purpose: File System Debug Configuration
+N * Rev.:    V1.0.0
+N *----------------------------------------------------------------------------*/
+N
+N//-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
+N
+N//   <e>File System Debug
+N//   <i>Enable File System event recording
+N#define FS_DEBUG_EVR_ENABLE     0
+N
+N//   <o>Core Management <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsCore: Core Management event recording
+N#define FS_DEBUG_EVR_CORE       1
+N
+N//   <o>FAT File System <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsFAT: FAT File System event recording
+N#define FS_DEBUG_EVR_FAT        1
+N
+N//   <o>EFS File System <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsEFS: EFS File System event recording
+N#define FS_DEBUG_EVR_EFS        1
+N
+N//   <o>I/O Control Interface <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsIOC: I/O Control Interface event recording
+N#define FS_DEBUG_EVR_IOC        1
+N
+N//   <o>NAND Flash Translation Layer <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsNFTL: NAND Flash Translation Layer event recording
+N#define FS_DEBUG_EVR_NFTL       1
+N
+N//   <o>NAND Device Interface <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsNAND: NAND Device Interface event recording
+N#define FS_DEBUG_EVR_NAND       1
+N
+N//   <o>Memory Card MCI <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsMcMCI: Memory Card MCI event recording
+N#define FS_DEBUG_EVR_MC_MCI     1
+N
+N//   <o>Memory Card SPI <0=>Off <1=>Errors <2=>Errors + API <3=>All
+N//   <i>Configure FsMcSPI: Memory Card SPI event recording
+N#define FS_DEBUG_EVR_MC_SPI     1
+N
+N//   </e>
+N
+N#include "fs_debug.h"
+L 1 "C:\Users\Mohammad\AppData\Local\Arm\Packs\Keil\MDK-Middleware\7.12.0\FileSystem\Include\fs_debug.h" 1
+N/*------------------------------------------------------------------------------
+N * MDK Middleware - Component ::File System
+N * Copyright (c) 2004-2019 Arm Limited (or its affiliates). All rights reserved.
+N *------------------------------------------------------------------------------
+N * Name:    fs_debug.h
+N * Purpose: File System Debug Configuration
+N *----------------------------------------------------------------------------*/
+N#if (FS_DEBUG_EVR_ENABLE != 0)
+X#if (0 != 0)
+S#include <stdint.h>
+S
+S#include "rl_fs_lib.h"
+S#include "EventRecorder.h"              // Keil.ARM Compiler::Compiler:Event Recorder
+S#include "fs_evr.h"
+S
+S/*
+S  Debug Configuration values
+S
+S  0 (Off):          EventRecordNone
+S  1 (Errors):       EventRecordError
+S  2 (Errors + API): EventRecordError | EventRecordAPI
+S  3 (All):          EventRecordAll
+S*/
+S
+S#define FS_DEBUG_EVR_CFG (FS_DEBUG_EVR_CORE   | \
+S                          FS_DEBUG_EVR_FAT    | \
+S                          FS_DEBUG_EVR_EFS    | \
+S                          FS_DEBUG_EVR_IOC    | \
+S                          FS_DEBUG_EVR_NFTL   | \
+S                          FS_DEBUG_EVR_NAND   | \
+S                          FS_DEBUG_EVR_MC_MCI | \
+S                          FS_DEBUG_EVR_MC_SPI )
+X#define FS_DEBUG_EVR_CFG (FS_DEBUG_EVR_CORE   |                           FS_DEBUG_EVR_FAT    |                           FS_DEBUG_EVR_EFS    |                           FS_DEBUG_EVR_IOC    |                           FS_DEBUG_EVR_NFTL   |                           FS_DEBUG_EVR_NAND   |                           FS_DEBUG_EVR_MC_MCI |                           FS_DEBUG_EVR_MC_SPI )
+S
+S#if (FS_DEBUG_EVR_CFG > 3)
+S  #error "FS_Debug.c contains invalid Event Recorder filter configuration."
+S#endif
+S
+S#define Level_Msk(cfg)                             \
+S ((cfg == 0) ? EventRecordNone  :                  \
+S  (cfg == 1) ? EventRecordError :                  \
+S  (cfg == 2) ? EventRecordError | EventRecordAPI : \
+S               EventRecordAll)
+X#define Level_Msk(cfg)                              ((cfg == 0) ? EventRecordNone  :                    (cfg == 1) ? EventRecordError :                    (cfg == 2) ? EventRecordError | EventRecordAPI :                EventRecordAll)
+S
+S/*-----------------------------------------------------------------------------
+S *  Configure Event Recorder event level
+S *----------------------------------------------------------------------------*/
+Svoid fs_config_evr (void) {
+S  uint32_t msk;
+S  uint32_t comp;
+S  uint32_t i;
+S
+S  EventRecorderDisable(EventRecordAll, EvtFsCore_No, EvtFsMcSPI_No);
+S
+S  /* Select error level, component and apply configuration */
+S  for (i = 0U; i < 8U; i++) {
+S    switch (i) {
+S      default:
+S      case 0: msk = Level_Msk(FS_DEBUG_EVR_CORE);   comp = EvtFsCore_No;  break;
+S      case 1: msk = Level_Msk(FS_DEBUG_EVR_FAT);    comp = EvtFsFAT_No;   break;
+S      case 2: msk = Level_Msk(FS_DEBUG_EVR_EFS);    comp = EvtFsEFS_No;   break;
+S      case 3: msk = Level_Msk(FS_DEBUG_EVR_IOC);    comp = EvtFsIOC_No;   break;
+S      case 4: msk = Level_Msk(FS_DEBUG_EVR_NFTL);   comp = EvtFsNFTL_No;  break;
+S      case 5: msk = Level_Msk(FS_DEBUG_EVR_NAND);   comp = EvtFsNAND_No;  break;
+S      case 6: msk = Level_Msk(FS_DEBUG_EVR_MC_MCI); comp = EvtFsMcMCI_No; break;
+S      case 7: msk = Level_Msk(FS_DEBUG_EVR_MC_SPI); comp = EvtFsMcSPI_No; break;
+S    }
+S  
+S    EventRecorderEnable (msk, comp, comp);
+S  }
+S}
+N#endif /* (FS_DEBUG_EVR_ENABLE != 0) */
+L 51 "RTE\File_System\FS_Debug.c" 2

@@ -1,0 +1,1364 @@
+L 1 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS-Driver\2.6.1\ETH\PHY_DP83848C.c"
+N/*
+N * Copyright (c) 2013-2018 Arm Limited. All rights reserved.
+N *
+N * SPDX-License-Identifier: Apache-2.0
+N *
+N * Licensed under the Apache License, Version 2.0 (the License); you may
+N * not use this file except in compliance with the License.
+N * You may obtain a copy of the License at
+N *
+N * www.apache.org/licenses/LICENSE-2.0
+N *
+N * Unless required by applicable law or agreed to in writing, software
+N * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+N * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+N * See the License for the specific language governing permissions and
+N * limitations under the License.
+N *
+N * -----------------------------------------------------------------------
+N *
+N * $Date:        25. May 2018
+N * $Revision:    V6.2
+N *
+N * Driver:       Driver_ETH_PHYn (default: Driver_ETH_PHY0)
+N * Project:      Ethernet Physical Layer Transceiver (PHY)
+N *               Driver for DP83848C
+N * -----------------------------------------------------------------------
+N * Use the following configuration settings in the middleware component
+N * to connect to this driver.
+N *
+N *   Configuration Setting                     Value
+N *   ---------------------                     -----
+N *   Connect to hardware via Driver_ETH_PHY# = n (default: 0)
+N * -------------------------------------------------------------------- */
+N
+N/* History:
+N *  Version 6.2
+N *    Updated for ARM compiler 6
+N *  Version 6.1
+N *    Added driver flow control flags
+N *  Version 6.0
+N *    Based on API V2.00
+N *  Version 5.1
+N *    Based on API V1.10 (namespace prefix ARM_ added)
+N *  Version 5.0
+N *    Initial release
+N */
+N
+N#include "PHY_DP83848C.h"
+L 1 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS-Driver\2.6.1\ETH\PHY_DP83848C.h" 1
+N/*
+N * Copyright (c) 2013-2018 Arm Limited. All rights reserved.
+N *
+N * SPDX-License-Identifier: Apache-2.0
+N *
+N * Licensed under the Apache License, Version 2.0 (the License); you may
+N * not use this file except in compliance with the License.
+N * You may obtain a copy of the License at
+N *
+N * www.apache.org/licenses/LICENSE-2.0
+N *
+N * Unless required by applicable law or agreed to in writing, software
+N * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+N * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+N * See the License for the specific language governing permissions and
+N * limitations under the License.
+N *
+N * -----------------------------------------------------------------------
+N *
+N * $Date:        25. May 2018
+N * $Revision:    V6.2
+N *
+N * Project:      Ethernet Physical Layer Transceiver (PHY)
+N *               Definitions for DP83848C
+N * -------------------------------------------------------------------- */
+N
+N#ifndef __PHY_DP83848C_H
+N#define __PHY_DP83848C_H
+N
+N#include "Driver_ETH_PHY.h"
+L 1 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_ETH_PHY.h" 1
+N/*
+N * Copyright (c) 2013-2020 ARM Limited. All rights reserved.
+N *
+N * SPDX-License-Identifier: Apache-2.0
+N *
+N * Licensed under the Apache License, Version 2.0 (the License); you may
+N * not use this file except in compliance with the License.
+N * You may obtain a copy of the License at
+N *
+N * www.apache.org/licenses/LICENSE-2.0
+N *
+N * Unless required by applicable law or agreed to in writing, software
+N * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+N * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+N * See the License for the specific language governing permissions and
+N * limitations under the License.
+N *
+N * $Date:        24. January 2020
+N * $Revision:    V2.2
+N *
+N * Project:      Ethernet PHY (Physical Transceiver) Driver definitions
+N */
+N
+N/* History:
+N *  Version 2.2
+N *    Removed volatile from ARM_ETH_LINK_INFO
+N *  Version 2.1
+N *    ARM_ETH_LINK_INFO made volatile
+N *  Version 2.0
+N *    changed parameter "mode" in function ARM_ETH_PHY_SetMode
+N *    Changed prefix ARM_DRV -> ARM_DRIVER
+N *    Changed return values of some functions to int32_t
+N *  Version 1.10
+N *    Namespace prefix ARM_ added
+N *  Version 1.00
+N *    Initial release
+N */
+N
+N#ifndef DRIVER_ETH_PHY_H_
+N#define DRIVER_ETH_PHY_H_
+N
+N#ifdef  __cplusplus
+Sextern "C"
+S{
+N#endif
+N
+N#include "Driver_ETH.h"
+L 1 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_ETH.h" 1
+N/*
+N * Copyright (c) 2013-2020 ARM Limited. All rights reserved.
+N *
+N * SPDX-License-Identifier: Apache-2.0
+N *
+N * Licensed under the Apache License, Version 2.0 (the License); you may
+N * not use this file except in compliance with the License.
+N * You may obtain a copy of the License at
+N *
+N * www.apache.org/licenses/LICENSE-2.0
+N *
+N * Unless required by applicable law or agreed to in writing, software
+N * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+N * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+N * See the License for the specific language governing permissions and
+N * limitations under the License.
+N *
+N * $Date:        24. January 2020
+N * $Revision:    V2.2
+N *
+N * Project:      Ethernet PHY and MAC Driver common definitions
+N */
+N
+N/* History:
+N *  Version 2.2
+N *    Removed volatile from ARM_ETH_LINK_INFO
+N *  Version 2.1
+N *    ARM_ETH_LINK_INFO made volatile
+N *  Version 2.0
+N *    Removed ARM_ETH_STATUS enumerator
+N *    Removed ARM_ETH_MODE enumerator
+N *  Version 1.10
+N *    Namespace prefix ARM_ added
+N *  Version 1.00
+N *    Initial release
+N */
+N
+N#ifndef DRIVER_ETH_H_
+N#define DRIVER_ETH_H_
+N
+N#include "Driver_Common.h"
+L 1 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_Common.h" 1
+N/*
+N * Copyright (c) 2013-2017 ARM Limited. All rights reserved.
+N *
+N * SPDX-License-Identifier: Apache-2.0
+N *
+N * Licensed under the Apache License, Version 2.0 (the License); you may
+N * not use this file except in compliance with the License.
+N * You may obtain a copy of the License at
+N *
+N * www.apache.org/licenses/LICENSE-2.0
+N *
+N * Unless required by applicable law or agreed to in writing, software
+N * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+N * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+N * See the License for the specific language governing permissions and
+N * limitations under the License.
+N *
+N * $Date:        2. Feb 2017
+N * $Revision:    V2.0
+N *
+N * Project:      Common Driver definitions
+N */
+N
+N/* History:
+N *  Version 2.0
+N *    Changed prefix ARM_DRV -> ARM_DRIVER
+N *    Added General return codes definitions
+N *  Version 1.10
+N *    Namespace prefix ARM_ added
+N *  Version 1.00
+N *    Initial release
+N */
+N
+N#ifndef DRIVER_COMMON_H_
+N#define DRIVER_COMMON_H_
+N
+N#include <stddef.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h" 1
+N/* stddef.h: ANSI 'C' (X3J11 Oct 88) library header, section 4.1.4 */
+N
+N/* Copyright (C) ARM Ltd., 1999
+N * All rights reserved
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N
+N/* Copyright (C) Codemist Ltd., 1988                            */
+N/* Copyright 1991 ARM Limited. All rights reserved.             */
+N/* version 0.05 */
+N
+N/*
+N * The following types and macros are defined in several headers referred to in
+N * the descriptions of the functions declared in that header. They are also
+N * defined in this header file.
+N */
+N
+N#ifndef __stddef_h
+N#define __stddef_h
+N#define __ARMCLIB_VERSION 5060044
+N
+N  #ifndef __STDDEF_DECLS
+N  #define __STDDEF_DECLS
+N    #undef __CLIBNS
+N    #ifdef __cplusplus
+S        namespace std {
+S        #define __CLIBNS ::std::
+S        extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S  typedef signed long ptrdiff_t;
+N#else
+N  typedef signed int ptrdiff_t;
+N#endif
+N
+N#if defined(__cplusplus) || !defined(__STRICT_ANSI__)
+X#if 0L || !0L
+N /* unconditional in C++ and non-strict C for consistency of debug info */
+N  #if __sizeof_ptr == 8
+X  #if 4 == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+N  #else
+N    typedef unsigned int size_t;   /* see <stddef.h> */
+N  #endif
+N#elif !defined(__size_t)
+S  #define __size_t 1
+S  #if __sizeof_ptr == 8
+S    typedef unsigned long size_t;   /* see <stddef.h> */
+S  #else
+S    typedef unsigned int size_t;   /* see <stddef.h> */
+S  #endif
+S   /* the unsigned integral type of the result of the sizeof operator. */
+N#endif
+N
+N#ifndef __cplusplus  /* wchar_t is a builtin type for C++ */
+N  #if !defined(__STRICT_ANSI__)
+X  #if !0L
+N  /* unconditional in non-strict C for consistency of debug info */
+N    #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+X    #if 0L || (0L && __ARM_SIZEOF_WCHAR_T == 4)
+S      typedef unsigned int wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+N    #else
+N      typedef unsigned short wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+N    #endif
+N  #elif !defined(__wchar_t)
+S    #define __wchar_t 1
+S    #if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+S      typedef unsigned int wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #else
+S      typedef unsigned short wchar_t; /* also in <stdlib.h> and <inttypes.h> */
+S    #endif
+S   /*
+S    * An integral type whose range of values can represent distinct codes for
+S    * all members of the largest extended character set specified among the
+S    * supported locales; the null character shall have the code value zero and
+S    * each member of the basic character set shall have a code value when used
+S    * as the lone character in an integer character constant.
+S    */
+N  #endif
+N#endif
+N
+N#undef NULL  /* others (e.g. <stdio.h>) also define */
+N#define NULL 0
+N   /* null pointer constant. */
+N
+N#ifdef __clang__
+S  #define offsetof(t, d) __builtin_offsetof(t, d)
+N#else
+N  /* EDG uses __INTADDR__ to avoid errors when strict */
+N  #define offsetof(t, memb) ((__CLIBNS size_t)__INTADDR__(&(((t *)0)->memb)))
+N#endif
+N
+N#if !defined(__STRICT_ANSI__) || (defined(__STDC_VERSION__) && 201112L <= __STDC_VERSION__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+X#if !0L || (1L && 201112L <= 199409L) || (0L && 201103L <= __cplusplus)
+N  typedef long double max_align_t;
+N#endif
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDDEF_DECLS */
+N
+N
+N  #ifdef __cplusplus
+S    #ifndef __STDDEF_NO_EXPORTS
+S      using ::std::size_t;
+S      using ::std::ptrdiff_t;
+S      #if !defined(__STRICT_ANSI__) || (defined(__cplusplus) && 201103L <= __cplusplus)
+S        using ::std::max_align_t;
+S      #endif
+S    #endif 
+N  #endif /* __cplusplus */
+N
+N#endif
+N
+N/* end of stddef.h */
+N
+L 38 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_Common.h" 2
+N#include <stdint.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h" 1
+N/* Copyright (C) ARM Ltd., 1999,2014 */
+N/* All rights reserved */
+N
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N
+N#ifndef __stdint_h
+N#define __stdint_h
+N#define __ARMCLIB_VERSION 5060044
+N
+N  #ifdef __INT64_TYPE__
+S    /* armclang predefines '__INT64_TYPE__' and '__INT64_C_SUFFIX__' */
+S    #define __INT64 __INT64_TYPE__
+N  #else
+N    /* armcc has builtin '__int64' which can be used in --strict mode */
+N    #define __INT64 __int64
+N    #define __INT64_C_SUFFIX__ ll
+N  #endif
+N  #define __PASTE2(x, y) x ## y
+N  #define __PASTE(x, y) __PASTE2(x, y)
+N  #define __INT64_C(x)  __ESCAPE__(__PASTE(x, __INT64_C_SUFFIX__))
+N  #define __UINT64_C(x)  __ESCAPE__(__PASTE(x ## u, __INT64_C_SUFFIX__))
+N  #if defined(__clang__) || (defined(__ARMCC_VERSION) && !defined(__STRICT_ANSI__))
+X  #if 0L || (1L && !0L)
+N    /* armclang and non-strict armcc allow 'long long' in system headers */
+N    #define __LONGLONG long long
+N  #else
+S    /* strict armcc has '__int64' */
+S    #define __LONGLONG __int64
+N  #endif
+N
+N  #ifndef __STDINT_DECLS
+N  #define __STDINT_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+S      namespace std {
+S          #define __CLIBNS std::
+S          extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N
+N/*
+N * 'signed' is redundant below, except for 'signed char' and if
+N * the typedef is used to declare a bitfield.
+N */
+N
+N    /* 7.18.1.1 */
+N
+N    /* exact-width signed integer types */
+Ntypedef   signed          char int8_t;
+Ntypedef   signed short     int int16_t;
+Ntypedef   signed           int int32_t;
+Ntypedef   signed       __INT64 int64_t;
+Xtypedef   signed       __int64 int64_t;
+N
+N    /* exact-width unsigned integer types */
+Ntypedef unsigned          char uint8_t;
+Ntypedef unsigned short     int uint16_t;
+Ntypedef unsigned           int uint32_t;
+Ntypedef unsigned       __INT64 uint64_t;
+Xtypedef unsigned       __int64 uint64_t;
+N
+N    /* 7.18.1.2 */
+N
+N    /* smallest type of at least n bits */
+N    /* minimum-width signed integer types */
+Ntypedef   signed          char int_least8_t;
+Ntypedef   signed short     int int_least16_t;
+Ntypedef   signed           int int_least32_t;
+Ntypedef   signed       __INT64 int_least64_t;
+Xtypedef   signed       __int64 int_least64_t;
+N
+N    /* minimum-width unsigned integer types */
+Ntypedef unsigned          char uint_least8_t;
+Ntypedef unsigned short     int uint_least16_t;
+Ntypedef unsigned           int uint_least32_t;
+Ntypedef unsigned       __INT64 uint_least64_t;
+Xtypedef unsigned       __int64 uint_least64_t;
+N
+N    /* 7.18.1.3 */
+N
+N    /* fastest minimum-width signed integer types */
+Ntypedef   signed           int int_fast8_t;
+Ntypedef   signed           int int_fast16_t;
+Ntypedef   signed           int int_fast32_t;
+Ntypedef   signed       __INT64 int_fast64_t;
+Xtypedef   signed       __int64 int_fast64_t;
+N
+N    /* fastest minimum-width unsigned integer types */
+Ntypedef unsigned           int uint_fast8_t;
+Ntypedef unsigned           int uint_fast16_t;
+Ntypedef unsigned           int uint_fast32_t;
+Ntypedef unsigned       __INT64 uint_fast64_t;
+Xtypedef unsigned       __int64 uint_fast64_t;
+N
+N    /* 7.18.1.4 integer types capable of holding object pointers */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+Stypedef   signed       __INT64 intptr_t;
+Stypedef unsigned       __INT64 uintptr_t;
+N#else
+Ntypedef   signed           int intptr_t;
+Ntypedef unsigned           int uintptr_t;
+N#endif
+N
+N    /* 7.18.1.5 greatest-width integer types */
+Ntypedef   signed     __LONGLONG intmax_t;
+Xtypedef   signed     long long intmax_t;
+Ntypedef unsigned     __LONGLONG uintmax_t;
+Xtypedef unsigned     long long uintmax_t;
+N
+N
+N#if !defined(__cplusplus) || defined(__STDC_LIMIT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.2.1 */
+N
+N    /* minimum values of exact-width signed integer types */
+N#define INT8_MIN                   -128
+N#define INT16_MIN                -32768
+N#define INT32_MIN          (~0x7fffffff)   /* -2147483648 is unsigned */
+N#define INT64_MIN  __INT64_C(~0x7fffffffffffffff) /* -9223372036854775808 is unsigned */
+N
+N    /* maximum values of exact-width signed integer types */
+N#define INT8_MAX                    127
+N#define INT16_MAX                 32767
+N#define INT32_MAX            2147483647
+N#define INT64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of exact-width unsigned integer types */
+N#define UINT8_MAX                   255
+N#define UINT16_MAX                65535
+N#define UINT32_MAX           4294967295u
+N#define UINT64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.2 */
+N
+N    /* minimum values of minimum-width signed integer types */
+N#define INT_LEAST8_MIN                   -128
+N#define INT_LEAST16_MIN                -32768
+N#define INT_LEAST32_MIN          (~0x7fffffff)
+N#define INT_LEAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of minimum-width signed integer types */
+N#define INT_LEAST8_MAX                    127
+N#define INT_LEAST16_MAX                 32767
+N#define INT_LEAST32_MAX            2147483647
+N#define INT_LEAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of minimum-width unsigned integer types */
+N#define UINT_LEAST8_MAX                   255
+N#define UINT_LEAST16_MAX                65535
+N#define UINT_LEAST32_MAX           4294967295u
+N#define UINT_LEAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.3 */
+N
+N    /* minimum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MIN           (~0x7fffffff)
+N#define INT_FAST16_MIN          (~0x7fffffff)
+N#define INT_FAST32_MIN          (~0x7fffffff)
+N#define INT_FAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MAX             2147483647
+N#define INT_FAST16_MAX            2147483647
+N#define INT_FAST32_MAX            2147483647
+N#define INT_FAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of fastest minimum-width unsigned integer types */
+N#define UINT_FAST8_MAX            4294967295u
+N#define UINT_FAST16_MAX           4294967295u
+N#define UINT_FAST32_MAX           4294967295u
+N#define UINT_FAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.4 */
+N
+N    /* minimum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MIN INT64_MIN
+N#else
+N#define INTPTR_MIN INT32_MIN
+N#endif
+N
+N    /* maximum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MAX INT64_MAX
+N#else
+N#define INTPTR_MAX INT32_MAX
+N#endif
+N
+N    /* maximum value of pointer-holding unsigned integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define UINTPTR_MAX UINT64_MAX
+N#else
+N#define UINTPTR_MAX UINT32_MAX
+N#endif
+N
+N    /* 7.18.2.5 */
+N
+N    /* minimum value of greatest-width signed integer type */
+N#define INTMAX_MIN  __ESCAPE__(~0x7fffffffffffffffll)
+N
+N    /* maximum value of greatest-width signed integer type */
+N#define INTMAX_MAX  __ESCAPE__(9223372036854775807ll)
+N
+N    /* maximum value of greatest-width unsigned integer type */
+N#define UINTMAX_MAX __ESCAPE__(18446744073709551615ull)
+N
+N    /* 7.18.3 */
+N
+N    /* limits of ptrdiff_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define PTRDIFF_MIN INT64_MIN
+S#define PTRDIFF_MAX INT64_MAX
+N#else
+N#define PTRDIFF_MIN INT32_MIN
+N#define PTRDIFF_MAX INT32_MAX
+N#endif
+N
+N    /* limits of sig_atomic_t */
+N#define SIG_ATOMIC_MIN (~0x7fffffff)
+N#define SIG_ATOMIC_MAX   2147483647
+N
+N    /* limit of size_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define SIZE_MAX UINT64_MAX
+N#else
+N#define SIZE_MAX UINT32_MAX
+N#endif
+N
+N    /* limits of wchar_t */
+N    /* NB we have to undef and redef because they're defined in both
+N     * stdint.h and wchar.h */
+N#undef WCHAR_MIN
+N#undef WCHAR_MAX
+N
+N#if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+X#if 0L || (0L && __ARM_SIZEOF_WCHAR_T == 4)
+S  #define WCHAR_MIN   0
+S  #define WCHAR_MAX   0xffffffffU
+N#else
+N  #define WCHAR_MIN   0
+N  #define WCHAR_MAX   65535
+N#endif
+N
+N    /* limits of wint_t */
+N#define WINT_MIN (~0x7fffffff)
+N#define WINT_MAX 2147483647
+N
+N#endif /* __STDC_LIMIT_MACROS */
+N
+N#if !defined(__cplusplus) || defined(__STDC_CONSTANT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.4.1 macros for minimum-width integer constants */
+N#define INT8_C(x)   (x)
+N#define INT16_C(x)  (x)
+N#define INT32_C(x)  (x)
+N#define INT64_C(x)  __INT64_C(x)
+N
+N#define UINT8_C(x)  (x ## u)
+N#define UINT16_C(x) (x ## u)
+N#define UINT32_C(x) (x ## u)
+N#define UINT64_C(x) __UINT64_C(x)
+N
+N    /* 7.18.4.2 macros for greatest-width integer constants */
+N#define INTMAX_C(x)  __ESCAPE__(x ## ll)
+N#define UINTMAX_C(x) __ESCAPE__(x ## ull)
+N
+N#endif /* __STDC_CONSTANT_MACROS */
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDINT_DECLS */
+N
+N  #ifdef __cplusplus
+S    #ifndef __STDINT_NO_EXPORTS
+S      using ::std::int8_t;
+S      using ::std::int16_t;
+S      using ::std::int32_t;
+S      using ::std::int64_t;
+S      using ::std::uint8_t;
+S      using ::std::uint16_t;
+S      using ::std::uint32_t;
+S      using ::std::uint64_t;
+S      using ::std::int_least8_t;
+S      using ::std::int_least16_t;
+S      using ::std::int_least32_t;
+S      using ::std::int_least64_t;
+S      using ::std::uint_least8_t;
+S      using ::std::uint_least16_t;
+S      using ::std::uint_least32_t;
+S      using ::std::uint_least64_t;
+S      using ::std::int_fast8_t;
+S      using ::std::int_fast16_t;
+S      using ::std::int_fast32_t;
+S      using ::std::int_fast64_t;
+S      using ::std::uint_fast8_t;
+S      using ::std::uint_fast16_t;
+S      using ::std::uint_fast32_t;
+S      using ::std::uint_fast64_t;
+S      using ::std::intptr_t;
+S      using ::std::uintptr_t;
+S      using ::std::intmax_t;
+S      using ::std::uintmax_t;
+S    #endif
+N  #endif /* __cplusplus */
+N
+N#undef __INT64
+N#undef __LONGLONG
+N
+N#endif /* __stdint_h */
+N
+N/* end of stdint.h */
+L 39 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_Common.h" 2
+N#include <stdbool.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h" 1
+N/* stdbool.h: ISO/IEC 9899:1999 (C99), section 7.16 */
+N
+N/* Copyright (C) ARM Ltd., 2002
+N * All rights reserved
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: drodgman $
+N */
+N
+N#ifndef __bool_true_false_are_defined
+N#define __bool_true_false_are_defined 1
+N#define __ARMCLIB_VERSION 5060044
+N
+N  #ifndef __cplusplus /* In C++, 'bool', 'true' and 'false' and keywords */
+N    #define bool _Bool
+N    #define true 1
+N    #define false 0
+N  #else
+S    #ifdef __GNUC__
+S      /* GNU C++ supports direct inclusion of stdbool.h to provide C99
+S         compatibility by defining _Bool */
+S      #define _Bool bool
+S    #endif
+N  #endif
+N
+N#endif /* __bool_true_false_are_defined */
+N
+L 40 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_Common.h" 2
+N
+N#define ARM_DRIVER_VERSION_MAJOR_MINOR(major,minor) (((major) << 8) | (minor))
+N
+N/**
+N\brief Driver Version
+N*/
+Ntypedef struct _ARM_DRIVER_VERSION {
+N  uint16_t api;                         ///< API version
+N  uint16_t drv;                         ///< Driver version
+N} ARM_DRIVER_VERSION;
+N
+N/* General return codes */
+N#define ARM_DRIVER_OK                 0 ///< Operation succeeded 
+N#define ARM_DRIVER_ERROR             -1 ///< Unspecified error
+N#define ARM_DRIVER_ERROR_BUSY        -2 ///< Driver is busy
+N#define ARM_DRIVER_ERROR_TIMEOUT     -3 ///< Timeout occurred
+N#define ARM_DRIVER_ERROR_UNSUPPORTED -4 ///< Operation not supported
+N#define ARM_DRIVER_ERROR_PARAMETER   -5 ///< Parameter error
+N#define ARM_DRIVER_ERROR_SPECIFIC    -6 ///< Start of driver specific errors 
+N
+N/**
+N\brief General power states
+N*/ 
+Ntypedef enum _ARM_POWER_STATE {
+N  ARM_POWER_OFF,                        ///< Power off: no operation possible
+N  ARM_POWER_LOW,                        ///< Low Power mode: retain state, detect and signal wake-up events
+N  ARM_POWER_FULL                        ///< Power on: full operation at maximum performance
+N} ARM_POWER_STATE;
+N
+N#endif /* DRIVER_COMMON_H_ */
+L 42 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_ETH.h" 2
+N
+N/**
+N\brief Ethernet Media Interface type
+N*/
+N#define ARM_ETH_INTERFACE_MII           (0U)    ///< Media Independent Interface (MII)
+N#define ARM_ETH_INTERFACE_RMII          (1U)    ///< Reduced Media Independent Interface (RMII)
+N#define ARM_ETH_INTERFACE_SMII          (2U)    ///< Serial Media Independent Interface (SMII)
+N
+N/**
+N\brief Ethernet link speed
+N*/
+N#define ARM_ETH_SPEED_10M               (0U)    ///< 10 Mbps link speed
+N#define ARM_ETH_SPEED_100M              (1U)    ///< 100 Mbps link speed
+N#define ARM_ETH_SPEED_1G                (2U)    ///< 1 Gpbs link speed
+N
+N/**
+N\brief Ethernet duplex mode
+N*/
+N#define ARM_ETH_DUPLEX_HALF             (0U)    ///< Half duplex link
+N#define ARM_ETH_DUPLEX_FULL             (1U)    ///< Full duplex link
+N
+N/**
+N\brief Ethernet link state
+N*/
+Ntypedef enum _ARM_ETH_LINK_STATE {
+N  ARM_ETH_LINK_DOWN,                    ///< Link is down
+N  ARM_ETH_LINK_UP                       ///< Link is up
+N} ARM_ETH_LINK_STATE;
+N
+N/**
+N\brief Ethernet link information
+N*/
+Ntypedef struct _ARM_ETH_LINK_INFO {
+N  uint32_t speed    : 2;                ///< Link speed: 0= 10 MBit, 1= 100 MBit, 2= 1 GBit
+N  uint32_t duplex   : 1;                ///< Duplex mode: 0= Half, 1= Full
+N  uint32_t reserved : 29;
+N} ARM_ETH_LINK_INFO;
+N
+N/**
+N\brief Ethernet MAC Address
+N*/
+Ntypedef struct _ARM_ETH_MAC_ADDR {
+N  uint8_t b[6];                         ///< MAC Address (6 bytes), MSB first
+N} ARM_ETH_MAC_ADDR;
+N
+N#endif /* DRIVER_ETH_H_ */
+L 48 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Driver\Include\Driver_ETH_PHY.h" 2
+N
+N#define ARM_ETH_PHY_API_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,2)  /* API version */
+N
+N
+N#define _ARM_Driver_ETH_PHY_(n)      Driver_ETH_PHY##n
+N#define  ARM_Driver_ETH_PHY_(n) _ARM_Driver_ETH_PHY_(n)
+N
+N
+N/****** Ethernet PHY Mode *****/
+N#define ARM_ETH_PHY_SPEED_Pos            0
+N#define ARM_ETH_PHY_SPEED_Msk           (3UL                 << ARM_ETH_PHY_SPEED_Pos)
+N#define ARM_ETH_PHY_SPEED_10M           (ARM_ETH_SPEED_10M   << ARM_ETH_PHY_SPEED_Pos)  ///< 10 Mbps link speed
+N#define ARM_ETH_PHY_SPEED_100M          (ARM_ETH_SPEED_100M  << ARM_ETH_PHY_SPEED_Pos)  ///< 100 Mbps link speed
+N#define ARM_ETH_PHY_SPEED_1G            (ARM_ETH_SPEED_1G    << ARM_ETH_PHY_SPEED_Pos)  ///< 1 Gpbs link speed
+N#define ARM_ETH_PHY_DUPLEX_Pos           2
+N#define ARM_ETH_PHY_DUPLEX_Msk          (1UL                 << ARM_ETH_PHY_DUPLEX_Pos)
+N#define ARM_ETH_PHY_DUPLEX_HALF         (ARM_ETH_DUPLEX_HALF << ARM_ETH_PHY_DUPLEX_Pos) ///< Half duplex link
+N#define ARM_ETH_PHY_DUPLEX_FULL         (ARM_ETH_DUPLEX_FULL << ARM_ETH_PHY_DUPLEX_Pos) ///< Full duplex link
+N#define ARM_ETH_PHY_AUTO_NEGOTIATE      (1UL << 3)                                      ///< Auto Negotiation mode
+N#define ARM_ETH_PHY_LOOPBACK            (1UL << 4)                                      ///< Loop-back test mode
+N#define ARM_ETH_PHY_ISOLATE             (1UL << 5)                                      ///< Isolate PHY from MII/RMII interface
+N
+N
+N// Function documentation
+N/**
+N  \fn          ARM_DRIVER_VERSION ARM_ETH_PHY_GetVersion (void)
+N  \brief       Get driver version.
+N  \return      \ref ARM_DRIVER_VERSION
+N*/
+N/**
+N  \fn          int32_t ARM_ETH_PHY_Initialize (ARM_ETH_PHY_Read_t  fn_read,
+N                                               ARM_ETH_PHY_Write_t fn_write)
+N  \brief       Initialize Ethernet PHY Device.
+N  \param[in]   fn_read   Pointer to \ref ARM_ETH_MAC_PHY_Read
+N  \param[in]   fn_write  Pointer to \ref ARM_ETH_MAC_PHY_Write
+N  \return      \ref execution_status
+N*/
+N/**
+N  \fn          int32_t ARM_ETH_PHY_Uninitialize (void)
+N  \brief       De-initialize Ethernet PHY Device.
+N  \return      \ref execution_status
+N*/
+N/**
+N  \fn          int32_t ARM_ETH_PHY_PowerControl (ARM_POWER_STATE state)
+N  \brief       Control Ethernet PHY Device Power.
+N  \param[in]   state  Power state
+N  \return      \ref execution_status
+N*/
+N/**
+N  \fn          int32_t ARM_ETH_PHY_SetInterface (uint32_t interface)
+N  \brief       Set Ethernet Media Interface.
+N  \param[in]   interface  Media Interface type
+N  \return      \ref execution_status
+N*/
+N/**
+N  \fn          int32_t ARM_ETH_PHY_SetMode (uint32_t mode)
+N  \brief       Set Ethernet PHY Device Operation mode.
+N  \param[in]   mode  Operation Mode
+N  \return      \ref execution_status
+N*/
+N/**
+N  \fn          ARM_ETH_LINK_STATE ARM_ETH_PHY_GetLinkState (void)
+N  \brief       Get Ethernet PHY Device Link state.
+N  \return      current link status \ref ARM_ETH_LINK_STATE
+N*/
+N/**
+N  \fn          ARM_ETH_LINK_INFO ARM_ETH_PHY_GetLinkInfo (void)
+N  \brief       Get Ethernet PHY Device Link information.
+N  \return      current link parameters \ref ARM_ETH_LINK_INFO
+N*/
+N
+N
+Ntypedef int32_t (*ARM_ETH_PHY_Read_t)  (uint8_t phy_addr, uint8_t reg_addr, uint16_t *data); ///< Pointer to \ref ARM_ETH_MAC_PHY_Read : Read Ethernet PHY Register.
+Ntypedef int32_t (*ARM_ETH_PHY_Write_t) (uint8_t phy_addr, uint8_t reg_addr, uint16_t  data); ///< Pointer to \ref ARM_ETH_MAC_PHY_Write : Write Ethernet PHY Register.
+N
+N
+N/**
+N\brief Access structure of the Ethernet PHY Driver
+N*/
+Ntypedef struct _ARM_DRIVER_ETH_PHY {
+N  ARM_DRIVER_VERSION (*GetVersion)   (void);                          ///< Pointer to \ref ARM_ETH_PHY_GetVersion : Get driver version.
+N  int32_t            (*Initialize)   (ARM_ETH_PHY_Read_t  fn_read,
+N                                      ARM_ETH_PHY_Write_t fn_write);  ///< Pointer to \ref ARM_ETH_PHY_Initialize : Initialize PHY Device.
+N  int32_t            (*Uninitialize) (void);                          ///< Pointer to \ref ARM_ETH_PHY_Uninitialize : De-initialize PHY Device.
+N  int32_t            (*PowerControl) (ARM_POWER_STATE state);         ///< Pointer to \ref ARM_ETH_PHY_PowerControl : Control PHY Device Power.
+N  int32_t            (*SetInterface) (uint32_t interface);            ///< Pointer to \ref ARM_ETH_PHY_SetInterface : Set Ethernet Media Interface.
+N  int32_t            (*SetMode)      (uint32_t mode);                 ///< Pointer to \ref ARM_ETH_PHY_SetMode : Set Ethernet PHY Device Operation mode.
+N  ARM_ETH_LINK_STATE (*GetLinkState) (void);                          ///< Pointer to \ref ARM_ETH_PHY_GetLinkState : Get Ethernet PHY Device Link state.
+N  ARM_ETH_LINK_INFO  (*GetLinkInfo)  (void);                          ///< Pointer to \ref ARM_ETH_PHY_GetLinkInfo : Get Ethernet PHY Device Link information.
+N} const ARM_DRIVER_ETH_PHY;
+N
+N#ifdef  __cplusplus
+S}
+N#endif
+N
+N#endif /* DRIVER_ETH_PHY_H_ */
+L 31 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS-Driver\2.6.1\ETH\PHY_DP83848C.h" 2
+N
+N/* Basic Registers */
+N#define REG_BMCR            0x00        /* Basic Mode Control Register       */
+N#define REG_BMSR            0x01        /* Basic Mode Status Register        */
+N#define REG_PHYIDR1         0x02        /* PHY Identifier 1                  */
+N#define REG_PHYIDR2         0x03        /* PHY Identifier 2                  */
+N#define REG_ANAR            0x04        /* Auto-Negotiation Advertisement    */
+N#define REG_ANLPAR          0x05        /* Auto-Neg. Link Partner Abitily    */
+N#define REG_ANER            0x06        /* Auto-Neg. Expansion Register      */
+N#define REG_ANNPTR          0x07        /* Auto-Neg. Next Page TX            */
+N
+N/* Extended Registers */
+N#define REG_PHYSTS          0x10        /* Status Register                   */
+N#define REG_MICR            0x11        /* MII Interrupt Control Register    */
+N#define REG_MISR            0x12        /* MII Interrupt Status Register     */
+N#define REG_FCSCR           0x14        /* False Carrier Sense Counter       */
+N#define REG_RECR            0x15        /* Receive Error Counter             */
+N#define REG_PCSR            0x16        /* PCS Sublayer Config. and Status   */
+N#define REG_RBR             0x17        /* RMII and Bypass Register          */
+N#define REG_LEDCR           0x18        /* LED Direct Control Register       */
+N#define REG_PHYCR           0x19        /* PHY Control Register              */
+N#define REG_BTSCR           0x1A        /* 10Base-T Status/Control Register  */
+N#define REG_CDBR1           0x1B        /* CD Test Control and BIST Extens.  */
+N#define REG_EDCR            0x1D        /* Energy Detect Control Register    */
+N
+N/* Basic Mode Control Register */
+N#define BMCR_RESET          0x8000      /* Software Reset                    */
+N#define BMCR_LOOPBACK       0x4000      /* Loopback mode                     */
+N#define BMCR_SPEED_SEL      0x2000      /* Speed Select (1=100Mb/s)          */
+N#define BMCR_ANEG_EN        0x1000      /* Auto Negotiation Enable           */
+N#define BMCR_POWER_DOWN     0x0800      /* Power Down                        */
+N#define BMCR_ISOLATE        0x0400      /* Isolate Media interface           */
+N#define BMCR_REST_ANEG      0x0200      /* Restart Auto Negotiation          */
+N#define BMCR_DUPLEX         0x0100      /* Duplex Mode (1=Full duplex)       */
+N#define BMCR_COL_TEST       0x0080      /* Collision Test                    */
+N
+N/* Basic Mode Status Register */
+N#define BMSR_100B_T4        0x8000      /* 100BASE-T4 Capable                */
+N#define BMSR_100B_TX_FD     0x4000      /* 100BASE-TX Full Duplex Capable    */
+N#define BMSR_100B_TX_HD     0x2000      /* 100BASE-TX Half Duplex Capable    */
+N#define BMSR_10B_T_FD       0x1000      /* 10BASE-T Full Duplex Capable      */
+N#define BMSR_10B_T_HD       0x0800      /* 10BASE-T Half Duplex Capable      */
+N#define BMSR_MF_PRE_SUP     0x0040      /* Preamble suppression Capable      */
+N#define BMSR_ANEG_COMPL     0x0020      /* Auto Negotiation Complete         */
+N#define BMSR_REM_FAULT      0x0010      /* Remote Fault                      */
+N#define BMSR_ANEG_ABIL      0x0008      /* Auto Negotiation Ability          */
+N#define BMSR_LINK_STAT      0x0004      /* Link Status (1=established)       */
+N#define BMSR_JABBER_DET     0x0002      /* Jaber Detect                      */
+N#define BMSR_EXT_CAPAB      0x0001      /* Extended Capability               */
+N
+N/* PHY Identifier Registers */
+N#define PHY_ID1             0x2000      /* DP83848C Device Identifier MSB    */
+N#define PHY_ID2             0x5C90      /* DP83848C Device Identifier LSB    */
+N
+N/* PHY Status Register */
+N#define PHYSTS_MDI_X        0x4000      /* MDI-X mode enabled by Auto-Negot. */
+N#define PHYSTS_REC_ERR      0x2000      /* Receive Error Latch               */
+N#define PHYSTS_POL_STAT     0x1000      /* Polarity Status                   */
+N#define PHYSTS_FC_SENSE     0x0800      /* False Carrier Sense Latch         */
+N#define PHYSTS_SIG_DET      0x0400      /* 100Base-TX Signal Detect          */
+N#define PHYSTS_DES_LOCK     0x0200      /* 100Base-TX Descrambler Lock       */
+N#define PHYSTS_PAGE_REC     0x0100      /* Link Code Word Page Received      */
+N#define PHYSTS_MII_INT      0x0080      /* MII Interrupt Pending             */
+N#define PHYSTS_REM_FAULT    0x0040      /* Remote Fault                      */
+N#define PHYSTS_JABBER_DET   0x0020      /* Jabber Detect                     */
+N#define PHYSTS_ANEG_COMPL   0x0010      /* Auto Negotiation Complete         */
+N#define PHYSTS_LOOPBACK     0x0008      /* Loopback Status                   */
+N#define PHYSTS_DUPLEX       0x0004      /* Duplex Status (1=Full duplex)     */
+N#define PHYSTS_SPEED        0x0002      /* Speed10 Status (1=10MBit/s)       */
+N#define PHYSTS_LINK_STAT    0x0001      /* Link Status (1=established)       */
+N
+N/* MII Interrupt Control Register */
+N#define MICR_TINT           0x0004      /* Test Interrupt                    */
+N#define MICR_INTEN          0x0002      /* Interrupt Enable                  */
+N#define MICR_INT_OE         0x0001      /* Interrupt Output Enable           */
+N
+N/* MII Interrupt Status Register */
+N#define MISR_ED_INT         0x4000      /* Energy Detect Interrupt           */
+N#define MISR_LINK_INT       0x2000      /* Link Status Change Interrupt      */
+N#define MISR_SPD_INT        0x1000      /* Speed Status Change Interrupt     */
+N#define MISR_DUP_INT        0x0800      /* Duplex Status Change Interrupt    */
+N#define MISR_ANC_INT        0x0400      /* Auto Negotiation Complete Interr. */
+N#define MISR_FHF_INT        0x0200      /* False Carrier Counter HF Interrupt*/
+N#define MISR_RHF_INT        0x0100      /* Receive Error Counter HF Interrupt*/
+N#define MISR_ED_INT_EN      0x0040      /* Endrgy Detect Int.Enable          */
+N#define MISR_LINK_INT_EN    0x0020      /* Link Status Change Int.Enable     */
+N#define MISR_SPD_INT_EN     0x0010      /* Speed Status Change Int.Enable    */
+N#define MISR_DUP_INT_EN     0x0008      /* Duplex Status Change Int.Enable   */
+N#define MISR_ANC_INT_EN     0x0004      /* Auto Negotiation Complete Int.Ena.*/
+N#define MISR_FHF_INT_EN     0x0002      /* False Carrier Count.HF Int.Enable */
+N#define MISR_RHF_INT_EN     0x0001      /* Receive Error Count.HF Int.Enable */
+N
+N/* 100Mb/s PCS Configuration and Status Register */
+N#define PCSR_TQ_EN          0x0400      /* 100Mbs True Quiet Mode Enable     */
+N#define PCSR_SD_FORCE_PMA   0x0200      /* Signal Detect Force PMA           */
+N#define PCSR_SD_OPTION      0x0100      /* Signal Detect Option              */
+N#define PCSR_DESC_TIME      0x0080      /* Descrambler Timeout               */
+N#define PCSR_FORCE_100_OK   0x0020      /* Force 100Mb/s Good Link           */
+N#define PCSR_NRZI_BYPASS    0x0004      /* NRZI Bypass Enable                */
+N
+N/* RMII and Bypass Register */
+N#define RBR_RMII_MODE       0x0020      /* Reduced MII Mode                  */
+N#define RBR_RMII_REV1_0     0x0010      /* Reduced MII Revision 1.0          */
+N#define RBR_RX_OVF_STS      0x0008      /* RX FIFO Overflow Status           */
+N#define RBR_RX_UNF_STS      0x0004      /* RX FIFO Underflow Status          */
+N#define RBR_ELAST_BUF       0x0003      /* Receive Elasticity Buffer         */
+N
+N/* LED Direct Control Register */
+N#define LEDCR_DRV_SPDLED    0x0020      /* Drive SPDLED bit to LED_SPD output*/
+N#define LEDCR_DRV_LNKLED    0x0010      /* Drive LNKLED bit to LED_LNK output*/
+N#define LEDCR_DRV_ACTLED    0x0008      /* Drive ACTLED bit to LED_ACT output*/
+N#define LEDCR_SPDLED        0x0004      /* Value to force on LED_SPD output  */
+N#define LEDCR_LNKLED        0x0002      /* Value to force on LED_LNK output  */
+N#define LEDCR_ACTLED        0x0001      /* Value to force on LED_ACT output  */
+N
+N/* PHY Control Register */
+N#define PHYCR_MDIX_EN       0x8000      /* Auto MDIX Enable                  */
+N#define PHYCR_FORCE_MDIX    0x4000      /* Force MDIX                        */
+N#define PHYCR_PAUSE_RX      0x2000      /* Pause Receive Negotiated          */
+N#define PHYCR_PAUSE_TX      0x1000      /* Pause Transmit Negotiated         */
+N#define PHYCR_BIST_FE       0x0800      /* BIST Force Error                  */
+N#define PHYCR_PSR_15        0x0400      /* BIST Sequence select              */
+N#define PHYCR_BIST_STATUS   0x0200      /* BIST Test Status                  */
+N#define PHYCR_BIST_START    0x0100      /* BIST Start                        */
+N#define PHYCR_BP_STRETCH    0x0080      /* Bypass LED Stretching             */
+N#define PHYCR_LED_CNFG      0x0060      /* LEDs Configuration                */
+N#define PHYCR_PHYADDR       0x001F      /* PHY Address for port              */
+N
+N/* 10Base-T Status/Control Register */
+N#define BTSCR_10BT_SER      0x8000      /* 10Base-T Serial Mode              */
+N#define BTSCR_SQUELCH       0x0E00      /* Squelch Configuration             */
+N#define BTSCR_LOOPB10_DIS   0x0100      /* Loopback 10Base-T Disable         */
+N#define BTSCR_LP_DIS        0x0080      /* Normal Link Pulse Disable         */
+N#define BTSCR_FORCE_LNK10   0x0040      /* Force 10Mbs Good Link             */
+N#define BTSCR_POLARITY      0x0010      /* 10Mbs Polarity Status             */
+N#define BTSCR_HEARTB_DIS    0x0002      /* Heartbeat Disable                 */
+N#define BTSCR_JABBER_DIS    0x0001      /* Jabber Disable                    */
+N
+N/* CD Test and BIST Extensions Register */
+N#define CDBR1_BIST_ERR_CNTR 0xFF00      /* BIST ERROR Counter                */
+N#define CDBR1_BIST_CONT_MD  0x0020      /* Packet BIST Continuous Mode       */
+N#define CDBR1_CDPATEN10     0x0010      /* CD Pattern Enable for 10Mbs       */
+N#define CDBR1_10MEG_PAT_GAP 0x0004      /* Defines gap between data or NLP   */
+N#define CDBR1_CDPATTSEL     0x0003      /* CD Pattern Select                 */
+N
+N/* Energy Detect Control */
+N#define EDCR_ED_EN          0x8000      /* Energy Detect Enable              */
+N#define EDCR_ED_AUTO_UP     0x4000      /* Energy Detect Automatic Power Up  */
+N#define EDCR_ED_AUTO_DOWN   0x2000      /* Energy Detect Automatic Power Down*/
+N#define EDCR_ED_MAN         0x1000      /* Energy Detect Manual Power Up/Down*/
+N#define EDCR_ED_BURST_DIS   0x0800      /* Energy Detect Burst Disable       */
+N#define EDCR_ED_PWR_STATE   0x0400      /* Energy Detect Power State         */
+N#define EDCR_ED_ERR_MET     0x0200      /* Energy Detect Error Threshold Met */
+N#define EDCR_ED_DATA_MET    0x0100      /* Energy Detect Data Threshold Met  */
+N#define EDCR_ED_ERR_CNT     0x00F0      /* Energy Detect Error Threshold     */
+N#define EDCR_ED_DATA_CNT    0x000F      /* Energy Detect Data Threshold      */
+N
+N/* PHY Driver State Flags */
+N#define PHY_INIT            0x01U       /* Driver initialized                */
+N#define PHY_POWER           0x02U       /* Driver power is on                */
+N
+N/* PHY Driver Control Structure */
+Ntypedef struct phy_ctrl {
+N  ARM_ETH_PHY_Read_t  reg_rd;           /* PHY register read function        */
+N  ARM_ETH_PHY_Write_t reg_wr;           /* PHY register write function       */
+N  uint16_t            bmcr;             /* BMCR register value               */
+N  uint8_t             flags;            /* Control flags                     */
+N  uint8_t             rsvd;             /* Reserved                          */
+N} PHY_CTRL;
+N
+N#endif /* __PHY_DP83848C_H */
+L 49 "C:\Users\Mohammad\AppData\Local\Arm\Packs\ARM\CMSIS-Driver\2.6.1\ETH\PHY_DP83848C.c" 2
+N
+N#define ARM_ETH_PHY_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(6,2) /* driver version */
+N
+N
+N#ifndef ETH_PHY_NUM
+N#define ETH_PHY_NUM     0        /* Default driver number */
+N#endif
+N
+N#ifndef ETH_PHY_ADDR
+N#define ETH_PHY_ADDR    0x01     /* Default device address */
+N#endif
+N
+N
+N/* Driver Version */
+Nstatic const ARM_DRIVER_VERSION DriverVersion = {
+N  ARM_ETH_PHY_API_VERSION,
+X  (((2) << 8) | (2)),
+N  ARM_ETH_PHY_DRV_VERSION
+X  (((6) << 8) | (2))
+N};
+N
+N/* Ethernet PHY control structure */
+Nstatic PHY_CTRL PHY = { NULL, NULL, 0, 0, 0 };
+Xstatic PHY_CTRL PHY = { 0, 0, 0, 0, 0 };
+N
+N
+N/**
+N  \fn          ARM_DRIVER_VERSION GetVersion (void)
+N  \brief       Get driver version.
+N  \return      \ref ARM_DRIVER_VERSION
+N*/
+Nstatic ARM_DRIVER_VERSION GetVersion (void) {
+N  return DriverVersion;
+N}
+N
+N
+N/**
+N  \fn          int32_t Initialize (ARM_ETH_PHY_Read_t  fn_read,
+N                                   ARM_ETH_PHY_Write_t fn_write)
+N  \brief       Initialize Ethernet PHY Device.
+N  \param[in]   fn_read   Pointer to \ref ARM_ETH_MAC_PHY_Read
+N  \param[in]   fn_write  Pointer to \ref ARM_ETH_MAC_PHY_Write
+N  \return      \ref execution_status
+N*/
+Nstatic int32_t Initialize (ARM_ETH_PHY_Read_t fn_read, ARM_ETH_PHY_Write_t fn_write) {
+N
+N  if ((fn_read == NULL) || (fn_write == NULL)) { return ARM_DRIVER_ERROR_PARAMETER; }
+X  if ((fn_read == 0) || (fn_write == 0)) { return -5; }
+N
+N  if ((PHY.flags & PHY_INIT) == 0U) {
+X  if ((PHY.flags & 0x01U) == 0U) {
+N    /* Register PHY read/write functions. */
+N    PHY.reg_rd = fn_read;
+N    PHY.reg_wr = fn_write;
+N
+N    PHY.bmcr   = 0U;
+N    PHY.flags  = PHY_INIT;
+X    PHY.flags  = 0x01U;
+N  }
+N
+N  return ARM_DRIVER_OK;
+X  return 0;
+N}
+N
+N/**
+N  \fn          int32_t Uninitialize (void)
+N  \brief       De-initialize Ethernet PHY Device.
+N  \return      \ref execution_status
+N*/
+Nstatic int32_t Uninitialize (void) {
+N
+N  PHY.reg_rd = NULL;
+X  PHY.reg_rd = 0;
+N  PHY.reg_wr = NULL;
+X  PHY.reg_wr = 0;
+N  PHY.bmcr   = 0U;
+N  PHY.flags  = 0U;
+N
+N  return ARM_DRIVER_OK;
+X  return 0;
+N}
+N
+N/**
+N  \fn          int32_t PowerControl (ARM_POWER_STATE state)
+N  \brief       Control Ethernet PHY Device Power.
+N  \param[in]   state  Power state
+N  \return      \ref execution_status
+N*/
+Nstatic int32_t PowerControl (ARM_POWER_STATE state) {
+N  uint16_t val;
+N
+N  switch ((int32_t)state) {
+N    case ARM_POWER_OFF:
+N      if ((PHY.flags & PHY_INIT) == 0U) {
+X      if ((PHY.flags & 0x01U) == 0U) {
+N        /* Initialize must provide register access function pointers */
+N        return ARM_DRIVER_ERROR;
+X        return -1;
+N      }
+N
+N      PHY.flags &= ~PHY_POWER;
+X      PHY.flags &= ~0x02U;
+N      PHY.bmcr   =  BMCR_POWER_DOWN;
+X      PHY.bmcr   =  0x0800;
+N
+N      return (PHY.reg_wr(ETH_PHY_ADDR, REG_BMCR, PHY.bmcr));
+X      return (PHY.reg_wr(0x01, 0x00, PHY.bmcr));
+N
+N    case ARM_POWER_FULL:
+N      if ((PHY.flags & PHY_INIT) == 0U) {
+X      if ((PHY.flags & 0x01U) == 0U) {
+N        return ARM_DRIVER_ERROR;
+X        return -1;
+N      }
+N      if (PHY.flags & PHY_POWER) {
+X      if (PHY.flags & 0x02U) {
+N        return ARM_DRIVER_OK;
+X        return 0;
+N      }
+N
+N      /* Check Device Identification. */
+N      PHY.reg_rd(ETH_PHY_ADDR, REG_PHYIDR1, &val);
+X      PHY.reg_rd(0x01, 0x02, &val);
+N
+N      if (val != PHY_ID1) {
+X      if (val != 0x2000) {
+N        /* Invalid PHY ID */
+N        return ARM_DRIVER_ERROR_UNSUPPORTED;
+X        return -4;
+N      }
+N
+N      PHY.reg_rd(ETH_PHY_ADDR, REG_PHYIDR2, &val);
+X      PHY.reg_rd(0x01, 0x03, &val);
+N
+N      if ((val & 0xFFF0) != PHY_ID2) {
+X      if ((val & 0xFFF0) != 0x5C90) {
+N        /* Invalid PHY ID */
+N        return ARM_DRIVER_ERROR_UNSUPPORTED;
+X        return -4;
+N      }
+N
+N      PHY.bmcr = 0U;
+N
+N      if (PHY.reg_wr(ETH_PHY_ADDR, REG_BMCR, PHY.bmcr) != ARM_DRIVER_OK) {
+X      if (PHY.reg_wr(0x01, 0x00, PHY.bmcr) != 0) {
+N        return ARM_DRIVER_ERROR;
+X        return -1;
+N      }
+N
+N      PHY.flags |=  PHY_POWER;
+X      PHY.flags |=  0x02U;
+N
+N      return ARM_DRIVER_OK;
+X      return 0;
+N
+N    case ARM_POWER_LOW:
+N    default:
+N      return ARM_DRIVER_ERROR_UNSUPPORTED;
+X      return -4;
+N  }
+N}
+N
+N/**
+N  \fn          int32_t SetInterface (uint32_t interface)
+N  \brief       Set Ethernet Media Interface.
+N  \param[in]   interface  Media Interface type
+N  \return      \ref execution_status
+N*/
+Nstatic int32_t SetInterface (uint32_t interface) {
+N  uint16_t val;
+N
+N  if ((PHY.flags & PHY_POWER) == 0U) { return ARM_DRIVER_ERROR; }
+X  if ((PHY.flags & 0x02U) == 0U) { return -1; }
+N
+N  switch (interface) {
+N    case ARM_ETH_INTERFACE_MII:
+X    case (0U):
+N      val = 0x0001;
+N      break;
+N    case ARM_ETH_INTERFACE_RMII:
+X    case (1U):
+N      val = RBR_RMII_MODE | 0x0001;
+X      val = 0x0020 | 0x0001;
+N      break;
+N    default:
+N      return ARM_DRIVER_ERROR_UNSUPPORTED;
+X      return -4;
+N  }
+N
+N  return (PHY.reg_wr(ETH_PHY_ADDR, REG_RBR, val));
+X  return (PHY.reg_wr(0x01, 0x17, val));
+N}
+N
+N/**
+N  \fn          int32_t SetMode (uint32_t mode)
+N  \brief       Set Ethernet PHY Device Operation mode.
+N  \param[in]   mode  Operation Mode
+N  \return      \ref execution_status
+N*/
+Nstatic int32_t SetMode (uint32_t mode) {
+N  uint16_t val;
+N
+N  if ((PHY.flags & PHY_POWER) == 0U) { return ARM_DRIVER_ERROR; }
+X  if ((PHY.flags & 0x02U) == 0U) { return -1; }
+N
+N  val = PHY.bmcr & BMCR_POWER_DOWN;
+X  val = PHY.bmcr & 0x0800;
+N
+N  switch (mode & ARM_ETH_PHY_SPEED_Msk) {
+X  switch (mode & (3UL << 0)) {
+N    case ARM_ETH_PHY_SPEED_10M:
+X    case ((0U) << 0):
+N      break;
+N    case ARM_ETH_PHY_SPEED_100M:
+X    case ((1U) << 0):
+N      val |= BMCR_SPEED_SEL;
+X      val |= 0x2000;
+N      break;
+N    default:
+N      return ARM_DRIVER_ERROR_UNSUPPORTED;
+X      return -4;
+N  }
+N
+N  switch (mode & ARM_ETH_PHY_DUPLEX_Msk) {
+X  switch (mode & (1UL << 2)) {
+N    case ARM_ETH_PHY_DUPLEX_HALF:
+X    case ((0U) << 2):
+N      break;
+N    case ARM_ETH_PHY_DUPLEX_FULL:
+X    case ((1U) << 2):
+N      val |= BMCR_DUPLEX;
+X      val |= 0x0100;
+N      break;
+N    default:
+N      return ARM_DRIVER_ERROR_UNSUPPORTED;
+X      return -4;
+N  }
+N
+N  if (mode & ARM_ETH_PHY_AUTO_NEGOTIATE) {
+X  if (mode & (1UL << 3)) {
+N    val |= BMCR_ANEG_EN;
+X    val |= 0x1000;
+N  }
+N
+N  if (mode & ARM_ETH_PHY_LOOPBACK) {
+X  if (mode & (1UL << 4)) {
+N    val |= BMCR_LOOPBACK;
+X    val |= 0x4000;
+N  }
+N
+N  if (mode & ARM_ETH_PHY_ISOLATE) {
+X  if (mode & (1UL << 5)) {
+N    val |= BMCR_ISOLATE;
+X    val |= 0x0400;
+N  }
+N
+N  PHY.bmcr = val;
+N
+N  return (PHY.reg_wr(ETH_PHY_ADDR, REG_BMCR, PHY.bmcr));
+X  return (PHY.reg_wr(0x01, 0x00, PHY.bmcr));
+N}
+N
+N/**
+N  \fn          ARM_ETH_LINK_STATE GetLinkState (void)
+N  \brief       Get Ethernet PHY Device Link state.
+N  \return      current link status \ref ARM_ETH_LINK_STATE
+N*/
+Nstatic ARM_ETH_LINK_STATE GetLinkState (void) {
+N  ARM_ETH_LINK_STATE state;
+N  uint16_t           val = 0U;
+N
+N  if (PHY.flags & PHY_POWER) {
+X  if (PHY.flags & 0x02U) {
+N    PHY.reg_rd(ETH_PHY_ADDR, REG_BMSR, &val);
+X    PHY.reg_rd(0x01, 0x01, &val);
+N  }
+N  state = (val & BMSR_LINK_STAT) ? ARM_ETH_LINK_UP : ARM_ETH_LINK_DOWN;
+X  state = (val & 0x0004) ? ARM_ETH_LINK_UP : ARM_ETH_LINK_DOWN;
+N
+N  return (state);
+N}
+N
+N/**
+N  \fn          ARM_ETH_LINK_INFO GetLinkInfo (void)
+N  \brief       Get Ethernet PHY Device Link information.
+N  \return      current link parameters \ref ARM_ETH_LINK_INFO
+N*/
+Nstatic ARM_ETH_LINK_INFO GetLinkInfo (void) {
+N  ARM_ETH_LINK_INFO info;
+N  uint16_t          val = 0U;
+N
+N  if (PHY.flags & PHY_POWER) {
+X  if (PHY.flags & 0x02U) {
+N    PHY.reg_rd(ETH_PHY_ADDR, REG_PHYSTS, &val);
+X    PHY.reg_rd(0x01, 0x10, &val);
+N  }
+N
+N  info.speed  = (val & PHYSTS_SPEED)  ? ARM_ETH_SPEED_10M   : ARM_ETH_SPEED_100M;
+X  info.speed  = (val & 0x0002)  ? (0U)   : (1U);
+N  info.duplex = (val & PHYSTS_DUPLEX) ? ARM_ETH_DUPLEX_FULL : ARM_ETH_DUPLEX_HALF;
+X  info.duplex = (val & 0x0004) ? (1U) : (0U);
+N
+N  return (info);
+N}
+N
+N
+N/* PHY Driver Control Block */
+Nextern
+NARM_DRIVER_ETH_PHY ARM_Driver_ETH_PHY_(ETH_PHY_NUM);
+XARM_DRIVER_ETH_PHY Driver_ETH_PHY0;
+NARM_DRIVER_ETH_PHY ARM_Driver_ETH_PHY_(ETH_PHY_NUM) = {
+XARM_DRIVER_ETH_PHY Driver_ETH_PHY0 = {
+N  GetVersion,
+N  Initialize,
+N  Uninitialize,
+N  PowerControl,
+N  SetInterface,
+N  SetMode,
+N  GetLinkState,
+N  GetLinkInfo
+N};
