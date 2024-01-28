@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>.\Class;.\Application;.\Class\DAP</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -387,6 +387,16 @@
               <FileName>main.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Application\main.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Class</GroupName>
+          <Files>
+            <File>
+              <FileName>dap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Class\dap.c</FilePath>
             </File>
           </Files>
         </Group>
