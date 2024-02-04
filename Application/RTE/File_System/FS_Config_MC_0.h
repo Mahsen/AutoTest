@@ -30,7 +30,7 @@
 //                       <8=>8 KB <16=>16 KB <32=>32 KB
 //   <i>Drive Cache stores data sectors and may be increased to speed-up
 //   <i>file read/write operations on this drive (default: 4 KB)
-#define MC0_CACHE_SIZE          4
+#define MC0_CACHE_SIZE          0
 
 //   <e>Locate Drive Cache and Drive Buffer
 //   <i>Some microcontrollers support DMA only in specific memory areas and
