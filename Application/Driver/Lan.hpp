@@ -17,7 +17,7 @@ class LAN
 		void Listen(uint16_t Port);
 		void GetLocal(U8 *IP, U8 *Mask, U8 *GateWay, U8 *DNS1, U8 *DNS2);
 		bool SetLocal(U8 *IP, U8 *Mask, U8 *GateWay, U8 *DNS1, U8 *DNS2);
-		NET_ADDR* IP_Client(void);
+		NET_ADDR* GetClient(void);
 		void Task(void const *argument);
 };
 extern LAN Lan;
