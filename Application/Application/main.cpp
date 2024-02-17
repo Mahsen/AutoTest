@@ -435,12 +435,22 @@ void MAIN_Task_Blink(void const *argument) {
 		
 		
 		if(Lan.Media->GetStatus().Receive.GetBusy()) {
-			static U8 Data[512];
+			static U8 Data[1024];
 			static U32 Length;
-			Length = Lan.Media->Receive(Data, 512);
-			if(Length) {
+			Length = Lan.Media->Receive(Data, 1024);
+			if(Length) {				
 				Lan.Media->Reset();
-				Lan.Media->Send(Data, Length);
+				if(strstr((char*)Data, "<List></List>")) {
+					strcpy((char*)Data, "<List>Stand_Down,On_AC220,Program,Off_AC220,Stand_Up</List>");
+					Lan.Media->Send(Data, strlen((char*)Data));
+				}
+				else if(strstr((char*)Data, "<Stand_Down></Stand_Down>")) {
+					strcpy((char*)Data, "<Stand_Down>Passed</Stand_Down>");
+					Lan.Media->Send(Data, strlen((char*)Data));
+				}
+				else {
+					Lan.Media->Send(Data, Length);
+				}				
 			}
 		}
 		

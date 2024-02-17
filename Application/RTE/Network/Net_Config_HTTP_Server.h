@@ -15,12 +15,12 @@
 //   <o>Number of Sessions <1-10>
 //   <i>Number of simultaneously active HTTP Sessions.
 //   <i>Default: 6
-#define HTTP_SERVER_NUM_SESSIONS    6
+#define HTTP_SERVER_NUM_SESSIONS    1
 
 //   <o>Port Number <1-65535>
 //   <i>Listening port number
 //   <i>Default: 0 (autoselects: 80/HTTP, 443/HTTPS) 
-#define HTTP_SERVER_PORT_NUM        0
+#define HTTP_SERVER_PORT_NUM        123
 
 //   <s.50>Server-Id header
 //   <i>Optional header, which overrides the default server-id header.
