@@ -24,6 +24,7 @@
 #include "dap.h"
 #include "lan.hpp"
 #include "glcd.hpp"
+#include "test.hpp"
 /************************************************** Defineds **********************************************************/
 /*
     Nothing
@@ -35,13 +36,17 @@
 /************************************************** Variables *********************************************************/
 void MAIN_Task_Blink(void const *argument);
 /************************************************** Opjects ***********************************************************/
-/*
-    Nothing
-*/
-/************************************************** Functions *********************************************************/
-
 GLCD Glcd;
-
+/************************************************** Functions *********************************************************/
+U8* MAIN_GetID() {
+	
+	return (U8*)"0";
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_HardwareVersion(uint8_t* Data) {
+	sprintf((char*)Data, "%s", "v1.11112233");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
 unsigned char program_file[4331] =
 {
    0x28,0x20,0x00,0x20,0x05,0x05,0x00,0x00,0x1B,0x04,0x00,0x00,0x9F,0x04,0x00,0x00,
@@ -392,6 +397,14 @@ int main (void) {
 	osDelay(1 Sec);
 	Glcd.cls(Black);
 	//}
+		
+	/// Init Test
+	//{
+	Test.Add((uint8_t*)"HardwareVersion", &MAIN_HardwareVersion);
+	Test.Init(&MAIN_GetID);
+	//}
+	
+	
 	
 //	test_swd();
 	
@@ -432,28 +445,7 @@ void MAIN_Task_Blink(void const *argument) {
 //		GPIO_PinWrite (2, 0, Value);
 //		Value = !Value;
 		osDelay(100  MSec);
-		
-		
-		if(Lan.Media->GetStatus().Receive.GetBusy()) {
-			static U8 Data[1024];
-			static U32 Length;
-			Length = Lan.Media->Receive(Data, 1024);
-			if(Length) {				
-				Lan.Media->Reset();
-				if(strstr((char*)Data, "<List></List>")) {
-					strcpy((char*)Data, "<List>Stand_Down,On_AC220,Program,Off_AC220,Stand_Up</List>");
-					Lan.Media->Send(Data, strlen((char*)Data));
-				}
-				else if(strstr((char*)Data, "<Stand_Down></Stand_Down>")) {
-					strcpy((char*)Data, "<Stand_Down>Passed</Stand_Down>");
-					Lan.Media->Send(Data, strlen((char*)Data));
-				}
-				else {
-					Lan.Media->Send(Data, Length);
-				}				
-			}
-		}
-		
+
 		char str[6][24];
 		Lan.GetLocal((U8*)str[1], (U8*)str[2], (U8*)str[3], (U8*)str[4], (U8*)str[5]);
 		sprintf(str[0], "IP: %s", str[1]);
@@ -470,7 +462,6 @@ void MAIN_Task_Blink(void const *argument) {
 		Glcd.DisplayString  (5, 0, (U8*)str[0]);		
 		sprintf(str[0], "Clt: %d.%d.%d.%d        ", Lan.GetClient()->addr[0], Lan.GetClient()->addr[1], Lan.GetClient()->addr[2], Lan.GetClient()->addr[3]);
 		Glcd.DisplayString  (6, 0, (U8*)str[0]);
-		
 		
 	}
 }

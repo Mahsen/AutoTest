@@ -388,6 +388,11 @@
               <FileType>8</FileType>
               <FilePath>.\Application\main.cpp</FilePath>
             </File>
+            <File>
+              <FileName>Test.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Application\Test.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -402,6 +407,11 @@
               <FileName>Media.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Class\Media.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Tag.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Class\Tag.cpp</FilePath>
             </File>
           </Files>
         </Group>
