@@ -34,6 +34,10 @@
 void TEST_Task(void const *argument) {
 	Test.Task(argument);
 }
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_Execute_Task(void const *argument) {
+	Test.Execute_Task(argument);
+}
 /************************************************** Opjects ***********************************************************/
 TEST Test;
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -50,8 +54,8 @@ void TEST::Init(uint8_t* (*_GetID)()){
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-bool TEST::Add(uint8_t *Command, void (*Handle)(uint8_t *Data)) {	
-	TREE* Tree = new TREE(Command, Handle);
+bool TEST::Add(uint8_t *Command, void (*Handle)(uint8_t *Data), bool Sync) {	
+	TREE* Tree = new TREE(Command, Handle, Sync);
 	if(Tree) {
 		if(Trees_Count < (sizeof(Trees)/4)) {
 			Trees[Trees_Count++] = Tree;		
@@ -61,21 +65,61 @@ bool TEST::Add(uint8_t *Command, void (*Handle)(uint8_t *Data)) {
 	return false;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-bool TEST::Execute() {
+TEST::Status TEST::Execute() {	
 	for(uint8_t Index=0; Index<Trees_Count; Index++) {
 		if(strcmp((char*)Trees[Index]->_Command, (char*)Parmeters.Command.Get()) == NULL) {
-			Trees[Index]->_Handle(Parmeters.Data.Get());
-			return true;
+			Trees_Select.Set(Index);
+			if(Trees[Index]->_Sync) {
+				Trees[Trees_Select.Get()]->_Handle(Parmeters.Data.Get());	
+				return Status_IDEL;
+			}
+			else {
+				if(Execute_Status == Status_COMPLETE) {
+					if(strcmp((char*)Parmeters.Command.Get(), (char*)Command)) {
+						Execute_Status = Status_IDEL;
+					}
+				}
+				if(Execute_Status == Status_COMPLETE) {
+					strcpy((char*)Parmeters.Command.Get(), (char*)Command);
+					memset((char*)Command, 0, sizeof(Command));
+					strcpy((char*)Parmeters.Data.Get(), (char*)Buffer);
+					memset((char*)Buffer, 0, sizeof(Buffer));
+					Execute_Status = Status_IDEL;
+					
+					return Status_COMPLETE;
+				}
+				else if(Execute_Status == Status_RUNNING) {
+					return Status_RUNNING;
+				}
+				else {		
+					osThreadDef_t Thread_t;
+					Thread_t.pthread = TEST_Execute_Task;
+					Thread_t.tpriority = osPriorityNormal;
+					Thread_t.instances = 1;
+					Thread_t.stacksize = 1024;
+					Execute_Status = Status_RUNNING;				
+					Execute_Task_ID = osThreadCreate(&Thread_t, NULL);
+					if(Execute_Task_ID == 0) {
+						while(true);
+					}
+					return Status_RUNNING;
+				}
+			}				
 		}
 	}
-	return false;
+
+	return Status_NOCOMMAND;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 bool TEST::Pars(uint8_t *Message, uint32_t *Length) {
 	Parmeters.Message.Set(Message);
 	if(Detach()) {
-		if(!Execute()) {
-			Parmeters.Data.Set((uint8_t*)"NoCommand");
+		Status err = Execute();
+		if(err == Status_NOCOMMAND) {
+			Parmeters.Data.Set((uint8_t*)"[ERR:1]");
+		}
+		else if(err == Status_RUNNING) {
+			Parmeters.Data.Set((uint8_t*)"[ERR:0]");
 		}
 		if(Attach()) {
 			strcpy((char*)Message, (char*)Parmeters.Message.Get());
@@ -90,6 +134,18 @@ bool TEST::Pars(uint8_t *Message, uint32_t *Length) {
     Nothing
 */
 /************************************************** Tasks *************************************************************/
+void TEST::Execute_Task(void const *argument) {
+
+	strcpy((char*)Command, (char*)Parmeters.Command.Get());
+	strcpy((char*)Buffer, (char*)Parmeters.Data.Get());
+	
+	Trees[Trees_Select.Get()]->_Handle(Buffer);	
+
+	Execute_Status = Status_COMPLETE;
+	osThreadTerminate(Execute_Task_ID);
+	
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
 void TEST::Task(void const *argument) {
 	while(true) {		
 		if(Lan.Media->GetStatus().Receive.GetBusy()) {
@@ -106,21 +162,7 @@ void TEST::Task(void const *argument) {
 				else if(Pars(Data, &Length)) {
 					Lan.Media->Send(Data, Length);
 				}
-				memset(Data, 0, sizeof(Data));
-
-				/*
-				if(strstr((char*)Data, "<List></List>")) {
-					strcpy((char*)Data, "<List>Stand_Down,On_AC220,Program,Off_AC220,Stand_Up</List>");
-					Lan.Media->Send(Data, strlen((char*)Data));
-				}
-				else if(strstr((char*)Data, "<Stand_Down></Stand_Down>")) {
-					strcpy((char*)Data, "<Stand_Down>Passed</Stand_Down>");
-					Lan.Media->Send(Data, strlen((char*)Data));
-				}
-				else {
-					Lan.Media->Send(Data, Length);
-				}			
-				*/				
+				memset(Data, 0, sizeof(Data));			
 			}
 		}
 		osDelay(100 MSec);

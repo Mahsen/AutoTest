@@ -43,8 +43,41 @@ U8* MAIN_GetID() {
 	return (U8*)"0";
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void MAIN_HardwareVersion(uint8_t* Data) {
+void MAIN_Link(uint8_t* Data) {
+	sprintf((char*)Data, "%s", "OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_List(uint8_t* Data) {
+	sprintf((char*)Data, "%s", "Version,Stand_Down,On_AC220,Program,Off_AC220,Stand_Up");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_Version(uint8_t* Data) {
 	sprintf((char*)Data, "%s", "v1.11112233");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_Stand_Down(uint8_t* Data){
+	osDelay(5  Sec);
+	sprintf((char*)Data, "%s", "Stand_Down_OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_On_AC220(uint8_t* Data){
+	osDelay(1  Sec);
+	sprintf((char*)Data, "%s", "On_AC220_OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_Program(uint8_t* Data){
+	osDelay(5  Sec);
+	sprintf((char*)Data, "%s", "Program_OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_Off_AC220(uint8_t* Data){
+	osDelay(1  Sec);
+	sprintf((char*)Data, "%s", "Off_AC220_OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void MAIN_Stand_Up(uint8_t* Data){
+	osDelay(5  Sec);
+	sprintf((char*)Data, "%s", "Stand_Up_OK");
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 unsigned char program_file[4331] =
@@ -400,7 +433,14 @@ int main (void) {
 		
 	/// Init Test
 	//{
-	Test.Add((uint8_t*)"HardwareVersion", &MAIN_HardwareVersion);
+	Test.Add((uint8_t*)"Link", &MAIN_Link, true);
+	Test.Add((uint8_t*)"List", &MAIN_List, true);
+	Test.Add((uint8_t*)"Version", &MAIN_Version, true);
+	Test.Add((uint8_t*)"Stand_Down", &MAIN_Stand_Down, false);
+	Test.Add((uint8_t*)"On_AC220", &MAIN_On_AC220, false);
+	Test.Add((uint8_t*)"Program", &MAIN_Program, false);
+	Test.Add((uint8_t*)"Off_AC220", &MAIN_Off_AC220, false);
+	Test.Add((uint8_t*)"Stand_Up", &MAIN_Stand_Up, false);
 	Test.Init(&MAIN_GetID);
 	//}
 	
