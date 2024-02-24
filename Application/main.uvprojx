@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\Class;.\Application;.\Class\DAP;.\Class;.\Core;.\Driver;.\Config</IncludePath>
+              <IncludePath>.\Class;.\Application;.\Class\DAP;.\Class;.\Core;.\Driver;.\Config;.\Module</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -413,6 +413,11 @@
               <FileType>8</FileType>
               <FilePath>.\Class\Tag.cpp</FilePath>
             </File>
+            <File>
+              <FileName>XMLDocument.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Class\XMLDocument.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -450,6 +455,16 @@
               <FileName>AddressFlash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Config\AddressFlash.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Module</GroupName>
+          <Files>
+            <File>
+              <FileName>Config.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Module\Config.cpp</FilePath>
             </File>
           </Files>
         </Group>

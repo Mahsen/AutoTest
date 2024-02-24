@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/1/27
+    Last Update : 2024/2/24
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -24,6 +24,7 @@
 #include "dap.h"
 #include "lan.hpp"
 #include "test.hpp"
+#include "config.hpp"
 /************************************************** Defineds **********************************************************/
 /*
     Nothing
@@ -395,13 +396,17 @@ int main (void) {
 	osDelay(1 Sec);
 	//}
 	
+	/// Init Config
+	//{
+	Config.Init();
+	//}
+
+	/// Init Lan
+	//{
 	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
 		osDelay(1 Sec);
 		__NVIC_SystemReset();
 	}
-		
-	/// Init Lan
-	//{
 	Lan.Init();
 	Lan.Listen(123);	
 	osDelay(1 Sec);
@@ -422,27 +427,9 @@ int main (void) {
 	
 //	test_swd();
 
-	GPIO_SetDir (1, 26, GPIO_DIR_OUTPUT);
-	GPIO_PinWrite (1, 26, false);
-	GPIO_SetDir (3, 26, GPIO_DIR_OUTPUT);
-	GPIO_PinWrite (3, 26, false);
-	osDelay(200 MSec);
-	funinit("M:");
-	fsStatus f1 = finit("M:");
-	if(f1 != fsOK) {
-		while(true);
-	}
-	fsStatus f2 = fmount("M:");
-	if(f2 != fsOK) {
-		while(true);
-	}
 	
-	osDelay(200 MSec);
-	FILE *File_Config = fopen("Config.xml", "r");
-	if(File_Config) {
-		GPIO_PinWrite (1, 26, true);
-	}
-	
+	/// Init blink LED
+	//{
 	osThreadDef_t Thread_t;
 	Thread_t.pthread = MAIN_Task_Blink;
 	Thread_t.tpriority = osPriorityNormal;
@@ -451,9 +438,9 @@ int main (void) {
 	if(osThreadCreate(&Thread_t, NULL) == 0) {
 		while(true);
 	}
-
+	//}
+	
 	return 0;
-
 }
 /************************************************** Tasks *************************************************************/
 void MAIN_Task_Blink(void const *argument) {	
