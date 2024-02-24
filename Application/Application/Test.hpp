@@ -7,8 +7,8 @@
 class TREE {
     public: 
 			uint8_t *_Command;
-			bool _Sync;
 			void (*_Handle)(uint8_t *Data);
+			bool _Sync;			
 			TREE(uint8_t *Command, void (*Handle)(uint8_t *Data), bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
 };
 class TEST : Tag

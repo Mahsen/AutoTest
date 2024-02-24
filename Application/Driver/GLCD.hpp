@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* GLCD.h: Graphic LCD function prototypes and defines                        */
+/* LCD.h: Graphic LCD function prototypes and defines                        */
 /******************************************************************************/
 /* This file is part of the uVision/ARM development tools.                    */
 /* Copyright (c) 2005-2009 Keil Software. All rights reserved.                */
@@ -10,21 +10,21 @@
 
 #ifndef _GLCD_HPP
 #define _GLCD_HPP
+#include "sys.h"
 
-#include "define.h"
-
+extern u16 BACK_COLOR, POINT_COLOR ;
 /*------------------------------------------------------------------------------
   Color coding
-  GLCD is coded:   15..11 red, 10..5 green, 4..0 blue  (uint16_t)  GLCD_R5, GLCD_G6, GLCD_B5   
+  LCD is coded:   15..11 red, 10..5 green, 4..0 blue  (unsigned short)  LCD_R5, LCD_G6, LCD_B5   
   original coding: 17..12 red, 11..6 green, 5..0 blue                    ORG_R6,  ORG_G6,  ORG_B6
 
-  ORG_R1..5 = GLCD_R0..4,  ORG_R0 = GLCD_R4
-  ORG_G0..5 = GLCD_G0..5,
-  ORG_B1..5 = GLCD_B0..4,  ORG_B0 = GLCD_B4
+  ORG_R1..5 = LCD_R0..4,  ORG_R0 = LCD_R4
+  ORG_G0..5 = LCD_G0..5,
+  ORG_B1..5 = LCD_B0..4,  ORG_B0 = LCD_B4
  *----------------------------------------------------------------------------*/
                             
-/* GLCD RGB color definitions                                                 */
-#define Black           0x0000      /*   0,   0,   0 */
+/* LCD RGB color definitions                                                 */
+#define Black           0x0000		/*   0,   0,   0 */
 #define Navy            0x000F      /*   0,   0, 128 */
 #define DarkGreen       0x03E0      /*   0, 128,   0 */
 #define DarkCyan        0x03EF      /*   0, 128, 128 */
@@ -40,130 +40,151 @@
 #define Magenta         0xF81F      /* 255,   0, 255 */
 #define Yellow          0xFFE0      /* 255, 255, 0   */
 #define White           0xFFFF      /* 255, 255, 255 */
-
-// GLCD Controller IDs
-#define HX8347A_ID      0x0047
-#define HX8347D_ID      0x0047
-#define ILI9320_ID      0x9320
-#define ILI9325_ID      0x9325
-#define ILI9325C_ID     0x9325
-#define ILI9325D_ID     0x9325
-#define ILI9328_ID      0x9328
-#define ILI9331_ID      0x9331
-#define LGDP4531_ID     0x4531
-#define LGDP4535_ID     0x4535
-#define R61505U_ID1     0x1505
-#define R61505U_ID2     0x0505
-#define SPFD5408B_ID    0x5408
-#define SSD1289_ID      0x8989
-#define SSD1298_ID      0x8999
-#define SSD2119_ID      0x9919  
-#define ST7781_ID       0x7783
+#define WHITE           0XFFFF
+#define RED             0xF800
+#define BLUE            0x001F
 
 
-class GLCD {
-//class GLCD {
-  public:
-    GLCD(void);
-    void init           (void);
-      
-    // Stream implementation - provides printf() interface
-    // You would otherwise be forced to use writeChar()
-    virtual int _putc(int value);
-    virtual int _getc();  
-       
-    void setWindowMax   (void);
-    void setWindow      (int x1, int y1, int x2, int y2);    
-    void drawPixel      (unsigned int x, unsigned int y);
-    void drawPixel      (unsigned int x, unsigned int y, uint16_t color); 
-    void drawPixel      (unsigned int x, unsigned int y, uint8_t r, uint8_t g, uint8_t b); 
-    
-    void setColor       (uint16_t color);
-    void setColor       (uint8_t r, uint8_t g, uint8_t b);     
-    void setBackColor   (uint16_t color);
-    void setBackColor   (uint8_t r, uint8_t g, uint8_t b);     
+//9320/9325 LCD¼Ä´æÆ÷  
+#define R0             0x00
+#define R1             0x01
+#define R2             0x02
+#define R3             0x03
+#define R4             0x04
+#define R5             0x05
+#define R6             0x06
+#define R7             0x07
+#define R8             0x08
+#define R9             0x09
+#define R10            0x0A
+#define R12            0x0C
+#define R13            0x0D
+#define R14            0x0E
+#define R15            0x0F
+#define R16            0x10
+#define R17            0x11
+#define R18            0x12
+#define R19            0x13
+#define R20            0x14
+#define R21            0x15
+#define R22            0x16
+#define R23            0x17
+#define R24            0x18
+#define R25            0x19
+#define R26            0x1A
+#define R27            0x1B
+#define R28            0x1C
+#define R29            0x1D
+#define R30            0x1E
+#define R31            0x1F
+#define R32            0x20
+#define R33            0x21
+#define R34            0x22
+#define R36            0x24
+#define R37            0x25
+#define R40            0x28
+#define R41            0x29
+#define R43            0x2B
+#define R45            0x2D
+#define R48            0x30
+#define R49            0x31
+#define R50            0x32
+#define R51            0x33
+#define R52            0x34
+#define R53            0x35
+#define R54            0x36
+#define R55            0x37
+#define R56            0x38
+#define R57            0x39
+#define R59            0x3B
+#define R60            0x3C
+#define R61            0x3D
+#define R62            0x3E
+#define R63            0x3F
+#define R64            0x40
+#define R65            0x41
+#define R66            0x42
+#define R67            0x43
+#define R68            0x44
+#define R69            0x45
+#define R70            0x46
+#define R71            0x47
+#define R72            0x48
+#define R73            0x49
+#define R74            0x4A
+#define R75            0x4B
+#define R76            0x4C
+#define R77            0x4D
+#define R78            0x4E
+#define R79            0x4F
+#define R80            0x50
+#define R81            0x51
+#define R82            0x52
+#define R83            0x53
+#define R96            0x60
+#define R97            0x61
+#define R106           0x6A
+#define R118           0x76
+#define R128           0x80
+#define R129           0x81
+#define R130           0x82
+#define R131           0x83
+#define R132           0x84
+#define R133           0x85
+#define R134           0x86
+#define R135           0x87
+#define R136           0x88
+#define R137           0x89
+#define R139           0x8B
+#define R140           0x8C
+#define R141           0x8D
+#define R143           0x8F
+#define R144           0x90
+#define R145           0x91
+#define R146           0x92
+#define R147           0x93
+#define R148           0x94
+#define R149           0x95
+#define R150           0x96
+#define R151           0x97
+#define R152           0x98
+#define R153           0x99
+#define R154           0x9A
+#define R157           0x9D
+#define R192           0xC0
+#define R193           0xC1
+#define R229           0xE5	
 
-    void cls            (uint16_t color);    
-    void locate         (int16_t ln, uint16_t col) {
-      _ln  = ln;
-      _col = col;  
-    };
+class GLCD
+{
+	public:
+		void Init           (void);
+		void WindowMax (unsigned int x,unsigned int y,unsigned int x_end,unsigned int y_end);
+		void PutPixel       (unsigned int x, unsigned int y);
+		void SetTextColor   (unsigned short color);
+		void SetBackColor   (unsigned short color);
+		void Clear          (unsigned short color);
+		void DrawChar       (unsigned int x, unsigned int y, unsigned short *c);
+		void DisplayChar    (unsigned int ln, unsigned int col, unsigned char  c);
+		void DisplayString  (unsigned int ln, unsigned int col, unsigned char *s);
+		void ClearLn        (unsigned int ln);
+		void Bargraph       (unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int val);
+		void Bitmap         (unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned char *bitmap);
+		void Bmp            (unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned char *bmp);
 
-/** @brief Write single character to the display using the 8x8 fontable
- *  @brief Start at current cursor location
- *  @param char chr character to write
-*/     
-    void writeChar      (uint8_t chr);
-    
-/*******************************************************************************
-* Draw character on given screen position                                      *
-*   Parameter:      x:        horizontal position                              *
-*                   y:        vertical position                                *
-*                   c:        pointer to character bitmap                      *
-*   Return:                                                                    *
-*******************************************************************************/   
-    void DrawChar       (unsigned int x, unsigned int y, uint16_t *c);
-
-/*******************************************************************************
-* Display character on given line                                              *
-*   Parameter:      ln:       line number                                      *
-*                   col:      column number                                    *
-*                   c:        ascii character                                  *
-*   Return:                                                                    *
-*******************************************************************************/   
-    void DisplayChar    (uint16_t ln, uint16_t col, uint8_t  c);
-
-/*******************************************************************************
-* Disply string on given line                                                  *
-*   Parameter:      ln:       line number                                      *
-*                   col:      column number                                    *
-*                   s:        pointer to string                                *
-*   Return:                                                                    *
-*******************************************************************************/
-    void DisplayString  (uint16_t ln, uint16_t col, uint8_t *s);
-    void ClearLn        (uint16_t ln);
-    
-    void Bargraph       (unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int val);
-    void Bitmap         (unsigned int x, unsigned int y, unsigned int w, unsigned int h, uint8_t *bitmap);
-    void Bmp            (unsigned int x, unsigned int y, unsigned int w, unsigned int h, uint8_t *bmp);
-
-    void drawHLine      (int x, int y, int l);
-    void drawVLine      (int x, int y, int l);
-    void drawRect       (int x1, int y1, int x2, int y2);
-    void drawLine       (int x1, int y1, int x2, int y2);
-    void drawRoundRect  (int x1, int y1, int x2, int y2);
-    void fillRect       (int x1, int y1, int x2, int y2);
-    void fillRoundRect  (int x1, int y1, int x2, int y2);
-    void drawCircle     (int x, int y, int radius);
-    void fillCircle     (int x, int y, int radius);
-        
-    void lcdOff();
-    void lcdOn();
-    void invertDisplay(bool i);    
-    void setContrast(uint8_t c);
-    
-    int getDisplayXSize();
-    int getDisplayYSize();
-    int getRows();
-    int getCols();
-    
-    uint16_t getDriverCode ();
-
-  private:
-    static __inline uint8_t _lcd_send (uint16_t data);
-    static __inline uint16_t _lcd_read (void);
-    static __inline void _wr_cmd (uint16_t c);
-    static __inline void _wr_dat (uint16_t c);
-    static __inline uint16_t _rd_dat (void);
-    static __inline void _wr_dat_start (void);
-    static __inline void _wr_dat_stop (void);
-    static __inline void _wr_dat_only (uint16_t c);
-    static __inline void _wr_reg (uint16_t reg, uint16_t val);
-    static __inline uint16_t _rd_reg (uint16_t reg); 
-
-    uint16_t _driverCode;
-    uint16_t _textColor, _backColor;    
-    uint16_t _col, _ln;
+		void SetCursor(u8 Xpos, u16 Ypos);
+		void DrawPoint1 (u16 x,u16 y ,u16 color);
+		void WriteRAM_Prepare(void);
+		void Fill(u8 xsta,u16 ysta,u8 xend,u16 yend,u16 color);
+		void DrawPoint(u16 x,u16 y);
+		void DrawLine(u16 x1, u16 y1, u16 x2, u16 y2);
+		void DrawRectangle(u8 x1, u16 y1, u8 x2, u16 y2);
+		void Draw_Circle(u8 x0,u16 y0,u8 r);
+		void ShowChar(u8 x,u16 y,u8 num,u8 size,u8 mode);
+		void ShowNum(u8 x,u16 y,u32 num,u8 len,u8 size);
+		void ShowString(u8 x,u16 y,const u8 *p);
+		void Show2Num(u8 x,u16 y,u16 num,u8 len,u8 size,u8 mode);
 };
 
-#endif /* _GLCD_H */
+#endif
+

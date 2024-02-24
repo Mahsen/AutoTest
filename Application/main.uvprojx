@@ -424,11 +424,6 @@
               <FilePath>.\Driver\Lan.cpp</FilePath>
             </File>
             <File>
-              <FileName>GLCD.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\Driver\GLCD.cpp</FilePath>
-            </File>
-            <File>
               <FileName>iap.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Driver\iap.c</FilePath>

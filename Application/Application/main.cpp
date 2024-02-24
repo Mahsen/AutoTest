@@ -23,7 +23,6 @@
 #include "define.h"
 #include "dap.h"
 #include "lan.hpp"
-#include "glcd.hpp"
 #include "test.hpp"
 /************************************************** Defineds **********************************************************/
 /*
@@ -36,7 +35,9 @@
 /************************************************** Variables *********************************************************/
 void MAIN_Task_Blink(void const *argument);
 /************************************************** Opjects ***********************************************************/
-GLCD Glcd;
+/*
+    Nothing
+*/
 /************************************************** Functions *********************************************************/
 U8* MAIN_GetID() {
 	
@@ -382,41 +383,19 @@ void test_swd(void) {
 }
 
 int main (void) {
-	
-//	char str[32];
-	
-	Glcd.cls(Black);
-	Glcd.setBackColor (0, 0, 0);
-	Glcd.setColor(255, 255, 255);
-	Glcd.DisplayString  (0, 0, (U8*)"Start...");
 
-
-//	GPIO_PortClock(true);
-//	GPIO_SetDir (2, 0, GPIO_DIR_OUTPUT);
-//	GPIO_SetDir (2, 1, GPIO_DIR_OUTPUT);
-//	GPIO_SetDir (2, 2, GPIO_DIR_OUTPUT);
-//	GPIO_SetDir (2, 3, GPIO_DIR_OUTPUT);
-//	GPIO_SetDir (2, 4, GPIO_DIR_OUTPUT);
-//	GPIO_SetDir (2, 5, GPIO_DIR_OUTPUT);
-//	GPIO_SetDir (2, 6, GPIO_DIR_OUTPUT);
-//	GPIO_SetDir (2, 7, GPIO_DIR_OUTPUT);
-	
 	/// Init Kernel
 	//{
 	if(osKernelInitialize() != osOK) {
 		while(true);
 	}
-	Glcd.DisplayString  (1, 0, (U8*)"osKernelInitialize()");
 	if(osKernelStart() != osOK) {
 		while(true);
 	}
 	osDelay(1 Sec);
-	Glcd.DisplayString  (2, 0, (U8*)"osKernelStart()");
 	//}
 	
 	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
-		Glcd.cls(Black);
-		Glcd.DisplayString  (0, 0, (U8*)"Restarting...");
 		osDelay(1 Sec);
 		__NVIC_SystemReset();
 	}
@@ -424,11 +403,8 @@ int main (void) {
 	/// Init Lan
 	//{
 	Lan.Init();
-	Glcd.DisplayString  (3, 0, (U8*)"Lan.Init()");
 	Lan.Listen(123);	
-	Glcd.DisplayString  (4, 0, (U8*)"Lan.Listen(123);");
 	osDelay(1 Sec);
-	Glcd.cls(Black);
 	//}
 		
 	/// Init Test
@@ -444,26 +420,29 @@ int main (void) {
 	Test.Init(&MAIN_GetID);
 	//}
 	
-	
-	
 //	test_swd();
+
+	GPIO_SetDir (1, 26, GPIO_DIR_OUTPUT);
+	GPIO_PinWrite (1, 26, false);
+	GPIO_SetDir (3, 26, GPIO_DIR_OUTPUT);
+	GPIO_PinWrite (3, 26, false);
+	osDelay(200 MSec);
+	funinit("M:");
+	fsStatus f1 = finit("M:");
+	if(f1 != fsOK) {
+		while(true);
+	}
+	fsStatus f2 = fmount("M:");
+	if(f2 != fsOK) {
+		while(true);
+	}
 	
-//	GPIO_SetDir (3, 26, GPIO_DIR_OUTPUT);
-//	GPIO_PinWrite (3, 26, false);
-//	osDelay(200 MSec);
-//	fsStatus f1 = finit ("M:");
-//	if(f1 != fsOK) {
-//		while(true);
-//	}
-//	fsStatus f2 = fmount ("M:");
-//	if(f2 != fsOK) {
-//		while(true);
-//	}
+	osDelay(200 MSec);
+	FILE *File_Config = fopen("Config.xml", "r");
+	if(File_Config) {
+		GPIO_PinWrite (1, 26, true);
+	}
 	
-//	osDelay(200 MSec);
-//	FILE *f = fopen("sa", "w+");
-	//FILE *f = fopen("Config.xml", "r");
-		
 	osThreadDef_t Thread_t;
 	Thread_t.pthread = MAIN_Task_Blink;
 	Thread_t.tpriority = osPriorityNormal;
@@ -477,32 +456,17 @@ int main (void) {
 
 }
 /************************************************** Tasks *************************************************************/
-void MAIN_Task_Blink(void const *argument) {
-//	bool Value;		
-	
-	
+void MAIN_Task_Blink(void const *argument) {	
+	GPIO_SetDir (1, 25, GPIO_DIR_OUTPUT);
 	while(true) {
-//		GPIO_PinWrite (2, 0, Value);
-//		Value = !Value;
+		GPIO_PinWrite (1, 25, true);
+		osDelay(200  MSec);
+		GPIO_PinWrite (1, 25, false);
 		osDelay(100  MSec);
-
-		char str[6][24];
-		Lan.GetLocal((U8*)str[1], (U8*)str[2], (U8*)str[3], (U8*)str[4], (U8*)str[5]);
-		sprintf(str[0], "IP: %s", str[1]);
-		Glcd.DisplayString  (0, 0, (U8*)str[0]);
-		sprintf(str[0], "Port: %d     ", 123);
-		Glcd.DisplayString  (1, 0, (U8*)str[0]);
-		sprintf(str[0], "Msk: %s", str[2]);
-		Glcd.DisplayString  (2, 0, (U8*)str[0]);
-		sprintf(str[0], "GW: %s", str[3]);
-		Glcd.DisplayString  (3, 0, (U8*)str[0]);
-		sprintf(str[0], "DNS1: %s", str[4]);
-		Glcd.DisplayString  (4, 0, (U8*)str[0]);
-		sprintf(str[0], "DNS2: %s", str[5]);
-		Glcd.DisplayString  (5, 0, (U8*)str[0]);		
-		sprintf(str[0], "Clt: %d.%d.%d.%d        ", Lan.GetClient()->addr[0], Lan.GetClient()->addr[1], Lan.GetClient()->addr[2], Lan.GetClient()->addr[3]);
-		Glcd.DisplayString  (6, 0, (U8*)str[0]);
-		
+		GPIO_PinWrite (1, 25, true);
+		osDelay(300  MSec);
+		GPIO_PinWrite (1, 25, false);
+		osDelay(1 Sec);
 	}
 }
 /************************************************** Vectors ***********************************************************/
