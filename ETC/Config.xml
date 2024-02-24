@@ -1,0 +1,7 @@
+<Ethernet>
+	<IP>192.168.70.220</IP>
+	<Mask>255.255.255.0</Mask>
+	<GateWay>192.168.70.1</GateWay>
+	<DNS1>192.168.3.2</DNS1>
+	<DNS2>8.8.8.8</DNS2>
+</Ethernet>
