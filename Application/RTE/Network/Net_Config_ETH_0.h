@@ -40,7 +40,7 @@
 //     <s.15>IP Address
 //     <i>Static IPv4 Address in text representation
 //     <i>Default: "192.168.0.100"
-#define ETH0_IP4_ADDR           "192.168.70.220"
+#define ETH0_IP4_ADDR           "192.168.70.202"
 
 //     <s.15>Subnet mask
 //     <i>Local Subnet mask in text representation
@@ -55,12 +55,12 @@
 //     <s.15>Primary DNS Server
 //     <i>IP Address of Primary DNS Server in text representation
 //     <i>Default: "8.8.8.8"
-#define ETH0_IP4_PRIMARY_DNS    "192.168.3.2"
+#define ETH0_IP4_PRIMARY_DNS    "8.8.8.8"
 
 //     <s.15>Secondary DNS Server
 //     <i>IP Address of Secondary DNS Server in text representation
 //     <i>Default: "8.8.4.4"
-#define ETH0_IP4_SECONDARY_DNS  "8.8.8.8"
+#define ETH0_IP4_SECONDARY_DNS  "8.8.4.4"
 
 //     <e>IP Fragmentation
 //     <i>This option enables fragmentation of outgoing IP datagrams,
@@ -242,7 +242,7 @@
 //   <i>These settings are used to optimize usage of OS resources.
 //     <o>Interface Thread Stack Size <512-65535:4>
 //     <i>Default: 512 bytes
-#define ETH0_THREAD_STACK_SIZE  1024
+#define ETH0_THREAD_STACK_SIZE  512
 
 //        Interface Thread Priority
 #define ETH0_THREAD_PRIORITY    osPriorityAboveNormal

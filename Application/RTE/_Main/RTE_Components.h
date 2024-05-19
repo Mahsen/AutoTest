@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'main' 
- * Target:  'Main' 
+ * Target:  'main' 
  */
 
 #ifndef RTE_COMPONENTS_H
@@ -14,21 +14,11 @@
 /*
  * Define the Device Header File: 
  */
-#define CMSIS_device_header "LPC17xx.h"
+#define CMSIS_device_header "stm32h5xx.h"
 
-/* ARM::CMSIS:RTOS:Keil RTX:4.82.0 */
-#define RTE_CMSIS_RTOS                  /* CMSIS-RTOS */
-        #define RTE_CMSIS_RTOS_RTX              /* CMSIS-RTOS Keil RTX */
-/* Keil.ARM Compiler::Compiler:I/O:File:File System:1.2.0 */
-#define RTE_Compiler_IO_File            /* Compiler I/O: File */
-          #define RTE_Compiler_IO_File_FS         /* Compiler I/O: File (File System) */
-/* Keil.MDK-Plus::File System:CORE:LFN:6.13.8 */
-#define RTE_FileSystem_Core             /* File System Core */
-          #define RTE_FileSystem_LFN              /* File System with Long Filename support */
-          #define RTE_FileSystem_Release          /* File System Release Version */
-/* Keil.MDK-Plus::File System:Drive:Memory Card:6.13.8 */
-#define RTE_FileSystem_Drive_MC_0       /* File System Memory Card Drive 0 */
-
+/* ARM::CMSIS:RTOS2:Keil RTX5:Library:5.5.2 */
+#define RTE_CMSIS_RTOS2                 /* CMSIS-RTOS2 */
+        #define RTE_CMSIS_RTOS2_RTX5            /* CMSIS-RTOS2 Keil RTX5 */
 /* Keil.MDK-Plus::Network:CORE:IPv4 Release:7.14.0 */
 #define RTE_Network_Core                /* Network Core */
           #define RTE_Network_IPv4                /* Network IPv4 Stack */
@@ -38,15 +28,52 @@
 
 /* Keil.MDK-Plus::Network:Socket:TCP:7.14.0 */
 #define RTE_Network_Socket_TCP          /* Network Socket TCP */
-/* Keil::CMSIS Driver:Ethernet MAC:2.12.0 */
+/* Keil::CMSIS Driver:Ethernet MAC:1.0.0 */
 #define RTE_Drivers_ETH_MAC0            /* Driver ETH_MAC0 */
-/* Keil::CMSIS Driver:Ethernet PHY:DP83848C:6.2.0 */
-#define RTE_Drivers_PHY_DP83848C        /* Driver PHY DP83848C */
-/* Keil::CMSIS Driver:SPI:SSP:2.7.0 */
-#define RTE_Drivers_SPI0                /* Driver SPI0 */
-        #define RTE_Drivers_SPI1                /* Driver SPI1 */
-/* Keil::Device:Startup:1.0.0 */
-#define RTE_DEVICE_STARTUP_LPC17XX      /* Device Startup for NXP17XX */
+/* Keil::CMSIS Driver:Ethernet PHY:LAN8742A:1.3.0 */
+#define RTE_Drivers_PHY_LAN8742A        /* Driver PHY LAN8742A */
+/* Keil::Device:STM32Cube Framework:STM32CubeMX:2.0.0 */
+#define RTE_DEVICE_FRAMEWORK_CUBE_MX
+/* Keil::Device:STM32Cube HAL:ADC:1.1.0 */
+#define RTE_DEVICE_HAL_ADC
+/* Keil::Device:STM32Cube HAL:Common:1.1.0 */
+#define RTE_DEVICE_HAL_COMMON
+/* Keil::Device:STM32Cube HAL:Cortex:1.1.0 */
+#define RTE_DEVICE_HAL_CORTEX
+/* Keil::Device:STM32Cube HAL:DMA:1.1.0 */
+#define RTE_DEVICE_HAL_DMA
+/* Keil::Device:STM32Cube HAL:ETH:1.1.0 */
+#define RTE_DEVICE_HAL_ETH
+/* Keil::Device:STM32Cube HAL:Flash:1.1.0 */
+#define RTE_DEVICE_HAL_FLASH
+/* Keil::Device:STM32Cube HAL:GPIO:1.1.0 */
+#define RTE_DEVICE_HAL_GPIO
+/* Keil::Device:STM32Cube HAL:GTZC:1.1.0 */
+#define RTE_DEVICE_HAL_GTZC
+/* Keil::Device:STM32Cube HAL:ICACHE:1.1.0 */
+#define RTE_DEVICE_HAL_ICACHE
+/* Keil::Device:STM32Cube HAL:PCD:1.1.0 */
+#define RTE_DEVICE_HAL_PCD
+/* Keil::Device:STM32Cube HAL:PWR:1.1.0 */
+#define RTE_DEVICE_HAL_PWR
+/* Keil::Device:STM32Cube HAL:RCC:1.1.0 */
+#define RTE_DEVICE_HAL_RCC
+/* Keil::Device:STM32Cube HAL:UART:1.1.0 */
+#define RTE_DEVICE_HAL_UART
+/* Keil::Device:STM32Cube LL:Common:1.1.0 */
+#define RTE_DEVICE_LL_COMMON
+/* Keil::Device:STM32Cube LL:GPIO:1.1.0 */
+#define RTE_DEVICE_LL_GPIO
+/* Keil::Device:STM32Cube LL:PWR:1.1.0 */
+#define RTE_DEVICE_LL_PWR
+/* Keil::Device:STM32Cube LL:RCC:1.1.0 */
+#define RTE_DEVICE_LL_RCC
+/* Keil::Device:STM32Cube LL:UCPD:1.1.0 */
+#define RTE_DEVICE_LL_UCPD
+/* Keil::Device:STM32Cube LL:UTILS:1.1.0 */
+#define RTE_DEVICE_LL_UTILS
+/* Keil::Device:Startup:1.2.0 */
+#define RTE_DEVICE_STARTUP_STM32H5XX    /* Device Startup for STM32H5 */
 
 
 #endif /* RTE_COMPONENTS_H */

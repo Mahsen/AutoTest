@@ -15,7 +15,7 @@
 //   <o>Number of TCP Sockets <1-20>
 //   <i>Number of available TCP sockets
 //   <i>Default: 6
-#define TCP_NUM_SOCKS           2
+#define TCP_NUM_SOCKS           6
 
 //   <o>Number of Retries <0-20>
 //   <i>How many times TCP module will try to retransmit data
@@ -47,7 +47,7 @@
 //   <i>Receive Window Size specifies the size of data, 
 //   <i>that the socket is able to buffer in flow-control mode.
 //   <i>Default: 4320
-#define TCP_RECEIVE_WIN_SIZE    2048
+#define TCP_RECEIVE_WIN_SIZE    4320
 
 // </h>
 

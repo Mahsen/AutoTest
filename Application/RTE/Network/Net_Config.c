@@ -15,13 +15,13 @@
 //   <i>This is the name under which embedded host can be
 //   <i>accessed on a local area network.
 //   <i>Default: "my_host"
-#define NET_HOST_NAME           "AutoTest"
+#define NET_HOST_NAME           "my_host"
 
 //   <o>Memory Pool Size <1536-262144:4>
 //   <i>This is the size of a memory pool in bytes. Buffers for
 //   <i>network packets are allocated from this memory pool.
 //   <i>Default: 12000 bytes
-#define NET_MEM_POOL_SIZE       1536
+#define NET_MEM_POOL_SIZE       12000
 
 //   <q>Start System Services
 //   <i>If enabled, the system will automatically start server services
@@ -133,6 +133,7 @@
 void net_sys_error (NET_ERROR error) {
   /* This function is called when a fatal error is encountered. */
   /* The normal program execution is not possible anymore.      */
+
   switch (error) {
     case NET_ERROR_MEM_ALLOC:
       /* Out of memory */
