@@ -192,8 +192,8 @@ void LAN::Init(void) {
 	memset(_IP_Client.addr, 0, NET_ADDR_IP6_LEN);
 
 	// Create an instance of the worker thread with static resources (TCB and stack)
-  LAN_Thread = osThreadNew([](void *argument) {Lan.Task();}, NULL, &LAN_attr);
-	if(LAN_Thread == 0) {
+  Thread = osThreadNew([](void *argument) {Lan.Task();}, NULL, &attr);
+	if(Thread == 0) {
 		while(true);
 	}
 }
