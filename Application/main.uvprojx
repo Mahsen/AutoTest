@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>.\Core;.\Driver;.\Class;.\Config;.\Module</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -392,6 +392,56 @@
         </Group>
         <Group>
           <GroupName>:STM32CubeMX:Common Sources</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Driver</GroupName>
+          <Files>
+            <File>
+              <FileName>Lan.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Driver\Lan.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Class</GroupName>
+          <Files>
+            <File>
+              <FileName>Media.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Class\Media.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Tag.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Class\Tag.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>HexType.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Class\HexType.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Config</GroupName>
+          <Files>
+            <File>
+              <FileName>AddressFlash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Config\AddressFlash.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Module</GroupName>
+          <Files>
+            <File>
+              <FileName>Test.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Module\Test.cpp</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>

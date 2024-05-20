@@ -1,184 +1,59 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
+/************************************************** Description *******************************************************/
+/*
+    File : main.cpp
+    Programmer : Mohammad Lotfi
+    Used : tester board
+    Design Pattern : Nothing
+    Types of memory : Heap & Stack
+    Total Tread : Nothing
+    Site : https://www.mahsen.ir
+    Tel : +989124662703
+    Email : info@mahsen.ir
+    Last Update : 2024/3/13
+*/
+/************************************************** Warnings **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Wizards ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Includes **********************************************************/
 #include "main.h"
-#include "cmsis_os2.h"
-#include "rl_net.h"
-#include "string.h"
+#include "defines.h"
+#include "lan.hpp"
+/************************************************** Defineds **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Names *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Variables *********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Opjects ***********************************************************/
+/************************************************** Functions *********************************************************/
+void Application(void *argument);
+/*--------------------------------------------------------------------------------------------------------------------*/
+bool TEST_GetID_MUTEX = false;
+uint8_t* TEST_GetID() {
+	static uint8_t Data[3];
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-ETH_TxPacketConfigTypeDef TxConfig;
-ETH_DMADescTypeDef  DMARxDscrTab[ETH_RX_DESC_CNT]; /* Ethernet Rx DMA Descriptors */
-ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx DMA Descriptors */
-
-ETH_HandleTypeDef heth;
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_GTZC_NS_Init(void);
-static void MX_ETH_Init(void);
-static void MX_ICACHE_Init(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-	
-	// Notify the user application about TCP socket events.
-uint32_t LAN_tcp_cb (int32_t socket, netTCP_Event event,
-                      const NET_ADDR *addr, const uint8_t *buf, uint32_t len) {
- 
-  switch (event) {
-    case netTCP_EventConnect:
-      return (1);
- 
-    case netTCP_EventEstablished:
-      // Connection established
-      break;
- 
-    case netTCP_EventClosed:
-      // Connection was properly closed
-      break;
- 
-    case netTCP_EventAborted:
-      // Connection is for some reason aborted
-      break;
- 
-    case netTCP_EventACK:
-      // Previously sent data acknowledged
-      break;
- 
-    case netTCP_EventData:
-      // Data received
-      if ((buf[0] == 0x01) && (len == 2)) {
-        // Switch LEDs on and off
-        // LED_out (buf[1]);
-      }
-      break;
-  }
-  return (0);
+	return Data;
 }
-											
-void Application(void *argument)
-{
-	if(netInitialize() != netOK) {
-		while(true);
-	}
- 
-  int32_t Socket = netTCP_GetSocket (&LAN_tcp_cb);
-  if (Socket) {
-		if(netTCP_Listen (Socket, 123) != netOK) {
-			while(true);
-		}
-  }
-	else {
-		while(true);
-	}
-	
-	while (1)
-  {
-    HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
-		osDelay(1000);
-		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
-		osDelay(1000);
-  }
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_HardwareVersion(uint8_t* Data) {
+	//sprintf((char*)Data, "%s", TESTBENCH_VERSION_HARDWARE);
 }
-
-
-int main(void)
-{
-
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-  /* GTZC initialisation */
-  MX_GTZC_NS_Init();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_ETH_Init();
-  MX_ICACHE_Init();
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-	osKernelInitialize();                            // initialize RTX
-	NVIC_SetPriorityGrouping (3);                    // setup priority grouping
-	osThreadNew(Application, NULL, NULL);  // create some threads
-	osKernelStart ();                                // start RTX kernel
-	
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  
-  /* USER CODE END 3 */
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_SoftwareVersion(U8* Data) {
+	//sprintf((char*)Data, "%s", TESTBENCH_VERSION_SOFTWARE);
 }
-
+/*--------------------------------------------------------------------------------------------------------------------*/
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -237,55 +112,7 @@ void SystemClock_Config(void)
   }
 }
 
-/**
-  * @brief ETH Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ETH_Init(void)
-{
-
-  /* USER CODE BEGIN ETH_Init 0 */
-
-  /* USER CODE END ETH_Init 0 */
-
-   static uint8_t MACAddr[6];
-
-  /* USER CODE BEGIN ETH_Init 1 */
-
-  /* USER CODE END ETH_Init 1 */
-  heth.Instance = ETH;
-  MACAddr[0] = 0x00;
-  MACAddr[1] = 0x80;
-  MACAddr[2] = 0xE1;
-  MACAddr[3] = 0x00;
-  MACAddr[4] = 0x00;
-  MACAddr[5] = 0x00;
-  heth.Init.MACAddr = &MACAddr[0];
-  heth.Init.MediaInterface = HAL_ETH_RMII_MODE;
-  heth.Init.TxDesc = DMATxDscrTab;
-  heth.Init.RxDesc = DMARxDscrTab;
-  heth.Init.RxBuffLen = 1524;
-
-  /* USER CODE BEGIN MACADDRESS */
-
-  /* USER CODE END MACADDRESS */
-
-  if (HAL_ETH_Init(&heth) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  memset(&TxConfig, 0 , sizeof(ETH_TxPacketConfigTypeDef));
-  TxConfig.Attributes = ETH_TX_PACKETS_FEATURES_CSUM | ETH_TX_PACKETS_FEATURES_CRCPAD;
-  TxConfig.ChecksumCtrl = ETH_CHECKSUM_IPHDR_PAYLOAD_INSERT_PHDR_CALC;
-  TxConfig.CRCPadCtrl = ETH_CRC_PAD_INSERT;
-  /* USER CODE BEGIN ETH_Init 2 */
-
-  /* USER CODE END ETH_Init 2 */
-
-}
-
+/*--------------------------------------------------------------------------------------------------------------------*/
 /**
   * @brief GTZC_NS Initialization Function
   * @param None
@@ -307,6 +134,7 @@ static void MX_GTZC_NS_Init(void)
 
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 /**
   * @brief ICACHE Initialization Function
   * @param None
@@ -335,6 +163,7 @@ static void MX_ICACHE_Init(void)
 
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -367,26 +196,60 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
-/* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
-  /* USER CODE END Error_Handler_Debug */
+/*--------------------------------------------------------------------------------------------------------------------*/
+int main (void) {
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+  /* Configure the system clock */
+  SystemClock_Config();
+  /* GTZC initialisation */
+  MX_GTZC_NS_Init();
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_ICACHE_Init();
+	/* initialize RTX */
+	osKernelInitialize();                            
+	/* setup priority grouping */
+	NVIC_SetPriorityGrouping (3);                    
+	/* create first threads */
+	osThreadNew(Application, NULL, NULL);  
+	/* start RTX kernel */
+	osKernelStart ();                                
+	
+	return 0;
 }
-
-#ifdef  USE_FULL_ASSERT
+/************************************************** Tasks *************************************************************/
+void Application(void *argument)
+{
+  /// Init Lan
+	//{
+//	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
+//		osDelay(1 Sec);
+//		__NVIC_SystemReset();
+//	}
+	Lan.Init();
+	MEDIA* Media_Lan_1 = Lan.Listen(1001);	
+	MEDIA* Media_Lan_2 = Lan.Listen(1002);
+	MEDIA* Media_Lan_3 = Lan.Listen(1003);
+	MEDIA* Media_Lan_4 = Lan.Listen(1004);
+	osDelay(1 Sec);
+	//}
+	
+	/* Blink LED */
+	while (1) {
+    HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
+		osDelay(100 MSec);
+		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
+		osDelay(100 MSec);
+		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
+		osDelay(200 MSec);
+		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
+		osDelay(500 MSec);
+  }
+}
+/************************************************** Vectors ***********************************************************/
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -401,4 +264,22 @@ void assert_failed(uint8_t *file, uint32_t line)
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
-#endif /* USE_FULL_ASSERT */
+/*--------------------------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+/**********************************************************************************************************************/
+
+
+
