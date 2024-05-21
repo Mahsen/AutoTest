@@ -5,13 +5,15 @@
 #include "tag.hpp"
 #include "HexType.hpp"
 //----------------------------------------------------------
+typedef void (*TREE_Function) (void *argument);
+//----------------------------------------------------------
 class TREE {
     public: 
 			uint8_t *_Command;
-			void (*_Handle)(uint8_t *Data);
+			TREE_Function _Handle;
 			bool _Sync;	
 			U8 Report[64];
-			TREE(uint8_t *Command, void (*Handle)(uint8_t *Data), bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
+			TREE(uint8_t *Command, TREE_Function Handle, bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
 };
 class TEST : Tag
 {
@@ -57,11 +59,17 @@ class TEST : Tag
 		void Play(uint8_t* Data);
 		void List(uint8_t* Data);
 		bool Pars(uint8_t *Message, uint32_t *Length);
-		bool Add(uint8_t *Command, void (*Handle)(uint8_t *Data), bool Sync);
+		bool Add(uint8_t *Command, TREE_Function Handle, bool Sync);
 		void Init(uint8_t* (*_GetID)());		
 		void Execute_Task();
+	
+		TEST(void) {
+			for(uint8_t Index=0; Index<Trees_Count; Index++) {
+			memset(Trees[Index]->Report, 0, 64);
+		}
+	}
 };
-extern TEST Test;
+//extern TEST Test;
 extern const unsigned char ProgramFile[];
 //----------------------------------------------------------
 #endif

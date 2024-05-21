@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/5/20
+    Last Update : 2024/5/21
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -30,28 +30,13 @@
     Nothing
 */
 /************************************************** Variables *********************************************************/
-//void TEST_Execute_Task(void *argument) {
-//	Test.Execute_Task();
-//}
-void TEST_Link(uint8_t* Data) {
-	Test.Link(Data);
-}
-void TEST_Stop(uint8_t* Data) {
-	Test.Stop(Data);
-}
-void TEST_Pause(uint8_t* Data) {
-	Test.Pause(Data);
-}
-void TEST_Play(uint8_t* Data) {
-	Test.Play(Data);
-}
-void TEST_List(uint8_t* Data) {
-	Test.List(Data);
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
-static U64 TEST_Execute_Task_STAK[2048/8];
+/*
+    Nothing
+*/
 /************************************************** Opjects ***********************************************************/
-TEST Test;
+/*
+    Nothing
+*/
 /************************************************** Functions *********************************************************/
 void TEST::Link(uint8_t* Data) {
 	sprintf((char*)Data, "%s", "OK");
@@ -62,7 +47,7 @@ void TEST::Stop(uint8_t* Data) {
 		osThreadTerminate(Execute_Task_ID);
 		Execute_Task_ID = 0;
 	}
-	for(uint8_t Index=6; Index<Trees_Count; Index++) {
+	for(uint8_t Index=0; Index<Trees_Count; Index++) {
 		memset(Trees[Index]->Report, 0, 64);
 	}
 	Execute_Status = Status_IDEL;
@@ -79,7 +64,7 @@ void TEST::Play(uint8_t* Data) {
 /*--------------------------------------------------------------------------------------------------------------------*/
 void TEST::List(uint8_t* Data) {
 	char str_l[128];
-	for(uint8_t Index=5; Index<Trees_Count; Index++) {
+	for(uint8_t Index=0; Index<Trees_Count; Index++) {
 		sprintf(str_l, "%s=%s,", Trees[Index]->_Command, Trees[Index]->Report);
 		strcat((char*)Data, str_l);
 	}
@@ -87,19 +72,13 @@ void TEST::List(uint8_t* Data) {
 /*--------------------------------------------------------------------------------------------------------------------*/
 void TEST::Init(uint8_t* (*_GetID)()){
 	GetID = _GetID;
-	
-	Test.Add((uint8_t*)"Link", &TEST_Link, true);
-	Test.Add((uint8_t*)"Stop", &TEST_Stop, true);
-	Test.Add((uint8_t*)"Pause", &TEST_Stop, true);
-	Test.Add((uint8_t*)"Play", &TEST_Play, true);
-	Test.Add((uint8_t*)"List", &TEST_List, true);
 
-	for(uint8_t Index=5; Index<Trees_Count; Index++) {
+	for(uint8_t Index=0; Index<Trees_Count; Index++) {
 		memset(Trees[Index]->Report, 0, 64);
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-bool TEST::Add(uint8_t *Command, void (*Handle)(uint8_t *Data), bool Sync) {	
+bool TEST::Add(uint8_t *Command, TREE_Function Handle, bool Sync) {	
 	TREE* Tree = new TREE(Command, Handle, Sync);
 	if(Tree) {
 		if(Trees_Count < (sizeof(Trees)/4)) {
@@ -140,7 +119,7 @@ TEST::Status TEST::Execute() {
 				}
 				else {
 					Trees_Select.Set(Index);
-					Execute_Task_ID = osThreadNew([](void *argument) {Test.Execute_Task();}, NULL, &Execute_attr);
+					Execute_Task_ID = osThreadNew([](void *argument) {((TEST*)argument)->Execute_Task();}, this, &Execute_attr);
 					if(Execute_Task_ID == 0) {
 						while(true);
 					}
@@ -151,6 +130,27 @@ TEST::Status TEST::Execute() {
 		}
 	}
 
+	if(strstr("Link", (char*)Parmeters.Command.Get())) {
+		Link(Parmeters.Data.Get());
+		return Status_IDEL;
+	}
+	else if(strstr("Stop", (char*)Parmeters.Command.Get())) {
+		Stop(Parmeters.Data.Get());
+		return Status_IDEL;
+	}
+	else if(strstr("Pause", (char*)Parmeters.Command.Get())) {
+		Pause(Parmeters.Data.Get());
+		return Status_IDEL;
+	}
+	else if(strstr("Play", (char*)Parmeters.Command.Get())) {
+		Play(Parmeters.Data.Get());
+		return Status_IDEL;
+	}
+	else if(strstr("List", (char*)Parmeters.Command.Get())) {
+		List(Parmeters.Data.Get());
+		return Status_IDEL;
+	}
+	
 	return Status_NOCOMMAND;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -185,7 +185,7 @@ void TEST::Execute_Task(void) {
 	
 	Execute_Status = Status_COMPLETE;
 	Execute_Task_ID = 0;
-	os_tsk_delete_self();
+	osThreadExit();
 	
 }
 /************************************************** Vectors ***********************************************************/

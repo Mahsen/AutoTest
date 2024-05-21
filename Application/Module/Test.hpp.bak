@@ -5,13 +5,15 @@
 #include "tag.hpp"
 #include "HexType.hpp"
 //----------------------------------------------------------
+typedef void (*TREE_Function) (void *argument);
+//----------------------------------------------------------
 class TREE {
     public: 
 			uint8_t *_Command;
-			void (*_Handle)(uint8_t *Data);
+			TREE_Function _Handle;
 			bool _Sync;	
 			U8 Report[64];
-			TREE(uint8_t *Command, void (*Handle)(uint8_t *Data), bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
+			TREE(uint8_t *Command, TREE_Function Handle, bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
 };
 class TEST : Tag
 {
@@ -19,19 +21,19 @@ class TEST : Tag
 		U8 Command[64]; 
 		U8 Buffer[2048]; 
 		// Define objects that are statically allocated for worker thread 1
-		osRtxThread_t LAN_thread_tcb;
+		osRtxThread_t Execute_thread_tcb;
 		// Reserve two areas for the stacks of worker thread 1
 		// uint64_t makes sure the memory alignment is 8
-		uint64_t LAN_thread_stk[4096];
+		uint64_t Execute_thread_stk[2048];
 		// Define the attributes which are used for thread creation
 		// Optional const saves RAM memory and includes the values in periodic ROM tests 
-		const osThreadAttr_t LAN_attr = {
-			"LAN_Thread",
+		const osThreadAttr_t Execute_attr = {
+			"Execute_Thread",
 			osThreadJoinable,
-			&LAN_thread_tcb,
-			sizeof(LAN_thread_tcb),
-			&LAN_thread_stk[0],
-			sizeof(LAN_thread_stk),
+			&Execute_thread_tcb,
+			sizeof(Execute_thread_tcb),
+			&Execute_thread_stk[0],
+			sizeof(Execute_thread_stk),
 			osPriorityAboveNormal,
 			0
 		};
@@ -57,11 +59,11 @@ class TEST : Tag
 		void Play(uint8_t* Data);
 		void List(uint8_t* Data);
 		bool Pars(uint8_t *Message, uint32_t *Length);
-		bool Add(uint8_t *Command, void (*Handle)(uint8_t *Data), bool Sync);
+		bool Add(uint8_t *Command, TREE_Function Handle, bool Sync);
 		void Init(uint8_t* (*_GetID)());		
 		void Execute_Task();
 };
-extern TEST Test;
+//extern TEST Test;
 extern const unsigned char ProgramFile[];
 //----------------------------------------------------------
 #endif
