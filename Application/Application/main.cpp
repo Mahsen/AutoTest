@@ -23,6 +23,7 @@
 #include "main.h"
 #include "defines.h"
 #include "lan.hpp"
+#include "test.hpp"
 /************************************************** Defineds **********************************************************/
 /*
     Nothing
@@ -32,20 +33,35 @@
     Nothing
 */
 /************************************************** Variables *********************************************************/
-/*
-    Nothing
-*/
-/************************************************** Opjects ***********************************************************/
-/************************************************** Functions *********************************************************/
+// Define objects that are statically allocated for worker thread 1
+osRtxThread_t MAIN_thread_tcb;
+// Reserve two areas for the stacks of worker thread 1
+// uint64_t makes sure the memory alignment is 8
+uint64_t MAIN_thread_stk[4096];
+// Define the attributes which are used for thread creation
+// Optional const saves RAM memory and includes the values in periodic ROM tests 
+const osThreadAttr_t MAIN_attr = {
+	"MAIN_Thread",
+	osThreadJoinable,
+	&MAIN_thread_tcb,
+	sizeof(MAIN_thread_tcb),
+	&MAIN_thread_stk[0],
+	sizeof(MAIN_thread_stk),
+	osPriorityAboveNormal,
+	0
+};
+// Define ID object for thread
+osThreadId_t MAIN_Thread;
+/*--------------------------------------------------------------------------------------------------------------------*/
 void Application(void *argument);
+void Task(void *argument);
 /*--------------------------------------------------------------------------------------------------------------------*/
-bool TEST_GetID_MUTEX = false;
-uint8_t* TEST_GetID() {
-	static uint8_t Data[3];
-
-	return Data;
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
+U8 Application_Message[2048];
+U32 Application_Length;
+/************************************************** Opjects ***********************************************************/
+TEST Application_Test[4];
+MEDIA* Application_Media_Lan[4];
+/************************************************** Functions *********************************************************/
 void TEST_HardwareVersion(uint8_t* Data) {
 	//sprintf((char*)Data, "%s", TESTBENCH_VERSION_HARDWARE);
 }
@@ -215,6 +231,7 @@ int main (void) {
 	NVIC_SetPriorityGrouping (3);                    
 	/* create first threads */
 	osThreadNew(Application, NULL, NULL);  
+	osThreadNew(Task, NULL, NULL); 
 	/* start RTX kernel */
 	osKernelStart ();                                
 	
@@ -223,20 +240,41 @@ int main (void) {
 /************************************************** Tasks *************************************************************/
 void Application(void *argument)
 {
-  /// Init Lan
-	//{
+  /* Init Lan */
 //	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
 //		osDelay(1 Sec);
 //		__NVIC_SystemReset();
 //	}
 	Lan.Init();
-	MEDIA* Media_Lan_1 = Lan.Listen(1001);	
-	MEDIA* Media_Lan_2 = Lan.Listen(1002);
-	MEDIA* Media_Lan_3 = Lan.Listen(1003);
-	MEDIA* Media_Lan_4 = Lan.Listen(1004);
+	/* Add Lan listening */
+	
+	for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
+		Application_Media_Lan[Media_Index] = Lan.Listen(1001 + Media_Index);
+	}
 	osDelay(1 Sec);
 	//}
 	
+	/* Application */
+	while (1) {
+		for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
+			Application_Length = Application_Media_Lan[Media_Index]->Receive(Application_Message, sizeof(Application_Message));
+			if(Application_Length) {	
+				if(strcmp((char*)Application_Message, "FIND=ID\r\n") == NULL) {
+					Application_Media_Lan[Media_Index]->Send((U8*)"OK\r\n", 4);
+				}
+				else if(Application_Test[Media_Index].Pars(Application_Message, &Application_Length)) {
+					Application_Media_Lan[Media_Index]->Send(Application_Message, Application_Length);
+				}
+				memset(Application_Message, 0, sizeof(Application_Message));
+				Application_Media_Lan[Media_Index]->Reset();
+			}
+		}
+		osDelay(100 MSec);
+	}
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Task(void *argument)
+{
 	/* Blink LED */
 	while (1) {
     HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);

@@ -70,14 +70,6 @@ void TEST::List(uint8_t* Data) {
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void TEST::Init(uint8_t* (*_GetID)()){
-	GetID = _GetID;
-
-	for(uint8_t Index=0; Index<Trees_Count; Index++) {
-		memset(Trees[Index]->Report, 0, 64);
-	}
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
 bool TEST::Add(uint8_t *Command, TREE_Function Handle, bool Sync) {	
 	TREE* Tree = new TREE(Command, Handle, Sync);
 	if(Tree) {

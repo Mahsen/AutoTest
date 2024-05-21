@@ -114,6 +114,8 @@ class MEDIA_LAN : MEDIA
 		}
 		
 		virtual U32 Receive(U8* Data, U32 Length) {
+			U32 Length_Feed = 0;
+			while(Length_Feed != Ring.Receive.Length) { Length_Feed = Ring.Receive.Length; osDelay(100 MSec);}
 			Length = (Length>Ring.Receive.Length)?Ring.Receive.Length:Length;
 			memcpy(Data, Ring.Receive.Data, Length);
 			return Length;
@@ -192,8 +194,7 @@ void LAN::Init(void) {
 	memset(_IP_Client.addr, 0, NET_ADDR_IP6_LEN);
 
 	// Create an instance of the worker thread with static resources (TCB and stack)
-  //Thread = osThreadNew([](void *argument) {((LAN*)argument)->Task();}, this, &attr);
-	Thread = osThreadNew([](void *argument) {((LAN*)argument)->Task();}, this, &attr);
+  Thread = osThreadNew([](void *argument) {((LAN*)argument)->Task();}, this, &attr);
 	if(Thread == 0) {
 		while(true);
 	}
@@ -299,14 +300,14 @@ NET_ADDR* LAN::GetClient() {
 void LAN::Task() {
 	while(true) {		
 		for(U8 Index_Port=0; Index_Port<Lan.NumberOfListen; Index_Port++) {
-			if(Media_Listen[NumberOfListen].Ring.Socket) {			
+			if(Media_Listen[Index_Port].Ring.Socket) {			
 				if(Media_Listen[Index_Port].Ring.Send.Length != Media_Listen[Index_Port].Ring.Send.Sent) {
 					// Connected, send the data
-					if (netTCP_SendReady (Media_Listen[NumberOfListen].Ring.Socket)) {
+					if (netTCP_SendReady (Media_Listen[Index_Port].Ring.Socket)) {
 						U8* sendbuf = netTCP_GetBuffer (Media_Listen[Index_Port].Ring.Send.Length);
 						if(sendbuf) {
 							memcpy(sendbuf, Media_Listen[Index_Port].Ring.Send.Data, Media_Listen[Index_Port].Ring.Send.Length);
-							netTCP_Send (Media_Listen[NumberOfListen].Ring.Socket, sendbuf, Media_Listen[Index_Port].Ring.Send.Length);
+							netTCP_Send (Media_Listen[Index_Port].Ring.Socket, sendbuf, Media_Listen[Index_Port].Ring.Send.Length);
 							Media_Listen[Index_Port].Ring.Send.Sent = Media_Listen[Index_Port].Ring.Send.Length;
 						}
 					}
