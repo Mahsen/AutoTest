@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/5/20
+    Last Update : 2024/5/21
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -192,7 +192,8 @@ void LAN::Init(void) {
 	memset(_IP_Client.addr, 0, NET_ADDR_IP6_LEN);
 
 	// Create an instance of the worker thread with static resources (TCB and stack)
-  Thread = osThreadNew([](void *argument) {Lan.Task();}, NULL, &attr);
+  //Thread = osThreadNew([](void *argument) {((LAN*)argument)->Task();}, this, &attr);
+	Thread = osThreadNew([](void *argument) {((LAN*)argument)->Task();}, this, &attr);
 	if(Thread == 0) {
 		while(true);
 	}
