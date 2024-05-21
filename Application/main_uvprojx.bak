@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\Core;.\Driver;.\Class;.\Config</IncludePath>
+              <IncludePath>.\Core;.\Driver;.\Class;.\Config;.\Module</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -416,6 +416,11 @@
               <FileType>8</FileType>
               <FilePath>.\Class\Tag.cpp</FilePath>
             </File>
+            <File>
+              <FileName>HexType.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Class\HexType.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -425,6 +430,16 @@
               <FileName>AddressFlash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Config\AddressFlash.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Module</GroupName>
+          <Files>
+            <File>
+              <FileName>Test.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Module\Test.cpp</FilePath>
             </File>
           </Files>
         </Group>

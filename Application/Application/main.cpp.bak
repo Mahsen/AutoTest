@@ -9,16 +9,14 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/3/13
+    Last Update : 2024/5/21
 */
 /************************************************** Warnings **********************************************************/
 /*
     Nothing
 */
 /************************************************** Wizards ***********************************************************/
-/*
-    Nothing
-*/
+#include "Wizards.c"
 /************************************************** Includes **********************************************************/
 #include "main.h"
 #include "defines.h"
@@ -33,26 +31,6 @@
     Nothing
 */
 /************************************************** Variables *********************************************************/
-// Define objects that are statically allocated for worker thread 1
-osRtxThread_t MAIN_thread_tcb;
-// Reserve two areas for the stacks of worker thread 1
-// uint64_t makes sure the memory alignment is 8
-uint64_t MAIN_thread_stk[4096];
-// Define the attributes which are used for thread creation
-// Optional const saves RAM memory and includes the values in periodic ROM tests 
-const osThreadAttr_t MAIN_attr = {
-	"MAIN_Thread",
-	osThreadJoinable,
-	&MAIN_thread_tcb,
-	sizeof(MAIN_thread_tcb),
-	&MAIN_thread_stk[0],
-	sizeof(MAIN_thread_stk),
-	osPriorityAboveNormal,
-	0
-};
-// Define ID object for thread
-osThreadId_t MAIN_Thread;
-/*--------------------------------------------------------------------------------------------------------------------*/
 void Application(void *argument);
 void Task(void *argument);
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -63,11 +41,119 @@ TEST Application_Test[4];
 MEDIA* Application_Media_Lan[4];
 /************************************************** Functions *********************************************************/
 void TEST_HardwareVersion(uint8_t* Data) {
-	//sprintf((char*)Data, "%s", TESTBENCH_VERSION_HARDWARE);
+	sprintf((char*)Data, "%s", TESTBENCH_VERSION_HARDWARE);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void TEST_SoftwareVersion(U8* Data) {
-	//sprintf((char*)Data, "%s", TESTBENCH_VERSION_SOFTWARE);
+	sprintf((char*)Data, "%s", TESTBENCH_VERSION_SOFTWARE);
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_1_Location(U8* Data) {
+	sprintf((char*)Data, "%s", "Floor_1-Top-Left");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_1_Blink(U8* Data) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);  
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Pin = GPIO_PIN_6;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = GPIO_PIN_8;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	
+	for(U8 Index=0; Index<100; Index++) {
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_8);
+		osDelay(100 MSec);
+	}
+	
+	sprintf((char*)Data, "%s", "OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_2_Location(U8* Data) {
+	sprintf((char*)Data, "%s", "Floor_1-Top-Right");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_2_Blink(U8* Data) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOF_CLK_ENABLE();
+	
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_3, GPIO_PIN_RESET);  
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Pin = GPIO_PIN_4;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = GPIO_PIN_3;
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+	
+	for(U8 Index=0; Index<100; Index++) {
+		HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_3);
+		osDelay(100 MSec);
+	}
+	
+	sprintf((char*)Data, "%s", "OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_3_Location(U8* Data) {
+	sprintf((char*)Data, "%s", "Floor_1-Bottom-Left");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_3_Blink(U8* Data) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+	
+	for(U8 Index=0; Index<100; Index++) {
+		HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_8);
+		osDelay(100 MSec);
+	}
+	
+	sprintf((char*)Data, "%s", "OK");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_4_Location(U8* Data) {
+	sprintf((char*)Data, "%s", "Floor_1-Bottom-Right");
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void TEST_4_Blink(U8* Data) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);  
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Pin = GPIO_PIN_0;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = GPIO_PIN_3;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	
+	for(U8 Index=0; Index<100; Index++) {
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_3);
+		osDelay(100 MSec);
+	}
+	
+	sprintf((char*)Data, "%s", "OK");
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 /**
@@ -211,9 +297,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
-
-
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 int main (void) {
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -251,16 +334,36 @@ void Application(void *argument)
 	for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
 		Application_Media_Lan[Media_Index] = Lan.Listen(1001 + Media_Index);
 	}
-	osDelay(1 Sec);
 	//}
 	
-	/* Application */
+	/* Add tests */
+	/* TEST 1 */	
+	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, true);
+	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, true);
+	Application_Test[0].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[0].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+	/* TEST 2 */
+	Application_Test[1].Add((uint8_t*)"Location", &TEST_2_Location, true);
+	Application_Test[1].Add((uint8_t*)"Blink", &TEST_2_Blink, true);
+	Application_Test[1].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[1].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+	/* TEST 3 */
+	Application_Test[2].Add((uint8_t*)"Location", &TEST_3_Location, true);
+	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, true);
+	Application_Test[2].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[2].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+	/* TEST 4 */
+	Application_Test[3].Add((uint8_t*)"Location", &TEST_4_Location, true);
+	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, true);
+	Application_Test[3].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[3].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
 	
+	/* Application */
 	while (1) {
 		for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
 			Application_Length = Application_Media_Lan[Media_Index]->Receive(Application_Message, sizeof(Application_Message));
 			if(Application_Length) {	
-				if(strcmp((char*)Application_Message, "FIND=ID\r\n") == NULL) {
+				if(strcmp((char*)Application_Message, "FIND\r\n") == NULL) {
 					Application_Media_Lan[Media_Index]->Send((U8*)"OK\r\n", 4);
 				}
 				else if(Application_Test[Media_Index].Pars(Application_Message, &Application_Length)) {

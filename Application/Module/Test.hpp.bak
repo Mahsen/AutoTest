@@ -62,6 +62,12 @@ class TEST : Tag
 		bool Add(uint8_t *Command, TREE_Function Handle, bool Sync);
 		void Init(uint8_t* (*_GetID)());		
 		void Execute_Task();
+	
+		TEST(void) {
+			for(uint8_t Index=0; Index<Trees_Count; Index++) {
+			memset(Trees[Index]->Report, 0, 64);
+		}
+	}
 };
 //extern TEST Test;
 extern const unsigned char ProgramFile[];
