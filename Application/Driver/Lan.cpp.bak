@@ -44,122 +44,12 @@ ETH_DMADescTypeDef  DMARxDscrTab[ETH_RX_DESC_CNT]; /* Ethernet Rx DMA Descriptor
 ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx DMA Descriptors */
 ETH_HandleTypeDef   heth;
 /*--------------------------------------------------------------------------------------------------------------------*/
-//// Define objects that are statically allocated for worker thread 1
-//__attribute__((section(".bss.os.thread.cb")))
-//osRtxThread_t LAN_thread_tcb;
-//// Reserve two areas for the stacks of worker thread 1
-//// uint64_t makes sure the memory alignment is 8
-//uint64_t LAN_thread_stk[4096];
-//// Define the attributes which are used for thread creation
-//// Optional const saves RAM memory and includes the values in periodic ROM tests 
-//const osThreadAttr_t LAN_attr = {
-//  "LAN_Thread",
-//  osThreadJoinable,
-//  &LAN_thread_tcb,
-//  sizeof(LAN_thread_tcb),
-//  &LAN_thread_stk[0],
-//  sizeof(LAN_thread_stk),
-//  osPriorityAboveNormal,
-//  0
-//};
-//// Define ID object for thread
-//osThreadId_t LAN_Thread;
+/*
+    Nothing
+*/
 /************************************************** Opjects ***********************************************************/
 LAN Lan;
-/*--------------------------------------------------------------------------------------------------------------------*/
-class MEDIA_LAN : MEDIA
-{
-	private:
-
-	public:
-		struct {
-			int32_t Socket;
-			U16 Port;			
-			U32 BaudRate;
-			struct {
-				U8 Data[512];
-				U32 Length;
-			} Receive;
-			struct {
-				U8 *Data;
-				U32 Length;
-				U32 Sent;
-			} Send;
-		} Ring;
-		
-		virtual void Reset(void) {
-			Ring.Receive.Length = 0;
-			Ring.Send.Length = 0;
-			memset(Ring.Receive.Data, NULL, sizeof(Ring.Receive.Data));
-		}
-		
-		virtual struct_Status GetStatus(void) {
-			struct_Status Status;
-			Status.Send.SetLength(Ring.Send.Length);
-			Status.Receive.SetLength(Ring.Receive.Length);
-			return Status;
-		}
-		
-		virtual bool Send(U8* Data, U32 Length) {
-			Ring.Send.Data = Data;
-			Ring.Send.Length = Length;
-			Ring.Send.Sent = 0;			
-			for(U16 TimeOut=0; ((TimeOut<20)&&(Ring.Send.Length!=Ring.Send.Sent)); TimeOut++) {
-				osDelay(100 MSec);
-			}
-			if(Ring.Send.Sent == Length) {
-				return true;
-			}
-			return false;
-		}
-		
-		virtual U32 Receive(U8* Data, U32 Length) {
-			U32 Length_Feed = 0;
-			while(Length_Feed != Ring.Receive.Length) { Length_Feed = Ring.Receive.Length; osDelay(100 MSec);}
-			Length = (Length>Ring.Receive.Length)?Ring.Receive.Length:Length;
-			memcpy(Data, Ring.Receive.Data, Length);
-			return Length;
-		}				
-} Media_Listen[LAN_SIZEOF_LISTEN];
 /************************************************** Functions *********************************************************/
-// Notify the user application about TCP socket events.
-uint32_t LAN_tcp_cb (int32_t socket, netTCP_Event event, const NET_ADDR *addr, const uint8_t *buf, uint32_t len) {
-  switch (event) {
-    case netTCP_EventConnect:
-      return 1;
-    case netTCP_EventEstablished:
-      // Connection established
-      break;
- 
-    case netTCP_EventClosed:
-      // Connection was properly closed
-			Lan._IP_Client.addr_type = NET_ADDR_ANY;
-			Lan._IP_Client.port = 0;
-			memset(Lan._IP_Client.addr, 0, NET_ADDR_IP6_LEN);
-      break;
- 
-    case netTCP_EventAborted:
-      // Connection is for some reason aborted
-      break;
- 
-    case netTCP_EventACK:
-      // Previously sent data acknowledged
-      break;
- 
-    case netTCP_EventData:
-			for(U8 Index_Port=0; Index_Port<Lan.NumberOfListen; Index_Port++) {
-				if(socket == Media_Listen[Index_Port].Ring.Socket) {
-					if((Media_Listen[Index_Port].Ring.Receive.Length + len) < sizeof(Media_Listen[Index_Port].Ring.Receive.Data)) {
-						memcpy((char*)&Media_Listen[Index_Port].Ring.Receive.Data[Media_Listen[Index_Port].Ring.Receive.Length], buf, len);
-						Media_Listen[Index_Port].Ring.Receive.Length += len;
-					}
-				}
-			}
-			break;
-  }
-  return (0);
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
 void LAN::Init(void) {
 	static uint8_t MACAddr[6];
 
@@ -192,32 +82,87 @@ void LAN::Init(void) {
 	_IP_Client.addr_type = NET_ADDR_ANY;
 	_IP_Client.port = 0;
 	memset(_IP_Client.addr, 0, NET_ADDR_IP6_LEN);
-
-	// Create an instance of the worker thread with static resources (TCB and stack)
-  Thread = osThreadNew([](void *argument) {((LAN*)argument)->Task();}, this, &attr);
-	if(Thread == 0) {
-		while(true);
-	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-MEDIA* LAN::Listen(uint16_t Port) {
+bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* Length)) {
 	if(NumberOfListen < LAN_SIZEOF_LISTEN) {
 		// Initialize TCP Socket 
-		Media_Listen[NumberOfListen].Ring.Socket = netTCP_GetSocket (LAN_tcp_cb);
-		if (Media_Listen[NumberOfListen].Ring.Socket) {
+		Listen[NumberOfListen].Socket = netTCP_GetSocket ([](S32 socket, netTCP_Event event, const NET_ADDR *addr, const uint8_t *buf, U32 len)->U32{
+			switch (event) {
+				case netTCP_EventConnect: {
+					return 1;
+				}
+				case netTCP_EventEstablished: {
+					// Connection established
+					break;
+				}
+				case netTCP_EventClosed: {
+					// Connection was properly closed
+					Lan._IP_Client.addr_type = NET_ADDR_ANY;
+					Lan._IP_Client.port = 0;
+					memset(Lan._IP_Client.addr, 0, NET_ADDR_IP6_LEN);
+					break;		
+				}					
+				case netTCP_EventAborted: {
+					// Connection is for some reason aborted
+					break;
+				}
+				case netTCP_EventACK: {
+					// Previously sent data acknowledged
+					break;
+				}
+				case netTCP_EventData: {
+					if((Lan.Listen[socket-1].Buffer.Length + len) < sizeof(Lan.Listen[socket-1].Buffer.Data)) {
+						memcpy((char*)&Lan.Listen[socket-1].Buffer.Data[Lan.Listen[socket-1].Buffer.Length], buf, len);
+						Lan.Listen[socket-1].Buffer.Length += len;
+					}
+					break;
+				}
+			}
+			return 0;
+		});
+		if (Listen[NumberOfListen].Socket) {
 			//Start listening on port
-			if(netTCP_Listen (Media_Listen[NumberOfListen].Ring.Socket, Port) != netOK) {
+			if(netTCP_Listen (Listen[NumberOfListen].Socket, Port) != netOK) {
 				while(true);
 			}
 		}
 		else {
 			while(true);
 		}
-		Media_Listen[NumberOfListen].Ring.Port = Port;
+		Lan.Listen[NumberOfListen].CallBack = CallBack;
+		Lan.Listen[NumberOfListen].Port = Port;
+		// Create an instance of the worker thread with static resources (TCB and stack)
+		osThreadId_t Thread = osThreadNew([](void *argument) {
+			while(true) {	
+				LAN::struct_Listen* Listen_p = ((LAN::struct_Listen*)argument);
+				U32 Length = 0;
+				while(Length != Listen_p->Buffer.Length) { Length = Listen_p->Buffer.Length; osDelay(100 MSec);}
+				if(Length) {
+					if(Listen_p->CallBack(Listen_p->Socket, Listen_p->Buffer.Data, &Length)) {
+						if (netTCP_SendReady (Listen_p->Socket)) {
+							U8* sendbuf = netTCP_GetBuffer (Length);
+							if(sendbuf) {
+								memcpy(sendbuf, Listen_p->Buffer.Data, Length);
+								netTCP_Send (Listen_p->Socket, sendbuf, Length);		
+								Listen_p->Buffer.Length = 0;								
+							}
+						}					
+					}
+					else {
+						Listen_p->Buffer.Length = 0;
+					}
+				}
+				osDelay(10 MSec);
+			}		
+		}, &Listen[NumberOfListen], NULL);
+		if(Thread == 0) {
+			while(true);
+		}
 		NumberOfListen++;
-		return (MEDIA*)&Media_Listen[NumberOfListen-1];
+		return true;
 	}
-	return NULL;
+	return false;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 extern const char ETH0_IP4_ADDR_SPECIAL[16];
@@ -297,26 +242,9 @@ NET_ADDR* LAN::GetClient() {
 	return &_IP_Client;
 }
 /************************************************** Tasks *************************************************************/
-void LAN::Task() {
-	while(true) {		
-		for(U8 Index_Port=0; Index_Port<Lan.NumberOfListen; Index_Port++) {
-			if(Media_Listen[Index_Port].Ring.Socket) {			
-				if(Media_Listen[Index_Port].Ring.Send.Length != Media_Listen[Index_Port].Ring.Send.Sent) {
-					// Connected, send the data
-					if (netTCP_SendReady (Media_Listen[Index_Port].Ring.Socket)) {
-						U8* sendbuf = netTCP_GetBuffer (Media_Listen[Index_Port].Ring.Send.Length);
-						if(sendbuf) {
-							memcpy(sendbuf, Media_Listen[Index_Port].Ring.Send.Data, Media_Listen[Index_Port].Ring.Send.Length);
-							netTCP_Send (Media_Listen[Index_Port].Ring.Socket, sendbuf, Media_Listen[Index_Port].Ring.Send.Length);
-							Media_Listen[Index_Port].Ring.Send.Sent = Media_Listen[Index_Port].Ring.Send.Length;
-						}
-					}
-				}
-			}
-		}
-		osDelay(100 MSec);
-	}
-}
+/*
+    Nothing
+*/
 /************************************************** Vectors ***********************************************************/
 /*
     Nothing

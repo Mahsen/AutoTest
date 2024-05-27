@@ -32,13 +32,8 @@
 */
 /************************************************** Variables *********************************************************/
 void Application(void *argument);
-void Task(void *argument);
-/*--------------------------------------------------------------------------------------------------------------------*/
-U8 Application_Message[2048];
-U32 Application_Length;
 /************************************************** Opjects ***********************************************************/
-TEST Application_Test[4];
-MEDIA* Application_Media_Lan[4];
+TEST Application_Test[LAN_SIZEOF_LISTEN];
 /************************************************** Functions *********************************************************/
 void TEST_HardwareVersion(uint8_t* Data) {
 	sprintf((char*)Data, "%s", TESTBENCH_VERSION_HARDWARE);
@@ -314,7 +309,6 @@ int main (void) {
 	NVIC_SetPriorityGrouping (3);                    
 	/* create first threads */
 	osThreadNew(Application, NULL, NULL);  
-	osThreadNew(Task, NULL, NULL); 
 	/* start RTX kernel */
 	osKernelStart ();                                
 	
@@ -323,62 +317,40 @@ int main (void) {
 /************************************************** Tasks *************************************************************/
 void Application(void *argument)
 {
+	/* Add tests */
+	/* TEST 1 */	
+	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, true);
+	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, false);
+	Application_Test[0].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[0].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+	/* TEST 2 */
+	Application_Test[1].Add((uint8_t*)"Location", &TEST_2_Location, true);
+	Application_Test[1].Add((uint8_t*)"Blink", &TEST_2_Blink, false);
+	Application_Test[1].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[1].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+	/* TEST 3 */
+	Application_Test[2].Add((uint8_t*)"Location", &TEST_3_Location, true);
+	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, false);
+	Application_Test[2].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[2].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+	/* TEST 4 */
+	Application_Test[3].Add((uint8_t*)"Location", &TEST_4_Location, true);
+	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, false);
+	Application_Test[3].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
+	Application_Test[3].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+
   /* Init Lan */
 //	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
 //		osDelay(1 Sec);
 //		__NVIC_SystemReset();
 //	}
 	Lan.Init();
-	/* Add Lan listening */
-	
-	for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
-		Application_Media_Lan[Media_Index] = Lan.Listen(1001 + Media_Index);
+	for(U8 Index=0; Index<LAN_SIZEOF_LISTEN; Index++) {
+		/* Add Lan listening */
+		Lan.AddListen((1001 + Index), [](S32 Socket, U8* Data, U32* Length)->bool{ return Application_Test[(Socket-1)].Pars(Data, Length);});
 	}
 	//}
-	
-	/* Add tests */
-	/* TEST 1 */	
-	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, true);
-	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, true);
-	Application_Test[0].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
-	Application_Test[0].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
-	/* TEST 2 */
-	Application_Test[1].Add((uint8_t*)"Location", &TEST_2_Location, true);
-	Application_Test[1].Add((uint8_t*)"Blink", &TEST_2_Blink, true);
-	Application_Test[1].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
-	Application_Test[1].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
-	/* TEST 3 */
-	Application_Test[2].Add((uint8_t*)"Location", &TEST_3_Location, true);
-	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, true);
-	Application_Test[2].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
-	Application_Test[2].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
-	/* TEST 4 */
-	Application_Test[3].Add((uint8_t*)"Location", &TEST_4_Location, true);
-	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, true);
-	Application_Test[3].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
-	Application_Test[3].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
-	
-	/* Application */
-	while (1) {
-		for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
-			Application_Length = Application_Media_Lan[Media_Index]->Receive(Application_Message, sizeof(Application_Message));
-			if(Application_Length) {	
-				if(strcmp((char*)Application_Message, "FIND\r\n") == NULL) {
-					Application_Media_Lan[Media_Index]->Send((U8*)"OK\r\n", 4);
-				}
-				else if(Application_Test[Media_Index].Pars(Application_Message, &Application_Length)) {
-					Application_Media_Lan[Media_Index]->Send(Application_Message, Application_Length);
-				}
-				memset(Application_Message, 0, sizeof(Application_Message));
-				Application_Media_Lan[Media_Index]->Reset();
-			}
-		}
-		osDelay(100 MSec);
-	}
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
-void Task(void *argument)
-{
+
 	/* Blink LED */
 	while (1) {
     HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
@@ -390,6 +362,24 @@ void Task(void *argument)
 		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
 		osDelay(500 MSec);
   }
+
+//	/* Application */
+//	while (1) {
+//		for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
+//			Application_Length = Application_Media_Lan[Media_Index]->Receive(Application_Message, sizeof(Application_Message));
+//			if(Application_Length) {	
+//				if(strcmp((char*)Application_Message, "FIND\r\n") == NULL) {
+//					Application_Media_Lan[Media_Index]->Send((U8*)"OK\r\n", 4);
+//				}
+//				else if(Application_Test[Media_Index].Pars(Application_Message, &Application_Length)) {
+//					Application_Media_Lan[Media_Index]->Send(Application_Message, Application_Length);
+//				}
+//				memset(Application_Message, 0, sizeof(Application_Message));
+//				Application_Media_Lan[Media_Index]->Reset();
+//			}
+//		}
+//		osDelay(100 MSec);
+//	}
 }
 /************************************************** Vectors ***********************************************************/
 /**
