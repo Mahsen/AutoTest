@@ -5,6 +5,7 @@
 #include "media.hpp"
 #include "Net_Config_TCP.h"
 //----------------------------------------------------------
+#define LAN_SIZEOF_BUFFER                                  512
 #define LAN_SIZEOF_LISTEN                                  TCP_NUM_SOCKS
 //----------------------------------------------------------
 class LAN
@@ -14,7 +15,7 @@ class LAN
 	public:
 		struct struct_Listen {
 			struct {
-				U8 Data[512];
+				U8 Data[LAN_SIZEOF_BUFFER];
 				U32 Length;
 			} Buffer;
 			bool (*CallBack)(S32 Socket, U8* Data, U32* Length);

@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/5/21
+    Last Update : 2024/5/28
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -152,6 +152,7 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 							osDelay(10 MSec);
 						}
 					}
+					memset(Listen_p->Buffer.Data, NULL, LAN_SIZEOF_BUFFER);
 					Listen_p->Buffer.Length = 0;
 				}
 				osDelay(10 MSec);

@@ -17,7 +17,7 @@ class LAN
 				U8 Data[512];
 				U32 Length;
 			} Buffer;
-			bool (*CallBack)(U8* Data, U32* Length);
+			bool (*CallBack)(S32 Socket, U8* Data, U32* Length);
 			S32 Socket;
 			U32 Port;
 		} Listen[LAN_SIZEOF_LISTEN];
