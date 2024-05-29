@@ -431,6 +431,11 @@
               <FileType>1</FileType>
               <FilePath>.\Config\AddressFlash.c</FilePath>
             </File>
+            <File>
+              <FileName>Wizards.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Config\Wizards.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

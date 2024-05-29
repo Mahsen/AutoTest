@@ -2,6 +2,7 @@
 #define __DEFINES_H
 //----------------------------------------------------------
 #include "cmsis_os2.h"
+#include "rtx_os.h"
 #include "rl_net.h"
 #include "string.h"
 #include <string.h>
