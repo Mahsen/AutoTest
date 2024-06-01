@@ -5,7 +5,7 @@
 #include "tag.hpp"
 #include "HexType.hpp"
 //----------------------------------------------------------
-typedef void (*TREE_Function) (void *argument);
+typedef void (*TREE_Function) (uint8_t *Data);
 //----------------------------------------------------------
 class TREE {
     public: 

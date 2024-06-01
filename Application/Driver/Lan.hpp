@@ -21,6 +21,7 @@ class LAN
 			bool (*CallBack)(S32 Socket, U8* Data, U32* Length);
 			S32 Socket;
 			U32 Port;
+			U8* PointerSend;
 		} Listen[LAN_SIZEOF_LISTEN];
 		
 		NET_ADDR _IP_Client;

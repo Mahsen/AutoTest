@@ -142,20 +142,20 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 					if(Listen_p->CallBack(Listen_p->Socket, Listen_p->Buffer.Data, &Length)) {
 						while(true) {
 							if (netTCP_SendReady (Listen_p->Socket)) {
-								U8* sendbuf = netTCP_GetBuffer (Length);
-								if(sendbuf) {
-									memcpy(sendbuf, Listen_p->Buffer.Data, Length);
-									netTCP_Send (Listen_p->Socket, sendbuf, Length);									
-								}
+								Listen_p->PointerSend = netTCP_GetBuffer (Length);
+								if(Listen_p->PointerSend) {
+									memcpy(Listen_p->PointerSend, Listen_p->Buffer.Data, Length);
+									netTCP_Send (Listen_p->Socket, Listen_p->PointerSend, Length);									
+								}								
 								break;
 							}		
-							osDelay(10 MSec);
+							osDelay(100 MSec);
 						}
 					}
 					memset(Listen_p->Buffer.Data, NULL, LAN_SIZEOF_BUFFER);
 					Listen_p->Buffer.Length = 0;
 				}
-				osDelay(10 MSec);
+				osDelay(100 MSec);
 			}		
 		}, &Listen[NumberOfListen], NULL);
 		if(Thread == 0) {

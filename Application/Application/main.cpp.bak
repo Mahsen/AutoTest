@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/5/21
+    Last Update : 2024/5/29
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -18643,8 +18643,9 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
+
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : LED1_GREEN_Pin */
   GPIO_InitStruct.Pin = LED1_GREEN_Pin;
@@ -18652,6 +18653,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED1_GREEN_GPIO_Port, &GPIO_InitStruct);
+
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -18684,7 +18686,7 @@ void Application(void *argument)
 	/* Add tests */
 	/* TEST 1 */	
 	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, true);
-	Application_Test[0].Add((uint8_t*)"ProgramSWD", &TEST_1_ProgramSWD, true);
+	Application_Test[0].Add((uint8_t*)"ProgramSWD(#FileName #Domain #Serial #Date)", &TEST_1_ProgramSWD, true);
 	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, false);
 	Application_Test[0].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
 	Application_Test[0].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
@@ -18716,6 +18718,30 @@ void Application(void *argument)
 	}
 	//}
 
+	/*
+	uint32_t chipID[2];
+	chipID[0] = TEST_ProgramSWD(0x00000000, ProgramFile, sizeof(ProgramFile), (U8*)"amr.ir", (U8*)"12345678", (U8*)"1403-03-13");
+	*/
+	
+	/*
+	uint32_t tmp;
+	tmp = LED1_GREEN_GPIO_Port->MODER;
+	tmp &= ~(GPIO_MODER_MODE0 << (0 * GPIO_MODER_MODE1_Pos));
+	tmp |= (1 << (0 * GPIO_MODER_MODE1_Pos));
+	LED1_GREEN_GPIO_Port->MODER = tmp;
+	
+	uint32_t tmp[4];
+	tmp[0] = GPIO_MODER_MODE0;
+	tmp[1] = GPIO_MODER_MODE1_Pos;
+	tmp[2] = (GPIO_MODER_MODE0 << (0 * GPIO_MODER_MODE1_Pos));
+	tmp[3] = (GPIO_MODER_MODE0 << GPIO_MODER_MODE0_0);
+	
+	/*
+	LED1_GREEN_GPIO_Port->MODER &= ~(GPIO_MODER_MODE0_0); 
+	LED1_GREEN_GPIO_Port->MODER |= GPIO_MODER_MODE0_0; 
+*/
+	
+	
 	/* Blink LED */
 	while (1) {
     HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
