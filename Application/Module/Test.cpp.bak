@@ -48,7 +48,7 @@ void TEST::Stop(uint8_t* Data) {
 		Execute_Task_ID = 0;
 	}
 	for(uint8_t Index=0; Index<Trees_Count; Index++) {
-		memset(Trees[Index]->Report, 0, 64);
+		memset(Trees[Index]->Report, 0, 128);
 	}
 	Execute_Status = Status_IDEL;
 	sprintf((char*)Data, "%s", "OK");
@@ -86,7 +86,7 @@ TEST::Status TEST::Execute() {
 		if(strstr((char*)Trees[Index]->_Command, (char*)Parmeters.Command.Get())) {			
 			if(Trees[Index]->_Sync) {
 				Trees[Index]->_Handle(Parmeters.Data.Get());	
-				if(strlen((char*)Parmeters.Data.Get()) < 64) {
+				if(strlen((char*)Parmeters.Data.Get()) < 128) {
 					strcpy((char*)Trees[Index]->Report, (char*)Parmeters.Data.Get());
 				}
 				return Status_IDEL;
@@ -171,7 +171,7 @@ void TEST::Execute_Task(void) {
 	strcpy((char*)Buffer, (char*)Parmeters.Data.Get());
 	
 	Trees[Trees_Select.Get()]->_Handle(Buffer);	
-	if(strlen((char*)Parmeters.Data.Get()) < 64) {
+	if(strlen((char*)Parmeters.Data.Get()) < 128) {
 		strcpy((char*)Trees[Trees_Select.Get()]->Report, (char*)Buffer);
 	}
 	
