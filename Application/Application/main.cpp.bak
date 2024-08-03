@@ -21,6 +21,7 @@
 #include "main.h"
 #include "defines.h"
 #include "dap.h"
+#include "vuart.hpp"
 #include "lan.hpp"
 #include "test.hpp"
 /************************************************** Defineds **********************************************************/
@@ -18698,8 +18699,8 @@ void Application(void *argument)
 	/* TEST 3 */
 	Application_Test[2].Add((uint8_t*)"Location", &TEST_3_Location, false);
 	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, false);
-	Application_Test[2].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, true);
-	Application_Test[2].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, true);
+	Application_Test[2].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, false);
+	Application_Test[2].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, false);
 	/* TEST 4 */
 	Application_Test[3].Add((uint8_t*)"Location", &TEST_4_Location, false);
 	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, false);
@@ -18736,10 +18737,12 @@ void Application(void *argument)
 	tmp[2] = (GPIO_MODER_MODE0 << (0 * GPIO_MODER_MODE1_Pos));
 	tmp[3] = (GPIO_MODER_MODE0 << GPIO_MODER_MODE0_0);
 	
-	/*
 	LED1_GREEN_GPIO_Port->MODER &= ~(GPIO_MODER_MODE0_0); 
 	LED1_GREEN_GPIO_Port->MODER |= GPIO_MODER_MODE0_0; 
 */
+	
+	VUART *vuart = new VUART(new VUART::PINMAP(GPIOF, GPIO_PIN_8, GPIOF, GPIO_PIN_8));
+	vuart->Update(9600);
 	
 	
 	/* Blink LED */

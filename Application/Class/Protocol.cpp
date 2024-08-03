@@ -1,6 +1,6 @@
 /************************************************** Description *******************************************************/
 /*
-    File : tag.cpp
+    File : Protocol.cpp
     Programmer : Mohammad Lotfi
     Used : Use header
     Design Pattern : Virtual
@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/2/18
+    Last Update : 2024/5/13
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -20,7 +20,8 @@
     Nothing
 */
 /************************************************** Includes **********************************************************/
-#include "tag.hpp"
+#include "protocol.hpp"
+#include "cJSON.h"
 /************************************************** Defineds **********************************************************/
 /*
     Nothing
@@ -38,59 +39,37 @@
     Nothing
 */
 /************************************************** Functions *********************************************************/
-bool Tag::Detach()
+bool Protocol::Detach()
 {
-	char *pch;
-	char Tag_End[16];
-	sprintf(Tag_End, "/%s", TAG_STRING);
-	
-	Parmeters.Command.Reset();
-	Parmeters.Data.Reset();
-	
-	pch = strtok((char*)Parmeters.Message.Get(), "<>:\r\n");
-	while(pch)
-	{
-		if(strcmp((char*)pch, TAG_STRING) == NULL)
-		{
-			pch = strtok(NULL, "<>:");			
-			if(pch)
-			{
-				Parmeters.Command.Set((uint8_t*)pch);
-				pch = strtok(NULL, "<>");				
-				if(pch)
-				{
-					if(strcmp((char*)pch, Tag_End) == NULL)
-					{
-						return true;
-					}
-					else
-					{
-						Parmeters.Data.Set((uint8_t*)pch);
-						pch = strtok(NULL, "<>");
-						if(pch)
-						{
-							if(strcmp((char*)pch, Tag_End) == NULL)
-							{
-								return true;
-							}
-						}
-					}
-				}
+	cJSON *json = cJSON_Parse((const char*)Parmeters.Message.Get()); 
+	if(json) {
+    cJSON *Command_p = cJSON_GetObjectItemCaseSensitive(json, "Command"); 
+    if (cJSON_IsString(Command_p) && (Command_p->valuestring != NULL)) { 
+			Parmeters.Command.Set((uint8_t*)Command_p->valuestring);
+			cJSON *Data_p = cJSON_GetObjectItemCaseSensitive(json, "Data"); 
+			if (cJSON_IsString(Data_p) && (Data_p->valuestring != NULL)) { 
+				Parmeters.Data.Set((uint8_t*)Data_p->valuestring);
+				cJSON_Delete(json);
+				return true;
 			}			
-		}
-		pch = strtok(NULL, "<>:\r\n");
+    } 
+		cJSON_Delete(json);
 	}
-
-	Parmeters.Command.Reset();
-	Parmeters.Data.Reset();
-	
 	return false;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-bool Tag::Attach()
+bool Protocol::Attach()
 {
-	Parmeters.Message.Reset();	
-	sprintf((char*)Parmeters.Message.Data, "<%s:%s>%s</%s>\r\n", TAG_STRING, Parmeters.Command.Get(), Parmeters.Data.Get(), TAG_STRING);	
+	cJSON *json = cJSON_CreateObject();
+	cJSON_AddStringToObject(json, "Command", (const char*)Parmeters.Command.Get()); 
+	cJSON_AddStringToObject(json, "Data", (const char*)Parmeters.Data.Get()); 
+	
+	Parmeters.Message.Reset();
+	char *json_str = cJSON_Print(json);
+	Parmeters.Message.Set((U8*)json_str);
+	cJSON_free(json_str); 
+  cJSON_Delete(json);
+	
 	return true;
 }
 /************************************************** Tasks *************************************************************/

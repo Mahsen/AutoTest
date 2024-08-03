@@ -74,6 +74,8 @@
 #define RTE_DEVICE_LL_UTILS
 /* Keil::Device:Startup:1.2.0 */
 #define RTE_DEVICE_STARTUP_STM32H5XX    /* Device Startup for STM32H5 */
+/* MDK-Packs::Data Exchange:JSON:cJSON:1.7.7 */
+#define RTE_DataExchange_JSON_cJSON     /* cJSON */
 
 
 #endif /* RTE_COMPONENTS_H */

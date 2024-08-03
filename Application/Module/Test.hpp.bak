@@ -12,7 +12,7 @@ class TREE {
 			uint8_t *_Command;
 			TREE_Function _Handle;
 			bool _Sync;	
-			U8 Report[64];
+			U8 Report[128];
 			TREE(uint8_t *Command, TREE_Function Handle, bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
 };
 class TEST : Tag

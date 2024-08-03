@@ -1,12 +1,10 @@
-#ifndef __TAG_HPP
-#define __TAG_HPP
+#ifndef __PROTCOL_HPP
+#define __PROTCOL_HPP
 //----------------------------------------------------------
-#include "define.h"
+#include "defines.h"
 #include "AdvancedTypes.hpp"
 //----------------------------------------------------------
-#define  TAG_STRING             "AUTOTEST"
-//----------------------------------------------------------
-class Tag
+class Protcol
 {
 	public:	
 		struct {			

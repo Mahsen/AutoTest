@@ -2,7 +2,7 @@
 #define __TEST_HPP
 //----------------------------------------------------------
 #include "defines.h"
-#include "tag.hpp"
+#include "protocol.hpp"
 #include "HexType.hpp"
 //----------------------------------------------------------
 typedef void (*TREE_Function) (uint8_t *Data);
@@ -15,7 +15,7 @@ class TREE {
 			U8 Report[128];
 			TREE(uint8_t *Command, TREE_Function Handle, bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
 };
-class TEST : Tag
+class TEST : Protocol
 {
 	private:
 		U8 Command[64]; 

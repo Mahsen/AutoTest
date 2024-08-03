@@ -111,11 +111,11 @@ TEST::Status TEST::Execute() {
 				}
 				else {
 					Trees_Select.Set(Index);
+					Execute_Status = Status_RUNNING;
 					Execute_Task_ID = osThreadNew([](void *argument) {((TEST*)argument)->Execute_Task();}, this, &Execute_attr);
 					if(Execute_Task_ID == 0) {
 						while(true);
-					}
-					Execute_Status = Status_RUNNING;
+					}					
 					return Status_RUNNING;
 				}
 			}				
