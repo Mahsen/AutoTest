@@ -1,0 +1,149 @@
+/************************************************** Description *******************************************************/
+/*
+    File : UART.c
+    Programmer : Mohammad Lotfi
+    Used : Functions to control UART
+    Design Pattern : Nothing
+    Types of memory : Heap & Stack
+    Total Tread : Nothing
+    Site : https://www.mahsen.ir
+    Tel : +989124662703
+    Email : info@mahsen.ir
+    Last Update : 2024/8/3
+*/
+/************************************************** Warnings **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Wizards ***********************************************************/
+#include "Wizards.c"
+/************************************************** Includes **********************************************************/
+#include "uart.h"
+/************************************************** Defineds **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Names *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Variables *********************************************************/
+struct struct_Ring Ring[UART_CHANNEL_MAX_SIZE];
+UART_HandleTypeDef UartHandle[UART_CHANNEL_MAX_SIZE];
+USART_TypeDef *Uarts[] = {0, USART1, USART2, USART3, UART4, UART5, USART6, UART7, UART8, UART9, USART10, USART11, UART12};
+/************************************************** Opjects ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Functions *********************************************************/
+void __init_UART(void) {
+	__USART2_CLK_ENABLE();
+  UART_Channel_Config(2, DIVER_UART_UART2_BOADRATE, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void UART_Channel_Config(U8 Channel, U32 BaudRate, U32 WordLength, U32 Parity, U32 StopBits) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+	switch(Channel) {
+		case 2: {
+			/* Initializes the peripherals clock */
+			PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2;
+			PeriphClkInitStruct.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+			if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
+				Error_Handler();
+			}
+			/* Peripheral clock enable */
+			__HAL_RCC_USART2_CLK_ENABLE();
+			__HAL_RCC_GPIOD_CLK_ENABLE();
+			/* USART2 GPIO Configuration */
+			/* PD6 ------> USART2_RX */
+			GPIO_InitStruct.Pin = GPIO_PIN_6;
+			GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+			GPIO_InitStruct.Pull = GPIO_NOPULL;
+			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+			GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+			HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+			/* PD5 ------> USART2_TX */
+			GPIO_InitStruct.Pin = GPIO_PIN_5;
+			GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+			GPIO_InitStruct.Pull = GPIO_NOPULL;
+			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+			GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+			HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);			
+			/* USART2 interrupt Init */
+			HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+			HAL_NVIC_EnableIRQ(USART2_IRQn);
+			break;
+		}
+		default: {
+			Error_Handler();
+		}
+	}
+	UartHandle[Channel].Instance    = Uarts[Channel];
+	UartHandle[Channel].Init.BaudRate   = BaudRate;
+	UartHandle[Channel].Init.WordLength  = WordLength;
+	UartHandle[Channel].Init.StopBits   = UART_STOPBITS_1;
+	UartHandle[Channel].Init.Parity    = Parity;
+	UartHandle[Channel].Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+	UartHandle[Channel].Init.Mode     = UART_MODE_TX_RX;	
+	UartHandle[Channel].Init.OverSampling = UART_OVERSAMPLING_16;
+	UartHandle[Channel].Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	UartHandle[Channel].AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	if(HAL_UART_DeInit(&UartHandle[Channel]) != HAL_OK) {
+		Error_Handler();
+	}
+	if(HAL_UART_Init(&UartHandle[Channel]) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_UARTEx_SetTxFifoThreshold(&UartHandle[Channel], UART_TXFIFO_THRESHOLD_1_8) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&UartHandle[Channel], UART_RXFIFO_THRESHOLD_1_8) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&UartHandle[Channel]) != HAL_OK) {
+    Error_Handler();
+  }
+	HAL_UART_Receive_IT(&UartHandle[Channel], Ring[Channel].Receive.Data, UART_CHANNEL_RING_SIZE);
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+U8* UART_Channel_Receive(U8 Channel, U32* Length) {
+	static U8 *Data_p = NULL;
+	if(!(Channel == 2)) {
+		Error_Handler();
+	}
+	if((UartHandle[Channel].RxXferSize - UartHandle[Channel].RxXferCount)==0) {
+		return NULL;
+	}
+	*Length = Ring[Channel].Receive.Length = (UartHandle[Channel].RxXferSize - UartHandle[Channel].RxXferCount);
+	return Ring[Channel].Receive.Data;
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void UART_Channel_Clear(U8 Channel) {
+	if(!(Channel == 2)) {
+		Error_Handler();
+	}
+	UartHandle[Channel].RxXferCount = UartHandle[Channel].RxXferSize;
+	UartHandle[Channel].pRxBuffPtr = Ring[Channel].Receive.Data;
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+struct struct_Ring* UART_Channel_Status(U8 Channel) {
+	Ring[Channel].Receive.Length = (UartHandle[Channel].RxXferSize - UartHandle[Channel].RxXferCount);
+	return &Ring[Channel];
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void UART_Channel_Send(U8 Channel, U8* Data, U32 Length) {
+	if(!(Channel == 2)) {
+		Error_Handler();
+	}
+	HAL_UART_Transmit(&UartHandle[Channel], Data, Length, HAL_MAX_DELAY);
+}
+/************************************************** Tasks *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Vectors ***********************************************************/
+void USART2_IRQHandler(void) {
+  HAL_UART_IRQHandler(&UartHandle[2]);
+}
+/**********************************************************************************************************************/

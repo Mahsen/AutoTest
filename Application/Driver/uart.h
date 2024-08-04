@@ -1,0 +1,30 @@
+#ifndef __UART_H
+#define __UART_H
+#ifdef __cplusplus
+extern "C" {
+#endif
+//----------------------------------------------------------
+#include "defines.h"
+//----------------------------------------------------------
+#define  UART_CHANNEL_MAX_SIZE                               3
+#define  UART_CHANNEL_RING_SIZE                              3000
+//----------------------------------------------------------
+struct struct_Ring {
+	struct struct_Receive {
+		U8 Data[UART_CHANNEL_RING_SIZE];
+		U32 Length;
+	} Receive;
+};
+//----------------------------------------------------------
+void __init_UART(void);
+void UART_Channel_Config(U8 Channel, U32 BaudRate, U32 WordLength, U32 Parity, U32 StopBits);
+void UART_Channel_Send(U8 Channel, U8* Data, U32 Length);
+U8* UART_Channel_Receive(U8 Channel, U32* Length);
+void UART_Channel_Clear(U8 Channel);
+struct struct_Ring* UART_Channel_Status(U8 Channel);
+void USART2_IRQHandler(void);
+//----------------------------------------------------------
+#ifdef __cplusplus
+}
+#endif
+#endif
