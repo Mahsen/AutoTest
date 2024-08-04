@@ -417,11 +417,6 @@
               <FilePath>.\Class\Media.cpp</FilePath>
             </File>
             <File>
-              <FileName>Tag.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\Class\Tag.cpp</FilePath>
-            </File>
-            <File>
               <FileName>HexType.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Class\HexType.cpp</FilePath>
@@ -430,6 +425,11 @@
               <FileName>dap.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Class\dap.c</FilePath>
+            </File>
+            <File>
+              <FileName>Protocol.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Class\Protocol.cpp</FilePath>
             </File>
           </Files>
         </Group>

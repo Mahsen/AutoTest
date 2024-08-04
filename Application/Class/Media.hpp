@@ -39,29 +39,29 @@ class MEDIA {
 		void Close();
 		bool IsOpen();
 		/* To set everything necessary  */
-		virtual void Init(void);
+		virtual void Init(void) = 0;
 		/* Returning to the state before Init */
-		virtual void DeInit(void);	
+		virtual void DeInit(void) = 0;	
 		/* Refresh */
 		void ReInit(void);    
 		/* If need a special agreement setting for your media */
-		virtual void Property(void* Config);
+		virtual void Property(void* Config) = 0;
 		/* If need a agreement callback or interrupt for your media */
-		virtual void CallBack(void* Event);
+		virtual void CallBack(void* Event) = 0;
 		/* Reset your media */
-		virtual void Reset(void);
+		virtual void Reset(void) = 0;
 		/* Clear all buffering or ring that is used */
-		virtual void Clear(void);
+		virtual void Clear(void) = 0;
 		/* Config agreement speed your media between layers */
-		virtual void Speed(unsigned int Value);
+		virtual void Speed(unsigned int Value) = 0;
 		/* It is used for sending */
 		/* Data is a pointer must send with amount Length if you success return true*/
-		virtual bool Send(unsigned char* Data, unsigned int Length);
+		virtual bool Send(unsigned char* Data, unsigned int Length) = 0;
 		/* It is used for receiveing */
 		/* Data is a pointer you can write them and Length is request of length of that but you return amount of length you have received or have] */
 		/* You have to give data continuously */
-		virtual unsigned int Receive(unsigned char* Data, unsigned int Length);	
+		virtual unsigned int Receive(unsigned char* Data, unsigned int Length) = 0;	
 		/* return your sending and receiving information */
-		virtual struct_Status GetStatus(void);
+		virtual struct_Status GetStatus(void) = 0;
 };
 #endif

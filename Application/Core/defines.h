@@ -1,6 +1,7 @@
 #ifndef __DEFINES_H
 #define __DEFINES_H
 //----------------------------------------------------------
+#include "main.h"
 #include "cmsis_os2.h"
 #include "rtx_os.h"
 #include "rl_net.h"

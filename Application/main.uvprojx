@@ -402,9 +402,9 @@
               <FilePath>.\Driver\Lan.cpp</FilePath>
             </File>
             <File>
-              <FileName>vuart.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\Driver\vuart.cpp</FilePath>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Driver\uart.c</FilePath>
             </File>
           </Files>
         </Group>

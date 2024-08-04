@@ -22,9 +22,7 @@
 	const char __attribute__((at(ADDRESSFLASH_ETH0_IP4_SECONDARY_DNS_SPECIAL))) ETH0_IP4_SECONDARY_DNS_SPECIAL[16] = ETH0_IP4_SECONDARY_DNS;
 */
 /************************************************** Wizards ***********************************************************/
-/*
-    Nothing
-*/
+#include "Wizards.c"
 /************************************************** Includes **********************************************************/
 #include "stm32h5xx_hal.h"
 #include "lan.hpp"

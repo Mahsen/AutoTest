@@ -38,7 +38,6 @@
     Nothing
 */
 /************************************************** Functions *********************************************************/
-/* Concurrent usage management */
 bool MEDIA::Open() {
 	if(!Opened) {
 		Opened = true;

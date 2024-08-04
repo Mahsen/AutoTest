@@ -7,6 +7,7 @@
 #include "string.h"
 #include <string.h>
 #include <stdio.h>
+#include "stm32h5xx_hal.h"
 //----------------------------------------------------------
 #define TASK_MANAGER_OS_TICK                                 1000  //OS_TICK in "RTX_Conf_CM.c" 
 #define OneUnic                                              1

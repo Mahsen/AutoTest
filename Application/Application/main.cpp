@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/6/1
+    Last Update : 2024/8/4
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -20,10 +20,12 @@
 /************************************************** Includes **********************************************************/
 #include "main.h"
 #include "defines.h"
+#include "uart.h"
 #include "dap.h"
 #include "vuart.hpp"
 #include "lan.hpp"
 #include "test.hpp"
+#include "media.hpp"
 /************************************************** Defineds **********************************************************/
 /*
     Nothing
@@ -35,7 +37,8 @@
 /************************************************** Variables *********************************************************/
 void Application(void *argument);
 // Program.bin
-const unsigned char /*__attribute__((at(0x8010000)))*/ ProgramFile [] = 
+const unsigned char /*__attribute__((at(0x8010000)))*/ ProgramFile [] = {0,0,0};
+/*
 {
    0xA8,0x16,0x00,0x20,0xED,0x32,0x00,0x00,0x53,0x01,0x00,0x00,0xCB,0x01,0x00,0x00,
    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -18344,15 +18347,66 @@ const unsigned char /*__attribute__((at(0x8010000)))*/ ProgramFile [] =
    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 };
+*/
 /************************************************** Opjects ***********************************************************/
 TEST Application_Test[LAN_SIZEOF_LISTEN];
+/*--------------------------------------------------------------------------------------------------------------------*/
+class MEDIA_OP_1 : public MEDIA {
+	public :
+		virtual void DeInit(void) {
+			/* Nothing */
+		}
+		virtual void Init(void) {
+			Speed(9600);
+		}
+		virtual void Property(void* Config) {
+			/* Nothing */
+		}
+		virtual void Speed(unsigned int Value) {
+			UART_Channel_Config(APPLICATION_MEDIA_OP_1_MEDIA, Value, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
+		}
+		virtual bool Send(unsigned char* Data, unsigned int Length) {
+			UART_Channel_Send(APPLICATION_MEDIA_OP_1_MEDIA, Data, Length);
+			return true;
+		}
+		virtual void CallBack(void* Event) {
+			/* Nothing */
+		}
+		virtual unsigned int Receive(unsigned char* Data, unsigned int Length) {
+			U8* pch;
+			U32 Length_Feed = Length;
+			Length = UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length;
+			do {
+				osDelay(100 MSec);
+			} while(Length != UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length);
+			if(Length) {				
+				pch = UART_Channel_Receive(APPLICATION_MEDIA_OP_1_MEDIA, &Length);
+				if(pch) {
+					Length = (Length>Length_Feed?Length_Feed:Length);
+					memcpy(Data, pch, Length);
+				}
+			}
+			return Length;
+		}
+		virtual struct_Status GetStatus(void) {
+			static struct_Status Status;
+			Status.Receive.SetLength(UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length);
+			return Status;
+		}
+		virtual void Clear(void) {
+			UART_Channel_Clear(APPLICATION_MEDIA_OP_1_MEDIA);
+		}
+		virtual void Reset(void) {
+			/* Nothing */
+		}
+} Media_OP_1;
 /************************************************** Functions *********************************************************/
 void TEST_HardwareVersion(uint8_t* Data) {
-	sprintf((char*)Data, "%s", TESTBENCH_VERSION_HARDWARE);
+	sprintf((char*)Data, "%s", APPLICATION_VERSION_HARDWARE);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void TEST_SoftwareVersion(U8* Data) {
-	sprintf((char*)Data, "%s", TESTBENCH_VERSION_SOFTWARE);
+	sprintf((char*)Data, "%s", APPLICATION_VERSION_SOFTWARE);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void TEST_1_Location(U8* Data) {
@@ -18516,12 +18570,7 @@ void TEST_4_Blink(U8* Data) {
 	sprintf((char*)Data, "%s", "OK");
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
+void SystemClock_Config(void) {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
@@ -18573,75 +18622,24 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
-
 /*--------------------------------------------------------------------------------------------------------------------*/
-/**
-  * @brief GTZC_NS Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GTZC_NS_Init(void)
-{
-
-  /* USER CODE BEGIN GTZC_NS_Init 0 */
-
-  /* USER CODE END GTZC_NS_Init 0 */
-
-  /* USER CODE BEGIN GTZC_NS_Init 1 */
-
-  /* USER CODE END GTZC_NS_Init 1 */
-  /* USER CODE BEGIN GTZC_NS_Init 2 */
-
-  /* USER CODE END GTZC_NS_Init 2 */
-
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-/**
-  * @brief ICACHE Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ICACHE_Init(void)
-{
-
-  /* USER CODE BEGIN ICACHE_Init 0 */
-
-  /* USER CODE END ICACHE_Init 0 */
-
-  /* USER CODE BEGIN ICACHE_Init 1 */
-
-  /* USER CODE END ICACHE_Init 1 */
-
-  /** Enable instruction cache (default 2-ways set associative cache)
-  */
-  if (HAL_ICACHE_Enable() != HAL_OK)
-  {
+static void MX_ICACHE_Init(void) {
+  /* Enable instruction cache (default 2-ways set associative cache) */
+  if (HAL_ICACHE_Enable() != HAL_OK) {
     Error_Handler();
   }
-  /* USER CODE BEGIN ICACHE_Init 2 */
-
-  /* USER CODE END ICACHE_Init 2 */
-
 }
-
 /*--------------------------------------------------------------------------------------------------------------------*/
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
+static void MX_GPIO_Init(void) {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
 
@@ -18654,10 +18652,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED1_GREEN_GPIO_Port, &GPIO_InitStruct);
-
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 int main (void) {
@@ -18665,8 +18659,6 @@ int main (void) {
   HAL_Init();
   /* Configure the system clock */
   SystemClock_Config();
-  /* GTZC initialisation */
-  MX_GTZC_NS_Init();
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ICACHE_Init();
@@ -18682,8 +18674,11 @@ int main (void) {
 	return 0;
 }
 /************************************************** Tasks *************************************************************/
-void Application(void *argument)
-{
+void Application(void *argument) {
+	/* Init Drivers */
+	__init_UART();
+	/* Init Lan */
+	Media_OP_1.Init();
 	/* Add tests */
 	/* TEST 1 */	
 	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, false);
@@ -18706,7 +18701,6 @@ void Application(void *argument)
 	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, false);
 	Application_Test[3].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, false);
 	Application_Test[3].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, false);
-
   /* Init Lan */
 //	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
 //		osDelay(1 Sec);
@@ -18717,13 +18711,13 @@ void Application(void *argument)
 		/* Add Lan listening */
 		Lan.AddListen((1001 + Index), [](S32 Socket, U8* Data, U32* Length)->bool{ return Application_Test[(Socket-1)].Pars(Data, Length);});
 	}
-	//}
 
+	
+	
 	/*
 	uint32_t chipID[2];
 	chipID[0] = TEST_ProgramSWD(0x00000000, ProgramFile, sizeof(ProgramFile), (U8*)"amr.ir", (U8*)"12345678", (U8*)"1403-03-13");
 	*/
-	
 	/*
 	uint32_t tmp;
 	tmp = LED1_GREEN_GPIO_Port->MODER;
@@ -18739,14 +18733,29 @@ void Application(void *argument)
 	
 	LED1_GREEN_GPIO_Port->MODER &= ~(GPIO_MODER_MODE0_0); 
 	LED1_GREEN_GPIO_Port->MODER |= GPIO_MODER_MODE0_0; 
-*/
-	
+	*/
+	/*	
 	VUART *vuart = new VUART(new VUART::PINMAP(GPIOF, GPIO_PIN_8, GPIOF, GPIO_PIN_7));
 	vuart->Update(9600);
+	*/	
 	
 	
 	/* Blink LED */
 	while (1) {
+		
+		U32 Length;
+		U8 Data[64];
+		if(Media_OP_1.Open()) {
+			if(Media_OP_1.GetStatus().Receive.GetBusy()) {	
+				Length = Media_OP_1.Receive(Data, sizeof(Data));
+				if(Length) {
+					Media_OP_1.Clear();
+					Media_OP_1.Send(Data, Length);
+				}
+			}
+			Media_OP_1.Close();
+		}
+		
     HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
 		osDelay(100 MSec);
 		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
@@ -18756,24 +18765,6 @@ void Application(void *argument)
 		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
 		osDelay(500 MSec);
   }
-
-//	/* Application */
-//	while (1) {
-//		for(U8 Media_Index=0; Media_Index<(sizeof(Application_Media_Lan)/sizeof(MEDIA*)); Media_Index++) {
-//			Application_Length = Application_Media_Lan[Media_Index]->Receive(Application_Message, sizeof(Application_Message));
-//			if(Application_Length) {	
-//				if(strcmp((char*)Application_Message, "FIND\r\n") == NULL) {
-//					Application_Media_Lan[Media_Index]->Send((U8*)"OK\r\n", 4);
-//				}
-//				else if(Application_Test[Media_Index].Pars(Application_Message, &Application_Length)) {
-//					Application_Media_Lan[Media_Index]->Send(Application_Message, Application_Length);
-//				}
-//				memset(Application_Message, 0, sizeof(Application_Message));
-//				Application_Media_Lan[Media_Index]->Reset();
-//			}
-//		}
-//		osDelay(100 MSec);
-//	}
 }
 /************************************************** Vectors ***********************************************************/
 /**
@@ -18783,27 +18774,20 @@ void Application(void *argument)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t *file, uint32_t line)
-{
-  /* USER CODE BEGIN 6 */
+void assert_failed(uint8_t *file, uint32_t line) {
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
+void Error_Handler(void) {
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
-  while (1)
-  {
+  while (1) {
   }
-  /* USER CODE END Error_Handler_Debug */
 }
 /**********************************************************************************************************************/
 

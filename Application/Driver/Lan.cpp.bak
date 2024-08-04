@@ -137,7 +137,7 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 			while(true) {	
 				LAN::struct_Listen* Listen_p = ((LAN::struct_Listen*)argument);
 				U32 Length = 0;
-				while(Length != Listen_p->Buffer.Length) { Length = Listen_p->Buffer.Length; osDelay(200 MSec);}
+				while(Length != Listen_p->Buffer.Length) { Length = Listen_p->Buffer.Length; osDelay(100 MSec);}
 				if(Length) {
 					if(Listen_p->CallBack(Listen_p->Socket, Listen_p->Buffer.Data, &Length)) {
 						while(true) {
@@ -149,7 +149,7 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 								}								
 								break;
 							}		
-							osDelay(200 MSec);
+							osDelay(100 MSec);
 						}
 					}
 					memset(Listen_p->Buffer.Data, NULL, LAN_SIZEOF_BUFFER);

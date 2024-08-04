@@ -4,12 +4,14 @@
 #include <string.h>
 #include <stdio.h>
 //----------------------------------------------------------
+#define MEDIA_NAME_ZISE                                   16
+//----------------------------------------------------------
 class MEDIA {
 	private:
 		/* Concurrent usage management */
 		bool Opened;
 		/* Name variable */
-		char Name[16];
+		char Name[MEDIA_NAME_ZISE];
 	public:
 		/* sample struct to know the sending and receiving information */
 		struct struct_Status {
