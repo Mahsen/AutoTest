@@ -18366,10 +18366,10 @@ class _MEDIA : public MEDIA {
 			/* Nothing */
 		}
 		virtual void Speed(unsigned int Value) {
-			UART_Channel_Config(APPLICATION_MEDIA_OP_1_MEDIA, Value, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
+			UART_Channel_Config(_Port, Value, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
 		}
 		virtual bool Send(unsigned char* Data, unsigned int Length) {
-			UART_Channel_Send(APPLICATION_MEDIA_OP_1_MEDIA, Data, Length);
+			UART_Channel_Send(_Port, Data, Length);
 			return true;
 		}
 		virtual void CallBack(void* Event) {
@@ -18379,11 +18379,11 @@ class _MEDIA : public MEDIA {
 			U8* pch;
 			U32 Length_Feed = Length;			
 			do {
-				Length = UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length;
+				Length = UART_Channel_Status(_Port)->Receive.Length;
 				osDelay(100 MSec);
-			} while(Length != UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length);
+			} while(Length != UART_Channel_Status(_Port)->Receive.Length);
 			if(Length) {				
-				pch = UART_Channel_Receive(APPLICATION_MEDIA_OP_1_MEDIA, &Length);
+				pch = UART_Channel_Receive(_Port, &Length);
 				if(pch) {
 					Length = (Length>Length_Feed?Length_Feed:Length);
 					memcpy(Data, pch, Length);
@@ -18393,7 +18393,7 @@ class _MEDIA : public MEDIA {
 		}
 		virtual struct_Status GetStatus(void) {
 			static struct_Status Status;
-			Status.Receive.SetLength(UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length);
+			Status.Receive.SetLength(UART_Channel_Status(_Port)->Receive.Length);
 			return Status;
 		}
 		virtual void Clear(void) {
@@ -18412,7 +18412,23 @@ enum class MediaName{
 	/* UART3 */
 	Stand_3_OP,
 	/* UART4 */
-	Stand_4_OP
+	Stand_4_OP,
+	/* UART5 */
+	Stand_1_RS485,
+	/* UART6 */
+	Stand_2_RS485,
+	/* UART7 */
+	Stand_3_RS485,
+	/* UART8 */
+	Stand_4_RS485,
+	/* UART9 */
+	Reserved_1,
+	/* UART10 */
+	Reserved_2,
+	/* UART11 */
+	Reserved_3,
+	/* UART12 */
+	Reserved_4
 };
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -18694,10 +18710,17 @@ void Application(void *argument) {
 	/* Init Drivers */
 	__init_UART();
 	/* Init Media */
-	for (_MEDIA *m : _Media) {
-		m = new _MEDIA(0);
-		m->Init();
+	for (U8 Index=0; Index<(sizeof(_Media)/4); Index++) {
+		/* Create media with index input */
+		_Media[Index] = new _MEDIA(Index+1);
+		_Media[Index]->Init();
 	}
+	/// MUST EDIT
+	_Media[MediaName.Stand_1_OP].Send((U8*)"123456", 6);
+	
+	
+	
+	
 	/* Add tests */
 	/* TEST 1 */	
 	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, false);
