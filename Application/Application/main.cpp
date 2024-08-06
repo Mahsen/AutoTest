@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/8/4
+    Last Update : 2024/8/6
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -18351,8 +18351,11 @@ const unsigned char /*__attribute__((at(0x8010000)))*/ ProgramFile [] = {0,0,0};
 /************************************************** Opjects ***********************************************************/
 TEST Application_Test[LAN_SIZEOF_LISTEN];
 /*--------------------------------------------------------------------------------------------------------------------*/
-class MEDIA_OP_1 : public MEDIA {
-	public :
+class _MEDIA : public MEDIA {
+	private:
+		U8 _Port;
+	public:
+		_MEDIA(U8 Port) : _Port(Port) {}
 		virtual void DeInit(void) {
 			/* Nothing */
 		}
@@ -18374,9 +18377,9 @@ class MEDIA_OP_1 : public MEDIA {
 		}
 		virtual unsigned int Receive(unsigned char* Data, unsigned int Length) {
 			U8* pch;
-			U32 Length_Feed = Length;
-			Length = UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length;
+			U32 Length_Feed = Length;			
 			do {
+				Length = UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length;
 				osDelay(100 MSec);
 			} while(Length != UART_Channel_Status(APPLICATION_MEDIA_OP_1_MEDIA)->Receive.Length);
 			if(Length) {				
@@ -18399,7 +18402,20 @@ class MEDIA_OP_1 : public MEDIA {
 		virtual void Reset(void) {
 			/* Nothing */
 		}
-} Media_OP_1;
+} *_Media[12];
+/*--------------------------------------------------------------------------------------------------------------------*/
+enum class MediaName{
+	/* UART1 */
+	Stand_1_OP=0,
+	/* UART2 */
+	Stand_2_OP,
+	/* UART3 */
+	Stand_3_OP,
+	/* UART4 */
+	Stand_4_OP
+};
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 /************************************************** Functions *********************************************************/
 void TEST_HardwareVersion(uint8_t* Data) {
 	sprintf((char*)Data, "%s", APPLICATION_VERSION_HARDWARE);
@@ -18677,8 +18693,11 @@ int main (void) {
 void Application(void *argument) {
 	/* Init Drivers */
 	__init_UART();
-	/* Init Lan */
-	Media_OP_1.Init();
+	/* Init Media */
+	for (_MEDIA *m : _Media) {
+		m = new _MEDIA(0);
+		m->Init();
+	}
 	/* Add tests */
 	/* TEST 1 */	
 	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, false);
