@@ -6,7 +6,6 @@ extern "C" {
 //----------------------------------------------------------
 #include "defines.h"
 //----------------------------------------------------------
-#define  UART_CHANNEL_MAX_SIZE                               3
 #define  UART_CHANNEL_RING_SIZE                              3000
 //----------------------------------------------------------
 struct struct_Ring {
@@ -22,7 +21,14 @@ void UART_Channel_Send(U8 Channel, U8* Data, U32 Length);
 U8* UART_Channel_Receive(U8 Channel, U32* Length);
 void UART_Channel_Clear(U8 Channel);
 struct struct_Ring* UART_Channel_Status(U8 Channel);
-void USART2_IRQHandler(void);
+void USART1_IRQHandler(void);
+void UART4_IRQHandler(void);
+void UART5_IRQHandler(void);
+void USART6_IRQHandler(void);
+void UART7_IRQHandler(void);
+void UART8_IRQHandler(void);
+void UART9_IRQHandler(void);
+void UART12_IRQHandler(void);
 //----------------------------------------------------------
 #ifdef __cplusplus
 }
