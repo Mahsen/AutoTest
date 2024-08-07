@@ -18796,7 +18796,7 @@ void Application(void *argument) {
 	/* TEST 4 */
 	Application_Test[3].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-RIGHT", false);
 	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, NULL, false);
-	Application_Test[2].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_4.OP, (void*)Stand.Board_4.RS485}, false);
+	Application_Test[3].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_4.OP, (void*)Stand.Board_4.RS485}, false);
 	Application_Test[3].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[3].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
   /* Init Lan */

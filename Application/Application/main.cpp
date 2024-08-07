@@ -18775,26 +18775,26 @@ void Application(void *argument) {
 	__init_UART();	
 	/* Add tests */
 	/* TEST 1 */
-	Application_Test[0].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-LEFT", false);
+	Application_Test[0].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-LEFT", false);
 	//Application_Test[0].Add((uint8_t*)"ProgramSWD(#FileName #Domain #Serial #Date)", &TEST_1_ProgramSWD, false);
 	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, NULL, false);
 	Application_Test[0].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_1.OP, (void*)Stand.Board_1.RS485}, false);
 	Application_Test[0].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[0].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 2 */
-	Application_Test[1].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-RIGHT", false);
+	Application_Test[1].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-RIGHT", false);
 	Application_Test[1].Add((uint8_t*)"Blink", &TEST_2_Blink, NULL, false);
 	Application_Test[1].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_2.OP, (void*)Stand.Board_2.RS485}, false);
 	Application_Test[1].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[1].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 3 */
-	Application_Test[2].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-LEFT", false);
+	Application_Test[2].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-LEFT", false);
 	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, NULL, false);
 	Application_Test[2].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_3.OP, (void*)Stand.Board_3.RS485}, false);
 	Application_Test[2].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[2].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 4 */
-	Application_Test[3].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-RIGHT", false);
+	Application_Test[3].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-RIGHT", false);
 	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, NULL, false);
 	Application_Test[3].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_4.OP, (void*)Stand.Board_4.RS485}, false);
 	Application_Test[3].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
