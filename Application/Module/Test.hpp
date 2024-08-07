@@ -5,15 +5,16 @@
 #include "protocol.hpp"
 #include "HexType.hpp"
 //----------------------------------------------------------
-typedef void (*TREE_Function) (uint8_t *Data);
+typedef void (*TREE_Function) (void **Argument);
 //----------------------------------------------------------
 class TREE {
-    public: 
-			uint8_t *_Command;
-			TREE_Function _Handle;
-			bool _Sync;	
-			U8 Report[128];
-			TREE(uint8_t *Command, TREE_Function Handle, bool Sync) : _Command(Command) , _Handle(Handle) , _Sync(Sync) {}						
+	public: 
+		uint8_t *_Command;
+		TREE_Function _Handle;
+		void *_Argument;
+		bool _Sync;	
+		U8 Report[128];
+		TREE(uint8_t *Command, TREE_Function Handle, void* Argument, bool Sync) : _Command(Command) , _Handle(Handle), _Argument(Argument), _Sync(Sync) {}						
 };
 class TEST : Protocol
 {
@@ -59,7 +60,7 @@ class TEST : Protocol
 		void Play(uint8_t* Data);
 		void List(uint8_t* Data);
 		bool Pars(uint8_t *Message, uint32_t *Length);
-		bool Add(uint8_t *Command, TREE_Function Handle, bool Sync);
+		bool Add(uint8_t *Command, TREE_Function Handle, void* Argument, bool Sync);
 		void Init(uint8_t* (*_GetID)());		
 		void Execute_Task();
 	

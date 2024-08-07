@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/5/13
+    Last Update : 2024/8/7
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -70,8 +70,8 @@ void TEST::List(uint8_t* Data) {
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-bool TEST::Add(uint8_t *Command, TREE_Function Handle, bool Sync) {	
-	TREE* Tree = new TREE(Command, Handle, Sync);
+bool TEST::Add(uint8_t *Command, TREE_Function Handle, void *Argument, bool Sync) {	
+	TREE* Tree = new TREE(Command, Handle, Argument, Sync);
 	if(Tree) {
 		if(Trees_Count < (sizeof(Trees)/4)) {
 			Trees[Trees_Count++] = Tree;		
@@ -84,8 +84,9 @@ bool TEST::Add(uint8_t *Command, TREE_Function Handle, bool Sync) {
 TEST::Status TEST::Execute() {
 	for(uint8_t Index=0; Index<Trees_Count; Index++) {
 		if(strstr((char*)Trees[Index]->_Command, (char*)Parmeters.Command.Get())) {			
-			if(Trees[Index]->_Sync) {
-				Trees[Index]->_Handle(Parmeters.Data.Get());	
+			if(Trees[Index]->_Sync) {		
+				void* Argument[] = {Parmeters.Data.Get(), Trees[Index]->_Argument};
+				Trees[Index]->_Handle(Argument);
 				if(strlen((char*)Parmeters.Data.Get()) < 128) {
 					strcpy((char*)Trees[Index]->Report, (char*)Parmeters.Data.Get());
 				}
@@ -170,8 +171,9 @@ void TEST::Execute_Task(void) {
 	strcpy((char*)Command, (char*)Parmeters.Command.Get());
 	strcpy((char*)Buffer, (char*)Parmeters.Data.Get());
 	
-	Trees[Trees_Select.Get()]->_Handle(Buffer);	
-	if(strlen((char*)Parmeters.Data.Get()) < 128) {
+	void* Argument[] = {Buffer, Trees[Trees_Select.Get()]->_Argument};
+	Trees[Trees_Select.Get()]->_Handle(Argument);	
+	if(strlen((char*)Buffer) < 128) {
 		strcpy((char*)Trees[Trees_Select.Get()]->Report, (char*)Buffer);
 	}
 	
