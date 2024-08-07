@@ -18397,52 +18397,128 @@ class _MEDIA : public MEDIA {
 			return Status;
 		}
 		virtual void Clear(void) {
-			UART_Channel_Clear(APPLICATION_MEDIA_OP_1_MEDIA);
+			UART_Channel_Clear(_Port);
 		}
 		virtual void Reset(void) {
 			/* Nothing */
 		}
-} *_Media[12];
-/*--------------------------------------------------------------------------------------------------------------------*/
-enum class MediaName{
-	/* UART1 */
-	Stand_1_OP=0,
-	/* UART2 */
-	Stand_2_OP,
-	/* UART3 */
-	Stand_3_OP,
-	/* UART4 */
-	Stand_4_OP,
-	/* UART5 */
-	Stand_1_RS485,
-	/* UART6 */
-	Stand_2_RS485,
-	/* UART7 */
-	Stand_3_RS485,
-	/* UART8 */
-	Stand_4_RS485,
-	/* UART9 */
-	Reserved_1,
-	/* UART10 */
-	Reserved_2,
-	/* UART11 */
-	Reserved_3,
-	/* UART12 */
-	Reserved_4
 };
 /*--------------------------------------------------------------------------------------------------------------------*/
-
+class {
+	public:
+	 class struct_Board_1 {
+			public:
+				_MEDIA *OP, *RS485;
+				struct_Board_1(void) {
+					OP = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_OP_UART);
+					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_RS485_UART);
+				};
+		} Board_1;
+	 class struct_Board_2 {
+			public:
+				_MEDIA *OP, *RS485;
+				struct_Board_2(void) {
+					OP = new _MEDIA(APPLICATION_STAND_BOARD_2_MEDIA_OP_UART);
+					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_2_MEDIA_RS485_UART);
+				};
+		} Board_2;
+	 class struct_Board_3 {
+			public:
+				_MEDIA *OP, *RS485;
+				struct_Board_3(void) {
+					OP = new _MEDIA(APPLICATION_STAND_BOARD_3_MEDIA_OP_UART);
+					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_3_MEDIA_RS485_UART);
+				};
+		} Board_3;
+		class struct_Board_4 {
+			public:
+				_MEDIA *OP, *RS485;
+				struct_Board_4(void) {
+					OP = new _MEDIA(APPLICATION_STAND_BOARD_4_MEDIA_OP_UART);
+					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_4_MEDIA_RS485_UART);
+				};
+		} Board_4;
+} Stand;
+/*--------------------------------------------------------------------------------------------------------------------*/
+class {
+	public:
+		void ReturnArgument(void** Argument) {
+			/* Get Data from Argument[0] */
+			char *Data = (char*)Argument[0]; 
+			/* Get location from Argument[1] */
+			char *Location = (char*)Argument[1]; 
+			/* Set location */
+			strcpy(Data, Location);
+		}
+		void MediaCheck(void** Argument) {
+			/* Get Data from Argument[0] */
+			char *Data = (char*)Argument[0]; 
+			/* Get media from Argument[1] */
+			_MEDIA* OP = ((_MEDIA**)((void*)Argument[1]))[0]; 
+			_MEDIA* RS485 = ((_MEDIA**)((void*)Argument[1]))[1];
+			/* Lambda Media data checking */
+			auto MediaChecking = [](MEDIA* _Media) -> bool {
+				bool Pass = false;
+				U8 Buffer[128];
+				uint32_t Length;
+				/* Open */
+				if(_Media->Open()) {
+					/* Init Media */
+					_Media->Init();
+					/* Clear Media */
+					_Media->Clear();
+					/* Prepere data to send */
+					for(U16 Index=RESET; Index<sizeof(Buffer); Index++) {
+						Buffer[Index] = Index;
+					}
+					_Media->Send(Buffer, sizeof(Buffer));
+					/* Wait */
+					for(int TimeOut=0; ((TimeOut<30)&&(!_Media->GetStatus().Receive.GetBusy())); TimeOut++) {
+						osDelay(100 MSec);
+					}				
+					Pass = false;
+					Length = _Media->Receive(Buffer, sizeof(Buffer));
+					/* Close */
+					_Media->Close();
+				}
+				/* Checking received data */
+				if(Length) {
+					Pass = true;
+					for(U16 Index=RESET; Index<sizeof(Buffer); Index++) {
+						if(Buffer[Index] != (0xFF-Index)) {
+							Pass = false;
+							break;
+						}
+					}
+				}
+				/* Report */
+				return Pass;
+			};	
+			/* Clear respond data */
+			sprintf(Data, "");	
+			/* add Report OP */
+			if(MediaChecking(OP)) {
+				strcat(Data, "OP:OK");
+			}
+			else {
+				strcat(Data, "OP:ERROR");
+			}
+			/* add RS485 Report */
+			if(MediaChecking(RS485)) {
+				strcat(Data, ", RS485:OK");
+			}
+			else {
+				strcat(Data, ", RS485:ERROR");
+			}
+		}
+} TestCase;
 /************************************************** Functions *********************************************************/
-void TEST_HardwareVersion(uint8_t* Data) {
-	sprintf((char*)Data, "%s", APPLICATION_VERSION_HARDWARE);
+void TEST_HardwareVersion(void** Argument) {
+	sprintf((char*)Argument[0], "%s", APPLICATION_VERSION_HARDWARE);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_SoftwareVersion(U8* Data) {
-	sprintf((char*)Data, "%s", APPLICATION_VERSION_SOFTWARE);
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_1_Location(U8* Data) {
-	sprintf((char*)Data, "%s", "Floor_1-Top-Left");
+void TEST_SoftwareVersion(void** Argument) {
+	sprintf((char*)Argument[0], "%s", APPLICATION_VERSION_SOFTWARE);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 uint32_t TEST_ProgramSWD(uint32_t addr, const uint8_t *data, uint32_t len, U8* Domain, U8* Serial, U8* Prodoct) {
@@ -18477,28 +18553,28 @@ uint32_t TEST_ProgramSWD(uint32_t addr, const uint8_t *data, uint32_t len, U8* D
 	return id;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_1_ProgramSWD(U8* Data) {
+void TEST_1_ProgramSWD(void** Argument) {
 	U8 FileName[64];
 	U8 Domain[64];
 	U8 Serial[64];
 	U8 Prodoct[64];
-	sscanf((char*)Data, "%s %s %s %s", (char*)FileName, (char*)Domain, (char*)Serial, (char*)Prodoct);
+	sscanf((char*)Argument[0], "%s %s %s %s", (char*)FileName, (char*)Domain, (char*)Serial, (char*)Prodoct);
 
 	if(strcmp((char*)FileName, "ProgramFile")==0) {
 		uint32_t chipID = TEST_ProgramSWD(0x00000000, ProgramFile, sizeof(ProgramFile), Domain, Serial, Prodoct);
 		if(chipID==0xFFFFFFFF) {
-			sprintf((char*)Data, "Chip not find");
+			sprintf((char*)Argument[0], "Chip not find");
 		}
 		else {
-			sprintf((char*)Data, "%s %s %s", Domain, Serial, Prodoct);
+			sprintf((char*)Argument[0], "%s %s %s", Domain, Serial, Prodoct);
 		}
 	}
 	else {
-		sprintf((char*)Data, "ERROR");
+		sprintf((char*)Argument[0], "ERROR");
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_1_Blink(U8* Data) {
+void TEST_1_Blink(void** Argument) {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	
 	__HAL_RCC_GPIOC_CLK_ENABLE();
@@ -18519,14 +18595,10 @@ void TEST_1_Blink(U8* Data) {
 		osDelay(100 MSec);
 	}
 	
-	sprintf((char*)Data, "%s", "OK");
+	sprintf((char*)Argument[0], "%s", "OK");
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_2_Location(U8* Data) {
-	sprintf((char*)Data, "%s", "Floor_1-Top-Right");
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_2_Blink(U8* Data) {
+void TEST_2_Blink(void** Argument) {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	
 	__HAL_RCC_GPIOB_CLK_ENABLE();
@@ -18547,14 +18619,10 @@ void TEST_2_Blink(U8* Data) {
 		osDelay(100 MSec);
 	}
 	
-	sprintf((char*)Data, "%s", "OK");
+	sprintf((char*)Argument[0], "%s", "OK");
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_3_Location(U8* Data) {
-	sprintf((char*)Data, "%s", "Floor_1-Bottom-Left");
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_3_Blink(U8* Data) {
+void TEST_3_Blink(void** Argument) {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	
 	__HAL_RCC_GPIOE_CLK_ENABLE();
@@ -18571,14 +18639,10 @@ void TEST_3_Blink(U8* Data) {
 		osDelay(100 MSec);
 	}
 	
-	sprintf((char*)Data, "%s", "OK");
+	sprintf((char*)Argument[0], "%s", "OK");
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_4_Location(U8* Data) {
-	sprintf((char*)Data, "%s", "Floor_1-Bottom-Right");
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_4_Blink(U8* Data) {
+void TEST_4_Blink(void** Argument) {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	
 	__HAL_RCC_GPIOE_CLK_ENABLE();
@@ -18599,7 +18663,7 @@ void TEST_4_Blink(U8* Data) {
 		osDelay(100 MSec);
 	}
 	
-	sprintf((char*)Data, "%s", "OK");
+	sprintf((char*)Argument[0], "%s", "OK");
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void SystemClock_Config(void) {
@@ -18708,41 +18772,33 @@ int main (void) {
 /************************************************** Tasks *************************************************************/
 void Application(void *argument) {
 	/* Init Drivers */
-	__init_UART();
-	/* Init Media */
-	for (U8 Index=0; Index<(sizeof(_Media)/4); Index++) {
-		/* Create media with index input */
-		_Media[Index] = new _MEDIA(Index+1);
-		_Media[Index]->Init();
-	}
-	/// MUST EDIT
-	_Media[MediaName.Stand_1_OP].Send((U8*)"123456", 6);
-	
-	
-	
-	
+	__init_UART();	
 	/* Add tests */
-	/* TEST 1 */	
-	Application_Test[0].Add((uint8_t*)"Location", &TEST_1_Location, false);
-	Application_Test[0].Add((uint8_t*)"ProgramSWD(#FileName #Domain #Serial #Date)", &TEST_1_ProgramSWD, false);
-	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, false);
-	Application_Test[0].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, false);
-	Application_Test[0].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, false);
+	/* TEST 1 */
+	Application_Test[0].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-LEFT", false);
+	//Application_Test[0].Add((uint8_t*)"ProgramSWD(#FileName #Domain #Serial #Date)", &TEST_1_ProgramSWD, false);
+	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, NULL, false);
+	Application_Test[0].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_1.OP, (void*)Stand.Board_1.RS485}, false);
+	Application_Test[0].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
+	Application_Test[0].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 2 */
-	Application_Test[1].Add((uint8_t*)"Location", &TEST_2_Location, false);
-	Application_Test[1].Add((uint8_t*)"Blink", &TEST_2_Blink, false);
-	Application_Test[1].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, false);
-	Application_Test[1].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, false);
+	Application_Test[1].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-RIGHT", false);
+	Application_Test[1].Add((uint8_t*)"Blink", &TEST_2_Blink, NULL, false);
+	Application_Test[1].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_2.OP, (void*)Stand.Board_2.RS485}, false);
+	Application_Test[1].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
+	Application_Test[1].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 3 */
-	Application_Test[2].Add((uint8_t*)"Location", &TEST_3_Location, false);
-	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, false);
-	Application_Test[2].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, false);
-	Application_Test[2].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, false);
+	Application_Test[2].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-LEFT", false);
+	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, NULL, false);
+	Application_Test[2].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_3.OP, (void*)Stand.Board_3.RS485}, false);
+	Application_Test[2].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
+	Application_Test[2].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 4 */
-	Application_Test[3].Add((uint8_t*)"Location", &TEST_4_Location, false);
-	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, false);
-	Application_Test[3].Add((uint8_t*)"HardwareVersion", &TEST_HardwareVersion, false);
-	Application_Test[3].Add((uint8_t*)"SoftwareVersion", &TEST_SoftwareVersion, false);
+	Application_Test[3].Add((uint8_t*)"GetLocation", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-RIGHT", false);
+	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, NULL, false);
+	Application_Test[3].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_4.OP, (void*)Stand.Board_4.RS485}, false);
+	Application_Test[3].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
+	Application_Test[3].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
   /* Init Lan */
 //	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
 //		osDelay(1 Sec);
@@ -18784,20 +18840,6 @@ void Application(void *argument) {
 	
 	/* Blink LED */
 	while (1) {
-		
-		U32 Length;
-		U8 Data[64];
-		if(Media_OP_1.Open()) {
-			if(Media_OP_1.GetStatus().Receive.GetBusy()) {	
-				Length = Media_OP_1.Receive(Data, sizeof(Data));
-				if(Length) {
-					Media_OP_1.Clear();
-					Media_OP_1.Send(Data, Length);
-				}
-			}
-			Media_OP_1.Close();
-		}
-		
     HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
 		osDelay(100 MSec);
 		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
