@@ -1,14 +1,14 @@
 /************************************************** Description *******************************************************/
 /*
     File : UART.c
-    Programmer : Mohammad Lotfi & Milad Mahmoodian
+    Programmer : Mohammad Lotfi & Milad Mahmodian
     Used : Functions to control UART
     Design Pattern : Nothing
     Types of memory : Heap & Stack
     Total Tread : Nothing
     Site : https://www.mahsen.ir
-    Tel : +989124662703 & +989152353354
-    Email : info@mahsen.ir
+    Tel : +989124662703 & +989044743354
+    Email : info@mahsen.ir & milad_mahmodian@outlook.ir
     Last Update : 2024/8/7
 */
 /************************************************** Warnings **********************************************************/
@@ -51,19 +51,11 @@ int UART_Map[12+1] = {-1 , 0, -1, -1, 1, 2, 3, 4, 5, 6, -1, -1, 7};
 */
 /************************************************** Functions *********************************************************/
 void __init_UART(void) {
-	for(int Index=0; Index<) {
-		if(UART_Map[Index]!=-1) {
-			UART_Channel_Config(1, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
+	for(U8 Channel=0; Channel<13; Channel++) {
+		if(UART_Map[Channel]!=-1) {
+			UART_Channel_Config(Channel, 9600, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
 		}
 	}
-  UART_Channel_Config(1, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
-	UART_Channel_Config(4, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
-	UART_Channel_Config(5, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
-	UART_Channel_Config(6, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
-	UART_Channel_Config(7, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
-	UART_Channel_Config(8, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
-	UART_Channel_Config(9, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
-	UART_Channel_Config(12, 115200, UART_WORDLENGTH_8B, UART_PARITY_NONE, UART_STOPBITS_1);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void UART_Channel_Config(U8 Channel, U32 BaudRate, U32 WordLength, U32 Parity, U32 StopBits) {	

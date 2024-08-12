@@ -1,14 +1,14 @@
 /************************************************** Description *******************************************************/
 /*
     File : UART.c
-    Programmer : Mohammad Lotfi & Milad Mahmoodian
-    Used : Functions to control UART
+    Programmer : Mohammad Lotfi & Milad Mahmodian
+    Used : UART Driver
     Design Pattern : Nothing
     Types of memory : Heap & Stack
     Total Tread : Nothing
     Site : https://www.mahsen.ir
-    Tel : +989124662703 & +989152353354
-    Email : info@mahsen.ir
+    Tel : +989124662703 & +989044743354
+    Email : info@mahsen.ir & milad_mahmodian@outlook.ir
     Last Update : 2024/8/7
 */
 /************************************************** Warnings **********************************************************/
