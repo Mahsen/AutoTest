@@ -1,0 +1,117 @@
+/************************************************** Description *******************************************************/
+/*
+    File : ADCMux.c
+    Programmer : Milad Mahmodian
+    Used : ADCMUX Driver
+    Design Pattern : Nothing
+    Types of memory : Nothing
+    Total Tread : Nothing
+    Site : 
+    Tel : +989044743354
+    Email : milad_mahmodian@outlook.ir
+    Last Update : 2024/8/14
+*/
+/************************************************** Warnings **********************************************************/
+//  Channel   |      Job		
+//----------------------------
+//     0      |    LED_PWR
+//     1      |    LED_Data
+//     2      |    LED_RS485
+//     3      |    LED_STS
+//     4      |    P_3v3
+//     5      |    P_12v
+//     6      |    GSM_REG
+//     7      |    VRTC
+/************************************************** Wizards ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Includes **********************************************************/
+#include "admux.h"
+/************************************************** Defineds **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Names *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Variables *********************************************************/
+U32 ADMUX_SelectBoard_PIN[ADMUX_MAX_BOARD] = {GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11, GPIO_PIN_12};
+/*--------------------------------------------------------------------------------------------------------------------*/
+GPIO_TypeDef *ADMUX_SelectBoard_PORT[ADMUX_MAX_BOARD] = {GPIOE, GPIOE, GPIOE, GPIOE};
+/*--------------------------------------------------------------------------------------------------------------------*/
+U8 ADMUX_SelectBoard_MASK[ADMUX_MAX_BOARD] = {0x1, 0x2, 0x4, 0x8};
+/*--------------------------------------------------------------------------------------------------------------------*/
+GPIO_TypeDef *ADMUX_SelectBit_PORT[ADMUX_MAX_SELECTBIT] = {GPIOE, GPIOE, GPIOE};
+/*--------------------------------------------------------------------------------------------------------------------*/
+U16 ADMUX_SelectBit_PIN[ADMUX_MAX_SELECTBIT] = {GPIO_PIN_13, GPIO_PIN_14, GPIO_PIN_15};
+/*--------------------------------------------------------------------------------------------------------------------*/
+U8 ADMUX_SelectBit_MASK[ADMUX_MAX_SELECTBIT] = {0x1, 0x2, 0x4};
+/*--------------------------------------------------------------------------------------------------------------------*/
+static BIT ADMUX_Mutex[2];
+/************************************************** Opjects ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Functions *********************************************************/
+void ADMUX_Enable() {
+	for (U8 Index = 0; Index < ADMUX_MAX_BOARD;Index++) {
+		HAL_GPIO_WritePin(ADMUX_SelectBoard_PORT[Index], ADMUX_SelectBoard_PIN[Index], GPIO_PIN_RESET);
+	}
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void ADMUX_Disable() {
+	for (U8 Index = 0; Index < ADMUX_MAX_BOARD;Index++) {
+		HAL_GPIO_WritePin(ADMUX_SelectBoard_PORT[Index], ADMUX_SelectBoard_PIN[Index], GPIO_PIN_SET);
+	}
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void __init_ADMux() {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+  /* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+  /*Configure GPIO pin Output Level */
+	for (U8 Index = 0; Index < ADMUX_MAX_BOARD;Index++) {
+		HAL_GPIO_WritePin(ADMUX_SelectBoard_PORT[Index], ADMUX_SelectBoard_PIN[Index], GPIO_PIN_RESET);
+		/* Configure Enable Pins */
+		GPIO_InitStruct.Pin = ADMUX_SelectBoard_PIN[Index];
+		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+		GPIO_InitStruct.Pull = GPIO_NOPULL;
+		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+		HAL_GPIO_Init(ADMUX_SelectBoard_PORT[Index], &GPIO_InitStruct);
+		HAL_GPIO_WritePin(ADMUX_SelectBoard_PORT[Index], ADMUX_SelectBoard_PIN[Index], GPIO_PIN_RESET);
+	}
+	for (U8 Index =0; Index < ADMUX_MAX_SELECTBIT;Index++) {
+		HAL_GPIO_WritePin(ADMUX_SelectBit_PORT[Index], ADMUX_SelectBit_PIN[Index], GPIO_PIN_RESET);
+		/* Configure SelectBit Pins */
+		GPIO_InitStruct.Pin = ADMUX_SelectBoard_PIN[Index];
+		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+		GPIO_InitStruct.Pull = GPIO_NOPULL;
+		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+		HAL_GPIO_Init(ADMUX_SelectBit_PORT[Index], &GPIO_InitStruct);
+	}	
+	TASK_MANAGER_MUTEXRELEASE(ADMUX_Mutex[0]);
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void ADMUX_Select(U8 Channel) {
+	TASK_MANAGER_MUTEXWAIT(ADMUX_Mutex[0]);
+	ADMUX_Enable();
+	HAL_GPIO_WritePin(ADMUX_SelectBit_PORT[0],ADMUX_SelectBit_PIN[0],ADMUX_SelectBit_MASK[0] & Channel);
+	HAL_GPIO_WritePin(ADMUX_SelectBit_PORT[1],ADMUX_SelectBit_PIN[1],ADMUX_SelectBit_MASK[1] & Channel);
+	HAL_GPIO_WritePin(ADMUX_SelectBit_PORT[2],ADMUX_SelectBit_PIN[2],ADMUX_SelectBit_MASK[2] & Channel);
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void ADMUX_DeSelectAll(void) {
+	ADMUX_Disable();
+	TASK_MANAGER_MUTEXRELEASE(ADMUX_Mutex[0]);
+}
+/************************************************** Tasks *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Vectors ***********************************************************/
+/*
+    Nothing
+*/
+/**********************************************************************************************************************/
