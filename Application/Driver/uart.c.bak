@@ -2,7 +2,7 @@
 /*
     File : UART.c
     Programmer : Mohammad Lotfi & Milad Mahmodian
-    Used : Functions to control UART
+    Used : UART Driver
     Design Pattern : Nothing
     Types of memory : Heap & Stack
     Total Tread : Nothing

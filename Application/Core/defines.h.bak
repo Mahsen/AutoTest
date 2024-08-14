@@ -1,6 +1,7 @@
 #ifndef __DEFINES_H
 #define __DEFINES_H
 //----------------------------------------------------------
+#include "main.h"
 #include "cmsis_os2.h"
 #include "rtx_os.h"
 #include "rl_net.h"
@@ -14,9 +15,13 @@
 #define MSec   				    									                 *1000/TASK_MANAGER_OS_TICK
 #define Sec                         	    	                 *1000000/TASK_MANAGER_OS_TICK
 
+#define TASK_MANAGER_MUTEXWAIT(x)                            while(x){osDelay(OneUnic);};x=1
+#define TASK_MANAGER_MUTEXRELEASE(x)                         x=1
+																					                   
+#define TASK_MANAGER_LOOPUNTIL(x)                            for(U32 LOOPUNTIL_time=0;(LOOPUNTIL_time<0xFFFFF)&&(x);LOOPUNTIL_time++){osDelay(OneUnic);}
+#define TASK_MANAGER_WHILEUNTIL(x)                           for(U32 LOOPUNTIL_time=0;(LOOPUNTIL_time<0xFFFFF)&&(x);LOOPUNTIL_time++){}
+	
 #define OFFSETOF(Type, Field)                               ((unsigned long) &(((Type *) 0)->Field))
-//----------------------------------------------------------
-typedef void (*CallBack_Type)(void);
 //----------------------------------------------------------
 #define     C_UNIC              * 1
 //----------------------------------------------------------
@@ -30,6 +35,9 @@ typedef long long       S64;
 typedef unsigned long long U64;
 typedef unsigned char   BIT;
 typedef unsigned int    BOOL;
+//----------------------------------------------------------
+typedef void (*CallBack_Type)(void);
+typedef U32 (*CallBack_U32_Type)(void);
 //----------------------------------------------------------
 #define     NULL_CHAR           0x00
 #define     CR_CHAR             0x0D

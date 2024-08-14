@@ -19,7 +19,7 @@ class TREE {
 class TEST : Protocol
 {
 	private:
-		U8 Command[64]; 
+		U8 Command[256]; 
 		U8 Buffer[2048]; 
 		// Define objects that are statically allocated for worker thread 1
 		osRtxThread_t Execute_thread_tcb;

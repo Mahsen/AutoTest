@@ -5,7 +5,7 @@
 #include "protocol.hpp"
 #include "HexType.hpp"
 //----------------------------------------------------------
-typedef void (*TREE_Function) (void *Argument);
+typedef void (*TREE_Function) (void **Argument);
 //----------------------------------------------------------
 class TREE {
 	public: 
@@ -19,7 +19,7 @@ class TREE {
 class TEST : Protocol
 {
 	private:
-		U8 Command[64]; 
+		U8 Command[256]; 
 		U8 Buffer[2048]; 
 		// Define objects that are statically allocated for worker thread 1
 		osRtxThread_t Execute_thread_tcb;
@@ -49,7 +49,7 @@ class TEST : Protocol
 		};
 		uint8_t Trees_Count;
 		struct_ValueU8 Trees_Select;
-		TREE* Trees[64];		
+		TREE* Trees[16];		
 		Status Execute();
 		Status Execute_Status;	
 	public:

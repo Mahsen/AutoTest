@@ -9,12 +9,15 @@
     Site : https://www.mahsen.ir
     Tel : +989044743354
     Email : milad_mahmodian@outlook.ir
-    Last Update : 2024/8/12
+    Last Update : 2024/8/14
 */
 /************************************************** Warnings **********************************************************/
-/*
-    Nothing
-*/
+//  Channel    |      Job		
+//------------------------------
+//     0       |    TOP_LEFT
+//     1       |    TOP_RIGHT
+//     2       |    BOTTOM_LEFT
+//     3       |    BOTTOM_RIGHT
 /************************************************** Wizards ***********************************************************/
 /*
     Nothing
@@ -22,7 +25,9 @@
 /************************************************** Includes **********************************************************/
 #include "adc.h"
 /************************************************** Defineds **********************************************************/
-#define ADC_CHANNEL_MAX_SIZE                               4
+/*
+    Nothing
+*/
 /************************************************** Names *************************************************************/
 /*
     Nothing
@@ -30,13 +35,13 @@
 /************************************************** Variables *********************************************************/
 ADC_HandleTypeDef ADCHandle;
 /*--------------------------------------------------------------------------------------------------------------------*/
-U16 ADC_ChannelPIN[ADC_CHANNEL_MAX_SIZE] = {GPIO_PIN_11, GPIO_PIN_1, GPIO_PIN_0, GPIO_PIN_4};
+U16 ADC_ChannelPIN[] = {GPIO_PIN_11, GPIO_PIN_1, GPIO_PIN_0, GPIO_PIN_4};
 /*--------------------------------------------------------------------------------------------------------------------*/
-GPIO_TypeDef* ADC_ChannelPORT[ADC_CHANNEL_MAX_SIZE] = {GPIOF, GPIOB, GPIOC, GPIOA};
+GPIO_TypeDef* ADC_ChannelPORT[] = {GPIOF, GPIOB, GPIOC, GPIOA};
 /*--------------------------------------------------------------------------------------------------------------------*/
 S8 ADC_Map[20] = {-1 , -1, 0, -1, -1, 1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, 3, -1};
 /*--------------------------------------------------------------------------------------------------------------------*/
-U32 ADC_Channels[20] = {ADC_CHANNEL_2 , ADC_CHANNEL_5, ADC_CHANNEL_10, ADC_CHANNEL_18};
+U32 ADC_Channels[] = {ADC_CHANNEL_2 , ADC_CHANNEL_5, ADC_CHANNEL_10, ADC_CHANNEL_18};
 /************************************************** Opjects ***********************************************************/
 /*
     Nothing
@@ -89,30 +94,33 @@ void ADC_CommonConfig(U32 ADCClockPrescaler,U32 Resolution,U32 Alignment,U32 Nbr
 	HAL_ADCEx_Calibration_Start(&ADCHandle, ADC_SINGLE_ENDED);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void ADC_ChanelConfig(U8 Channel) {	
-	/*ADC1 GPIO clock */
+void ADC_ChannelConfig(U8 Channel) {	
+	/* ADC1 GPIO clock */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 	__HAL_RCC_GPIOF_CLK_ENABLE();		
-	/*ADC1 GPIO Configuration */
+	/* ADC1 GPIO Configuration */
 	GPIO_InitTypeDef GPIO_InitStruct = {0};		
-	GPIO_InitStruct.Pin = ADC_ChannelPIN[Channel];
+	GPIO_InitStruct.Pin = ADC_ChannelPIN[ADC_Map[Channel]];
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(ADC_ChannelPORT[Channel], &GPIO_InitStruct);	
+	HAL_GPIO_Init(ADC_ChannelPORT[ADC_Map[Channel]], &GPIO_InitStruct);	
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void __init_ADC() {
-	ADC_CommonConfig(ADC_CLOCK_ASYNC_DIV2,ADC_RESOLUTION_12B,ADC_DATAALIGN_RIGHT,1);
+	ADC_CommonConfig(ADC_CLOCK_ASYNC_DIV2, ADC_RESOLUTION_12B, ADC_DATAALIGN_RIGHT, 1);
 	for(U8 Channel=0; Channel<20; Channel++) {
 		if(ADC_Map[Channel]!=-1) {
-			ADC_ChanelConfig((U8)ADC_Map[Channel]);
+			ADC_ChannelConfig(Channel);
 		}
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 U16 ADC_Read(U32 Channel, U32 TimeOut_ms) {
+	if(ADC_Map[Channel]==-1) {
+		Error_Handler();
+	}
 	/* Check state */
 	do {
 		osDelay(1 MSec);
@@ -123,7 +131,7 @@ U16 ADC_Read(U32 Channel, U32 TimeOut_ms) {
 	U16 ad_value = 0;	
 	/* Channel Selection */
 	ADC_ChannelConfTypeDef sConfig = { 0 };	
-	sConfig.Channel = Channel;
+	sConfig.Channel = ADC_Channels[ADC_Map[Channel]];
 	sConfig.Rank = ADC_REGULAR_RANK_1;
 	sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
 	sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -141,7 +149,7 @@ U16 ADC_Read(U32 Channel, U32 TimeOut_ms) {
 		HAL_ADC_Stop(&ADCHandle);
 		return ad_value;
 	}
-	else  {
+	else {
 		/* Sampling start*/
 		HAL_ADC_Stop(&ADCHandle);
 		return 0;

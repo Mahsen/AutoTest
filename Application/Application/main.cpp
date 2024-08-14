@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/8/6
+    Last Update : 2024/8/14
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -24,6 +24,8 @@
 #include "dap.h"
 #include "vuart.hpp"
 #include "lan.hpp"
+#include "adc.h"
+#include "admux.h"
 #include "test.hpp"
 #include "media.hpp"
 /************************************************** Defineds **********************************************************/
@@ -18406,37 +18408,49 @@ class _MEDIA : public MEDIA {
 /*--------------------------------------------------------------------------------------------------------------------*/
 class {
 	public:
-	 class struct_Board_1 {
+	 class {
 			public:
-				_MEDIA *OP, *RS485;
-				struct_Board_1(void) {
-					OP = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_OP_UART);
-					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_RS485_UART);
-				};
+				class class_Media {
+					public:
+						_MEDIA *OP, *RS485;
+						class_Media(void) {
+							OP = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_OP_UART);
+							RS485 = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_RS485_UART);
+						};
+				} Media;						
 		} Board_1;
-	 class struct_Board_2 {
+	 class {
 			public:
-				_MEDIA *OP, *RS485;
-				struct_Board_2(void) {
-					OP = new _MEDIA(APPLICATION_STAND_BOARD_2_MEDIA_OP_UART);
-					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_2_MEDIA_RS485_UART);
-				};
+				class class_Media {
+					public:
+						_MEDIA *OP, *RS485;
+						class_Media(void) {
+							OP = new _MEDIA(APPLICATION_STAND_BOARD_2_MEDIA_OP_UART);
+							RS485 = new _MEDIA(APPLICATION_STAND_BOARD_2_MEDIA_RS485_UART);
+						};
+				} Media;	
 		} Board_2;
-	 class struct_Board_3 {
+	 class {
 			public:
-				_MEDIA *OP, *RS485;
-				struct_Board_3(void) {
-					OP = new _MEDIA(APPLICATION_STAND_BOARD_3_MEDIA_OP_UART);
-					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_3_MEDIA_RS485_UART);
-				};
+				class class_Media {
+					public:
+						_MEDIA *OP, *RS485;
+						class_Media(void) {
+							OP = new _MEDIA(APPLICATION_STAND_BOARD_3_MEDIA_OP_UART);
+							RS485 = new _MEDIA(APPLICATION_STAND_BOARD_3_MEDIA_RS485_UART);
+						};
+				} Media;	
 		} Board_3;
-		class struct_Board_4 {
+		class {
 			public:
-				_MEDIA *OP, *RS485;
-				struct_Board_4(void) {
-					OP = new _MEDIA(APPLICATION_STAND_BOARD_4_MEDIA_OP_UART);
-					RS485 = new _MEDIA(APPLICATION_STAND_BOARD_4_MEDIA_RS485_UART);
-				};
+				class class_Media {
+					public:
+						_MEDIA *OP, *RS485;
+						class_Media(void) {
+							OP = new _MEDIA(APPLICATION_STAND_BOARD_4_MEDIA_OP_UART);
+							RS485 = new _MEDIA(APPLICATION_STAND_BOARD_4_MEDIA_RS485_UART);
+						};
+				} Media;	
 		} Board_4;
 } Stand;
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -18445,12 +18459,12 @@ class {
 		void ReturnArgument(void** Argument) {
 			/* Get Data from Argument[0] */
 			char *Data = (char*)Argument[0]; 
-			/* Get location from Argument[1] */
-			char *Location = (char*)Argument[1]; 
-			/* Set location */
-			strcpy(Data, Location);
+			/* Get Value from Argument[1] */
+			char *Value = (char*)Argument[1]; 
+			/* Set Report */
+			strcpy(Data, Value);
 		}
-		void MediaCheck(void** Argument) {
+		void CheckMedia(void** Argument) {
 			/* Get Data from Argument[0] */
 			char *Data = (char*)Argument[0]; 
 			/* Get media from Argument[1] */
@@ -18511,16 +18525,37 @@ class {
 				strcat(Data, ", RS485:ERROR");
 			}
 		}
+		void CheckADC(void** Argument) {			
+			/* Get Data from Argument[0] */
+			char *Data = (char*)Argument[0]; 
+			/* Get Multiplex */
+			int Multiplex = *((int**)((void*)Argument[1]))[0];
+			/* Get Channel */
+			int Channel = *((int**)((void*)Argument[1]))[1];				
+			/* Get Minimum Value */
+			double Minimum = *((double**)((void*)Argument[1]))[2];
+			/* Get Maximum Value */
+			double Maximum = *((double**)((void*)Argument[1]))[3];
+			/* Get Negative Value */
+			bool Negative = *((bool**)((void*)Argument[1]))[4];
+			/* Set Multiplex */
+			ADMUX_Select(Multiplex);
+			/* Read ADC channel */
+			double Value = ADC_Read(Channel, 10) * 1.0;
+			/* Set Multiplex */
+			ADMUX_DeSelectAll();
+			/* Check window Value */			
+			if(((Value>=Minimum) && (Value<=Maximum))^Negative) {
+				/* Add pass Report */
+				sprintf(Data, "OK : %02f", Value); 
+			}
+			else {
+				/* Add fault Report */
+				sprintf(Data, "ERROR : %02f", Value); 
+			}
+		}
 } TestCase;
 /************************************************** Functions *********************************************************/
-void TEST_HardwareVersion(void** Argument) {
-	sprintf((char*)Argument[0], "%s", APPLICATION_VERSION_HARDWARE);
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
-void TEST_SoftwareVersion(void** Argument) {
-	sprintf((char*)Argument[0], "%s", APPLICATION_VERSION_SOFTWARE);
-}
-/*--------------------------------------------------------------------------------------------------------------------*/
 uint32_t TEST_ProgramSWD(uint32_t addr, const uint8_t *data, uint32_t len, U8* Domain, U8* Serial, U8* Prodoct) {
   
 	//__disable_irq();
@@ -18773,30 +18808,36 @@ int main (void) {
 void Application(void *argument) {
 	/* Init Drivers */
 	__init_UART();	
+	__init_ADC();
+	__init_ADMux();
 	/* Add tests */
 	/* TEST 1 */
 	Application_Test[0].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-LEFT", false);
 	//Application_Test[0].Add((uint8_t*)"ProgramSWD(#FileName #Domain #Serial #Date)", &TEST_1_ProgramSWD, false);
 	Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, NULL, false);
-	Application_Test[0].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_1.OP, (void*)Stand.Board_1.RS485}, false);
+	//Application_Test[0].Add((uint8_t*)"3V3", [](void** Argument){TestCase.CheckADC(Argument);}, new void*[]{(void*)(new int(APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MULTIPLEX)), (void*)(new int(APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_CHANNEL)), (void*)(new double(APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MINIMUM)), (void*)(new double(APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MAXIMUM)), (void*)(new bool(APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_NEGATIVE))}, false);
+	Application_Test[0].Add((uint8_t*)"CheckADC(#Multiplex #Channel #Minimum #Maximum #Negative)", [](void** Argument){TestCase.CheckADC(Argument);}, nullptr, false);
+	
+
+	Application_Test[0].Add((uint8_t*)"Media", [](void** Argument){TestCase.CheckMedia(Argument);}, new void*[]{(void*)Stand.Board_1.Media.OP, (void*)Stand.Board_1.Media.RS485}, false);
 	Application_Test[0].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[0].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 2 */
 	Application_Test[1].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-RIGHT", false);
 	Application_Test[1].Add((uint8_t*)"Blink", &TEST_2_Blink, NULL, false);
-	Application_Test[1].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_2.OP, (void*)Stand.Board_2.RS485}, false);
+	Application_Test[1].Add((uint8_t*)"Media", [](void** Argument){TestCase.CheckMedia(Argument);}, new void*[]{(void*)Stand.Board_2.Media.OP, (void*)Stand.Board_2.Media.RS485}, false);
 	Application_Test[1].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[1].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 3 */
 	Application_Test[2].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-LEFT", false);
 	Application_Test[2].Add((uint8_t*)"Blink", &TEST_3_Blink, NULL, false);
-	Application_Test[2].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_3.OP, (void*)Stand.Board_3.RS485}, false);
+	Application_Test[2].Add((uint8_t*)"Media", [](void** Argument){TestCase.CheckMedia(Argument);}, new void*[]{(void*)Stand.Board_3.Media.OP, (void*)Stand.Board_3.Media.RS485}, false);
 	Application_Test[2].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[2].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
 	/* TEST 4 */
 	Application_Test[3].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"BOTTOM-RIGHT", false);
 	Application_Test[3].Add((uint8_t*)"Blink", &TEST_4_Blink, NULL, false);
-	Application_Test[3].Add((uint8_t*)"MediaCheck", [](void** Argument){TestCase.MediaCheck(Argument);}, new void*[]{(void*)Stand.Board_4.OP, (void*)Stand.Board_4.RS485}, false);
+	Application_Test[3].Add((uint8_t*)"Media", [](void** Argument){TestCase.CheckMedia(Argument);}, new void*[]{(void*)Stand.Board_4.Media.OP, (void*)Stand.Board_4.Media.RS485}, false);
 	Application_Test[3].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	Application_Test[3].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
   /* Init Lan */

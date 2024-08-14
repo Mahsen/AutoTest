@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/8/7
+    Last Update : 2024/8/14
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -28,10 +28,108 @@
 // <h> Config Wizards
 // 	<h> Application
 //  <s> Version Hardware 
-#define APPLICATION_VERSION_HARDWARE            	                         "v7.20240807"
+#define APPLICATION_VERSION_HARDWARE            	                         "v7.20240814"
 //  <s> Version Software
-#define APPLICATION_VERSION_SOFTWARE            	                         "v1.20240807"
+#define APPLICATION_VERSION_SOFTWARE            	                         "v1.20240814"
 // 		<h> Board_1
+// 			<h> ADC
+// 				<h> LED PWR
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_MULTIPLEX                    0
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_CHANNEL                      2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_MINIMUM                      3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_MAXIMUM                      3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_NEGATIVE                     0
+// 				</h>
+// 				<h> LED Data
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_MULTIPLEX                   1
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_CHANNEL                     2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_MINIMUM                     3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_MAXIMUM                     3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_NEGATIVE                    0
+// 				</h>
+// 				<h> LED RS485
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_MULTIPLEX                  2
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_CHANNEL                    2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_MINIMUM                    3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_MAXIMUM                    3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_NEGATIVE                   0
+// 				</h>
+// 				<h> LED STS
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MULTIPLEX                    3
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_CHANNEL                      2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MINIMUM                      3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MAXIMUM                      3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_NEGATIVE                     0
+// 				</h>
+// 				<h> Power 3v3
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MULTIPLEX                  4
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_CHANNEL                    2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MINIMUM                    3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MAXIMUM                    3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_NEGATIVE                   0
+// 				</h>
+// 				<h> Power 12v
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_MULTIPLEX                  5
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_CHANNEL                    2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_MINIMUM                    3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_MAXIMUM                    3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_NEGATIVE                   0
+// 				</h>
+// 				<h> Power GSM
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_MULTIPLEX                  6
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_CHANNEL                    2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_MINIMUM                    3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_MAXIMUM                    3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_NEGATIVE                   0
+// 				</h>
+// 				<h> Power VRTC
+//					<o> Multiplex <1-8>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_MULTIPLEX                 7
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_CHANNEL                   2
+//					<o> Minimum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_MINIMUM                   3.1
+//					<o> Maximum
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_MAXIMUM                   3.4
+//					<o> Negative <0-1>
+#define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_NEGATIVE                  0
+// 				</h>
+// 			</h>
 // 			<h> Media
 // 				<h> OP
 //					<o> UART <1-12>
@@ -44,6 +142,14 @@
 // 			</h>
 // 		</h>
 // 		<h> Board_2
+// 			<h> ADC
+//				<o> Multiplex <1-4>
+#define APPLICATION_STAND_BOARD_2_ADC_MULTIPLEX                            2
+// 				<h> 3v3
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_2_ADC_3V3_CHANNEL                          2
+// 				</h>
+// 			</h>
 // 			<h> Media
 // 				<h> OP
 //					<o> UART <1-12>
@@ -56,6 +162,14 @@
 // 			</h>
 // 		</h>
 // 		<h> Board_3
+// 			<h> ADC
+//				<o> Multiplex <1-4>
+#define APPLICATION_STAND_BOARD_3_ADC_MULTIPLEX                            3
+// 				<h> 3v3
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_3_ADC_3V3_CHANNEL                          2
+// 				</h>
+// 			</h>
 // 			<h> Media
 // 				<h> OP
 //					<o> UART <1-12>
@@ -68,6 +182,14 @@
 // 			</h>
 // 		</h>
 // 		<h> Board_4
+// 			<h> ADC
+//				<o> Multiplex <1-4>
+#define APPLICATION_STAND_BOARD_4_ADC_MULTIPLEX                            4
+// 				<h> 3v3
+//					<o> Channel <1-20>
+#define APPLICATION_STAND_BOARD_4_ADC_3V3_CHANNEL                          2
+// 				</h>
+// 			</h>
 // 			<h> Media
 // 				<h> OP
 //					<o> UART <1-12>

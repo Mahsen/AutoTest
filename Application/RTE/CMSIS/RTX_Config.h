@@ -44,7 +44,7 @@
 //   <i> Defines the combined global dynamic memory size.
 //   <i> Default: 32768
 #ifndef OS_DYNAMIC_MEM_SIZE
-#define OS_DYNAMIC_MEM_SIZE         32768
+#define OS_DYNAMIC_MEM_SIZE         40000
 #endif
  
 //   <o>Kernel Tick Frequency [Hz] <1-1000000>
@@ -131,7 +131,7 @@
 //   <i> Defines stack size for Idle thread.
 //   <i> Default: 512
 #ifndef OS_IDLE_THREAD_STACK_SIZE
-#define OS_IDLE_THREAD_STACK_SIZE   4096
+#define OS_IDLE_THREAD_STACK_SIZE   1024
 #endif
  
 //   <o>Idle Thread TrustZone Module Identifier

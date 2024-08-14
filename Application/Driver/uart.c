@@ -31,20 +31,20 @@ struct struct_Ring Ring[UART_CHANNEL_MAX_SIZE];
 UART_HandleTypeDef UartHandle[UART_CHANNEL_MAX_SIZE];
 USART_TypeDef *Uarts[] = {USART1, UART4, UART5, USART6, UART7, UART8, UART9, UART12};
 /*--------------------------------------------------------------------------------------------------------------------*/
-U8 UART_RxPIN_AF[UART_CHANNEL_MAX_SIZE] = {GPIO_AF7_USART1, GPIO_AF8_UART4, GPIO_AF14_UART5, GPIO_AF7_USART6, GPIO_AF7_UART7, GPIO_AF8_UART8, GPIO_AF11_UART9, GPIO_AF6_UART12};
-U8 UART_TxPIN_AF[UART_CHANNEL_MAX_SIZE] = {GPIO_AF7_USART1, GPIO_AF8_UART4, GPIO_AF14_UART5, GPIO_AF7_USART6, GPIO_AF7_UART7, GPIO_AF8_UART8, GPIO_AF11_UART9, GPIO_AF6_UART12};
+U8 UART_RxPIN_AF[] = {GPIO_AF7_USART1, GPIO_AF8_UART4, GPIO_AF14_UART5, GPIO_AF7_USART6, GPIO_AF7_UART7, GPIO_AF8_UART8, GPIO_AF11_UART9, GPIO_AF6_UART12};
+U8 UART_TxPIN_AF[] = {GPIO_AF7_USART1, GPIO_AF8_UART4, GPIO_AF14_UART5, GPIO_AF7_USART6, GPIO_AF7_UART7, GPIO_AF8_UART8, GPIO_AF11_UART9, GPIO_AF6_UART12};
 /*--------------------------------------------------------------------------------------------------------------------*/
-U16 UART_RxPIN[UART_CHANNEL_MAX_SIZE] = {GPIO_PIN_7, GPIO_PIN_11, GPIO_PIN_12, GPIO_PIN_7, GPIO_PIN_6 , GPIO_PIN_0, GPIO_PIN_0, GPIO_PIN_5};
+U16 UART_RxPIN[] = {GPIO_PIN_7, GPIO_PIN_11, GPIO_PIN_12, GPIO_PIN_7, GPIO_PIN_6 , GPIO_PIN_0, GPIO_PIN_0, GPIO_PIN_5};
 /*--------------------------------------------------------------------------------------------------------------------*/
-U16 UART_TxPIN[UART_CHANNEL_MAX_SIZE] = {GPIO_PIN_6, GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_6, GPIO_PIN_7 , GPIO_PIN_2, GPIO_PIN_1, GPIO_PIN_2};
+U16 UART_TxPIN[] = {GPIO_PIN_6, GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_6, GPIO_PIN_7 , GPIO_PIN_2, GPIO_PIN_1, GPIO_PIN_2};
 /*--------------------------------------------------------------------------------------------------------------------*/
-GPIO_TypeDef* UART_RxPORT[UART_CHANNEL_MAX_SIZE] = {GPIOB, GPIOD, GPIOB, GPIOC, GPIOF, GPIOE, GPIOG, GPIOF};
-GPIO_TypeDef* UART_TxPORT[UART_CHANNEL_MAX_SIZE] = {GPIOB, GPIOD, GPIOB, GPIOC, GPIOF, GPIOE, GPIOG, GPIOF};
+GPIO_TypeDef* UART_RxPORT[] = {GPIOB, GPIOD, GPIOB, GPIOC, GPIOF, GPIOE, GPIOG, GPIOF};
+GPIO_TypeDef* UART_TxPORT[] = {GPIOB, GPIOD, GPIOB, GPIOC, GPIOF, GPIOE, GPIOG, GPIOF};
 /*--------------------------------------------------------------------------------------------------------------------*/
-IRQn_Type UART_IRQn[UART_CHANNEL_MAX_SIZE] = {USART1_IRQn, UART4_IRQn, UART5_IRQn, USART6_IRQn, UART7_IRQn, UART8_IRQn, UART9_IRQn, UART12_IRQn};
+IRQn_Type UART_IRQn[] = {USART1_IRQn, UART4_IRQn, UART5_IRQn, USART6_IRQn, UART7_IRQn, UART8_IRQn, UART9_IRQn, UART12_IRQn};
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Map Channel to variable */
-int UART_Map[12+1] = {-1 , 0, -1, -1, 1, 2, 3, 4, 5, 6, -1, -1, 7};
+int UART_Map[] = {-1 , 0, -1, -1, 1, 2, 3, 4, 5, 6, -1, -1, 7};
 /************************************************** Opjects ***********************************************************/
 /*
     Nothing
