@@ -42,7 +42,9 @@
 #define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_MINIMUM                      3.1
 //					<o> Maximum
 #define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_MAXIMUM                      3.4
-//					<o> Negative <0-1>
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_LED_PWR_NEGATIVE                     0
 // 				</h>
 // 				<h> LED Data
@@ -54,7 +56,9 @@
 #define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_MINIMUM                     3.1
 //					<o> Maximum
 #define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_MAXIMUM                     3.4
-//					<o> Negative <0-1>
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_LED_DATA_NEGATIVE                    0
 // 				</h>
 // 				<h> LED RS485
@@ -66,7 +70,9 @@
 #define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_MINIMUM                    3.1
 //					<o> Maximum
 #define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_MAXIMUM                    3.4
-//					<o> Negative <0-1>
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_LED_RS485_NEGATIVE                   0
 // 				</h>
 // 				<h> LED STS
@@ -74,11 +80,17 @@
 #define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MULTIPLEX                    3
 //					<o> Channel <1-20>
 #define APPLICATION_STAND_BOARD_1_ADC_LED_STS_CHANNEL                      2
-//					<o> Minimum
-#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MINIMUM                      3.1
-//					<o> Maximum
-#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MAXIMUM                      3.4
-//					<o> Negative <0-1>
+//					<o> Minimum 1
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_1_MINIMUM                    3.1
+//					<o> Maximum 1
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_1_MAXIMUM                    3.4
+//					<o> Minimum 2
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_2_MINIMUM                    3.1
+//					<o> Maximum 2
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_2_MAXIMUM                    3.4
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_LED_STS_NEGATIVE                     0
 // 				</h>
 // 				<h> Power 3v3
@@ -90,7 +102,9 @@
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MINIMUM                    3.1
 //					<o> Maximum
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_MAXIMUM                    3.4
-//					<o> Negative <0-1>
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_3V3_NEGATIVE                   0
 // 				</h>
 // 				<h> Power 12v
@@ -102,7 +116,9 @@
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_MINIMUM                    3.1
 //					<o> Maximum
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_MAXIMUM                    3.4
-//					<o> Negative <0-1>
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_12V_NEGATIVE                   0
 // 				</h>
 // 				<h> Power GSM
@@ -114,7 +130,9 @@
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_MINIMUM                    3.1
 //					<o> Maximum
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_MAXIMUM                    3.4
-//					<o> Negative <0-1>
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_GSM_NEGATIVE                   0
 // 				</h>
 // 				<h> Power VRTC
@@ -126,7 +144,9 @@
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_MINIMUM                   3.1
 //					<o> Maximum
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_MAXIMUM                   3.4
-//					<o> Negative <0-1>
+//					<o> Negative 
+//						<0=> False
+//						<1=> True
 #define APPLICATION_STAND_BOARD_1_ADC_POWER_VRTC_NEGATIVE                  0
 // 				</h>
 // 			</h>

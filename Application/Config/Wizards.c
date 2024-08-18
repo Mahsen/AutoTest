@@ -28,9 +28,9 @@
 // <h> Config Wizards
 // 	<h> Application
 //  <s> Version Hardware 
-#define APPLICATION_VERSION_HARDWARE            	                         "v7.20240814"
+#define APPLICATION_VERSION_HARDWARE            	                         "h7.20240814"
 //  <s> Version Software
-#define APPLICATION_VERSION_SOFTWARE            	                         "v1.20240814"
+#define APPLICATION_VERSION_SOFTWARE            	                         "s1.20240814"
 // 		<h> Board_1
 // 			<h> ADC
 // 				<h> LED PWR
@@ -80,10 +80,14 @@
 #define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MULTIPLEX                    3
 //					<o> Channel <1-20>
 #define APPLICATION_STAND_BOARD_1_ADC_LED_STS_CHANNEL                      2
-//					<o> Minimum
-#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MINIMUM                      3.1
-//					<o> Maximum
-#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_MAXIMUM                      3.4
+//					<o> Minimum 1
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_1_MINIMUM                    3.1
+//					<o> Maximum 1
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_1_MAXIMUM                    3.4
+//					<o> Minimum 2
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_2_MINIMUM                    3.1
+//					<o> Maximum 2
+#define APPLICATION_STAND_BOARD_1_ADC_LED_STS_2_MAXIMUM                    3.4
 //					<o> Negative 
 //						<0=> False
 //						<1=> True
