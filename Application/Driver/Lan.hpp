@@ -11,7 +11,7 @@
 class LAN
 {
 	private:
-	
+		int InUsed;
 	public:
 		struct struct_Listen {
 			struct {
@@ -22,15 +22,13 @@ class LAN
 			S32 Socket;
 			U32 Port;
 			U8* PointerSend;
-		} Listen[LAN_SIZEOF_LISTEN];
-		
-		NET_ADDR _IP_Client;
+		} Listen[LAN_SIZEOF_LISTEN];				
 		U32 NumberOfListen;
 		void Init(void);
 		bool AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* Length));
 		void GetLocal(U8 *IP, U8 *Mask, U8 *GateWay, U8 *DNS1, U8 *DNS2);
 		bool SetLocal(U8 *IP, U8 *Mask, U8 *GateWay, U8 *DNS1, U8 *DNS2);
-		NET_ADDR* GetClient(void);		
+		bool Useing(void);		
 };
 extern LAN Lan;
 #endif

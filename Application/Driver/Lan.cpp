@@ -77,9 +77,7 @@ void LAN::Init(void) {
 		while(true);
 	}
 
-	_IP_Client.addr_type = NET_ADDR_ANY;
-	_IP_Client.port = 0;
-	memset(_IP_Client.addr, 0, NET_ADDR_IP6_LEN);
+	InUsed = 0;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* Length)) {
@@ -88,6 +86,7 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 		Listen[NumberOfListen].Socket = netTCP_GetSocket ([](S32 socket, netTCP_Event event, const NET_ADDR *addr, const uint8_t *buf, U32 len)->U32{
 			switch (event) {
 				case netTCP_EventConnect: {
+					Lan.InUsed++;
 					return 1;
 				}
 				case netTCP_EventEstablished: {
@@ -96,9 +95,7 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 				}
 				case netTCP_EventClosed: {
 					// Connection was properly closed
-					Lan._IP_Client.addr_type = NET_ADDR_ANY;
-					Lan._IP_Client.port = 0;
-					memset(Lan._IP_Client.addr, 0, NET_ADDR_IP6_LEN);
+					Lan.InUsed--;
 					break;		
 				}					
 				case netTCP_EventAborted: {
@@ -238,8 +235,8 @@ bool LAN::SetLocal(U8 *IP, U8 *Mask, U8 *GateWay, U8 *DNS1, U8 *DNS2) {
 	return NotChange;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-NET_ADDR* LAN::GetClient() {
-	return &_IP_Client;
+bool LAN::Useing(void) {
+	return (InUsed>0);
 }
 /************************************************** Tasks *************************************************************/
 /*

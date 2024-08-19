@@ -28,9 +28,9 @@
 // <h> Config Wizards
 // 	<h> Application
 //  <s> Version Hardware 
-#define APPLICATION_VERSION_HARDWARE            	                         "v7.20240814"
+#define APPLICATION_VERSION_HARDWARE            	                         "h7.20240814"
 //  <s> Version Software
-#define APPLICATION_VERSION_SOFTWARE            	                         "v1.20240814"
+#define APPLICATION_VERSION_SOFTWARE            	                         "s1.20240814"
 // 		<h> Board_1
 // 			<h> ADC
 // 				<h> LED PWR

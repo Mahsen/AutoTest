@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/8/14
+    Last Update : 2024/8/19
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -18892,14 +18892,20 @@ static void MX_GPIO_Init(void) {
 
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED3_RED_GPIO_Port, LED3_RED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED1_GREEN_Pin */
-  GPIO_InitStruct.Pin = LED1_GREEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Pin = LED1_GREEN_Pin;
   HAL_GPIO_Init(LED1_GREEN_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = LED2_YELLOW_Pin;
+  HAL_GPIO_Init(LED2_YELLOW_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = LED3_RED_Pin;
+  HAL_GPIO_Init(LED3_RED_GPIO_Port, &GPIO_InitStruct);
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 int main (void) {
@@ -19081,30 +19087,25 @@ void Application(void *argument) {
 		osDelay(200 MSec);
 		HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_RESET);
 		osDelay(500 MSec);
+		if(Lan.Useing()) {
+			HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin, GPIO_PIN_SET);
+		}
+		else {
+			HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin, GPIO_PIN_RESET);
+		}
   }
 }
 /************************************************** Vectors ***********************************************************/
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
 void assert_failed(uint8_t *file, uint32_t line) {
+	HAL_GPIO_WritePin(LED3_RED_GPIO_Port, LED3_RED_Pin, GPIO_PIN_SET);
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
 void Error_Handler(void) {
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
-  while (1) {
-  }
+	HAL_GPIO_WritePin(LED3_RED_GPIO_Port, LED3_RED_Pin, GPIO_PIN_SET);
+  while(true);
 }
 /**********************************************************************************************************************/
 
