@@ -411,6 +411,21 @@
               <FileType>1</FileType>
               <FilePath>.\Driver\adc.c</FilePath>
             </File>
+            <File>
+              <FileName>admux.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Driver\admux.c</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Driver\pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Driver\servo.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

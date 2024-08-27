@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/8/19
+    Last Update : 2024/8/27
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -27,6 +27,8 @@
 #include "adc.h"
 #include "admux.h"
 #include "test.hpp"
+#include "pwm.h"
+#include "servo.h"
 #include "media.hpp"
 /************************************************** Defineds **********************************************************/
 /*
@@ -18933,6 +18935,7 @@ void Application(void *argument) {
 	__init_UART();	
 	__init_ADC();
 	__init_ADMux();
+	__init_SERVO();
 	/* Add tests */
 	/* TEST 0 TOP-LEFT */
 	Application_Test[0].Add((uint8_t*)"Board", [](void** Argument){TestCase.ReturnArgument(Argument);}, new void*[]{ \
@@ -19076,6 +19079,16 @@ void Application(void *argument) {
 	vuart->Update(9600);
 	*/	
 	
+	SERVO_Set_Pos(1, 90);
+	osDelay(1 Sec);
+	SERVO_Set_Pos(1, 45);
+	osDelay(500 MSec);
+	SERVO_Set_Pos(1, 90);
+	osDelay(1 Sec);
+	SERVO_Set_Pos(1, 135);
+	osDelay(500 MSec);
+	SERVO_Set_Pos(1, 90);
+	osDelay(1 Sec);
 	
 	/* Blink LED */
 	while (1) {
