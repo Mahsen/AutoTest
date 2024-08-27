@@ -1,0 +1,162 @@
+/************************************************** Description *******************************************************/
+/*
+    File : pwm.c
+    Programmer : Milad Mahmodian
+    Used : PWM Driver
+    Design Pattern : Nothing
+    Types of memory : Nothing
+    Total Tread : Nothing
+    Site : Nothing
+    Tel : +989044743354
+    Email : milad_mahmodian@outlook.ir
+    Last Update : 2024/8/24
+*/
+/************************************************** Warnings **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Wizards ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Includes **********************************************************/
+#include "pwm.h"
+
+/************************************************** Defineds **********************************************************/
+#define PWM_MAX_CHANNELS                                        6
+#define PWM_MAX_HANDLE                                          1
+/************************************************** Names *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Variables *********************************************************/
+TIM_HandleTypeDef PWM_TIMHandle[PWM_MAX_HANDLE];
+TIM_TypeDef *TIMs[PWM_MAX_HANDLE] = {TIM2};
+U32 PWM_Channels[PWM_MAX_CHANNELS] = {TIM_CHANNEL_1, TIM_CHANNEL_2, TIM_CHANNEL_3, TIM_CHANNEL_4, TIM_CHANNEL_5, TIM_CHANNEL_6};
+/** TIM2 GPIO Configuration
+    PA3    								------> TIM2_CH4
+    PA5   							  ------> TIM2_CH1
+    PB10  							  ------> TIM2_CH3
+    PB3(JTDO/TRACESWO)    ------> TIM2_CH2
+*/
+GPIO_TypeDef *PWM_Channel_PORT[PWM_MAX_HANDLE][PWM_MAX_CHANNELS] = {{GPIOA, GPIOB, GPIOB, GPIOA}};
+U32 PWM_Channel_PIN[PWM_MAX_HANDLE][PWM_MAX_CHANNELS] = {{GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_10, GPIO_PIN_3}};
+U8 PWM_Channel_GPIO_AF[PWM_MAX_HANDLE][PWM_MAX_CHANNELS] = {{GPIO_AF1_TIM2, GPIO_AF1_TIM2, GPIO_AF1_TIM2, GPIO_AF1_TIM2}};
+S8 PWM_Map[17+1] = {-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+S8 PWM_Channels_Map[17+1][6+1] = {
+	{-1,-1,-1,-1,-1,-1,-1},	// Not_Valid
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM1
+	{-1,0,1,2,3,-1,-1},			// TIM2
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM3
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM4
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM5
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM6
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM7
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM8
+	{-1,-1,-1,-1,-1,-1,-1},	// Not_Valid
+	{-1,-1,-1,-1,-1,-1,-1},	// Not_Valid
+	{-1,-1,-1,-1,-1,-1,-1},	// Not_Valid
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM12
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM13
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM14
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM15
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM16
+	{-1,-1,-1,-1,-1,-1,-1},	// TIM17
+};
+
+/************************************************** Opjects ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Functions *********************************************************/
+void PWM_Common_Config(U8 Timer, U32 Prescaler, U32 Period, U32 ClockDivision) {
+	if(PWM_Map[Timer]==-1) {
+		Error_Handler();
+	}
+	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  
+	// -------------------------//
+  /* TIM2 Base Iinitialization */
+  PWM_TIMHandle[PWM_Map[Timer]].Instance = TIMs[PWM_Map[Timer]];
+  PWM_TIMHandle[PWM_Map[Timer]].Init.Prescaler = Prescaler;
+  PWM_TIMHandle[PWM_Map[Timer]].Init.CounterMode = TIM_COUNTERMODE_UP;
+  PWM_TIMHandle[PWM_Map[Timer]].Init.Period = Period;
+  PWM_TIMHandle[PWM_Map[Timer]].Init.ClockDivision = ClockDivision;
+  PWM_TIMHandle[PWM_Map[Timer]].Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&PWM_TIMHandle[PWM_Map[Timer]]) != HAL_OK)
+  {
+    Error_Handler();
+  }
+	switch (Timer) {
+		case 2:
+			__HAL_RCC_TIM2_CLK_ENABLE();
+			break;
+	}
+	// -------------------------//
+	/* TIM2 Clock Source Config */
+	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(&PWM_TIMHandle[PWM_Map[Timer]], &sClockSourceConfig) != HAL_OK){
+		Error_Handler();
+	}
+	if (HAL_TIM_PWM_Init(&PWM_TIMHandle[PWM_Map[Timer]]) != HAL_OK){
+		Error_Handler();
+	}
+	// -------------------------//
+	/* TIM2 MasterSlave Config */
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&PWM_TIMHandle[PWM_Map[Timer]], &sMasterConfig) != HAL_OK){
+    Error_Handler();
+  }
+	// -------------------------//
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void PWM_Channel_Config(U8 Timer, U32 Channel) {
+	if(PWM_Map[Timer] == -1 || PWM_Channels_Map[Timer][Channel]==-1) {
+		Error_Handler();
+	}
+	TIM_OC_InitTypeDef sConfigOC = {0};
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	/* TIM2 PWM Channels Config */
+	sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	switch (Timer) {
+		case 2:
+			__HAL_RCC_GPIOA_CLK_ENABLE(); 
+			__HAL_RCC_GPIOB_CLK_ENABLE();
+			break;
+	}
+	if (HAL_TIM_PWM_ConfigChannel(&PWM_TIMHandle[PWM_Map[Timer]], &sConfigOC, PWM_Channels[PWM_Channels_Map[Timer][Channel]]) != HAL_OK) {
+		Error_Handler();
+	}
+	GPIO_InitStruct.Pin = PWM_Channel_PIN[PWM_Map[Timer]][PWM_Channels_Map[Timer][Channel]];
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Alternate = PWM_Channel_GPIO_AF[PWM_Map[Timer]][PWM_Channels_Map[Timer][Channel]];
+	HAL_GPIO_Init(PWM_Channel_PORT[PWM_Map[Timer]][PWM_Channels_Map[Timer][Channel]], &GPIO_InitStruct);
+	HAL_TIM_PWM_Start(&PWM_TIMHandle[PWM_Map[Timer]],PWM_Channels[PWM_Channels_Map[Timer][Channel]]);
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void PWM_Set_DutyCycle(U8 Timer, U32 Channel, U16 DutyCycle) {
+	if(PWM_Map[Timer] == -1 || PWM_Channels_Map[Timer][Channel]==-1) {
+		Error_Handler();
+	}
+	__HAL_TIM_SET_COMPARE(&PWM_TIMHandle[PWM_Map[Timer]],PWM_Channels[PWM_Channels_Map[Timer][Channel]], DutyCycle);
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+U8 PWM_Ready(U8 Timer) {
+	return (PWM_TIMHandle[PWM_Map[Timer]].State & HAL_TIM_STATE_READY);
+}
+/************************************************** Tasks *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Vectors ***********************************************************/
+/*
+    Nothing
+*/
+/**********************************************************************************************************************/
