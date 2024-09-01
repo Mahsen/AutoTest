@@ -30,27 +30,27 @@
 //     <s.15>IP Address
 //     <i>Static IPv4 Address in text representation
 //     <i>Default: "192.168.0.100"
-#define APPLICATION_IP4_ADDR_DEFAULT           "192.168.70.201"
+#define APPLICATION_IP4_ADDR_DEFAULT                                       "192.168.70.201"
 
 //     <s.15>Subnet mask
 //     <i>Local Subnet mask in text representation
 //     <i>Default: "255.255.255.0"
-#define APPLICATION_IP4_MASK_DEFAULT           "255.255.255.0"
+#define APPLICATION_IP4_MASK_DEFAULT                                       "255.255.255.0"
 
 //     <s.15>Default Gateway
 //     <i>IP Address of Default Gateway in text representation
 //     <i>Default: "192.168.0.254"
-#define APPLICATION_IP4_GATEWAY_DEFAULT        "192.168.70.1"
+#define APPLICATION_IP4_GATEWAY_DEFAULT                                    "192.168.70.1"
 
 //     <s.15>Primary DNS Server
 //     <i>IP Address of Primary DNS Server in text representation
 //     <i>Default: "8.8.8.8"
-#define APPLICATION_IP4_PRIMARY_DNS_DEFAULT    "192.168.3.2"
+#define APPLICATION_IP4_PRIMARY_DNS_DEFAULT                                "192.168.3.2"
 
 //     <s.15>Secondary DNS Server
 //     <i>IP Address of Secondary DNS Server in text representation
 //     <i>Default: "8.8.4.4"
-#define APPLICATION_IP4_SECONDARY_DNS_DEFAULT  "8.8.8.8"
+#define APPLICATION_IP4_SECONDARY_DNS_DEFAULT                              "8.8.8.8"
 //  <s> Version Hardware 
 #define APPLICATION_VERSION_HARDWARE            	                         "h7.20240819"
 //  <s> Version Software
@@ -59,6 +59,30 @@
 // 			<h> Key
 // 				<o> Servo <1-4>
 #define APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL                        1
+// 				<h> Reset
+// 					<o> Clk <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_CLK                           __HAL_RCC_GPIOA_CLK_ENABLE
+// 					<o> Port <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_PORT                           GPIOA
+// 					<o> Pin <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_PIN                            GPIO_PIN_1
+// 					<o> Degree <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_DEGREE                         45
+// 					<o> Trust <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_TRUST                          0
+// 				</h>
+// 				<h> Factory
+// 					<o> Clk <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_CLK                           __HAL_RCC_GPIOA_CLK_ENABLE
+// 					<o> Port <0-1>                  
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_PORT                          GPIOA
+// 					<o> Pin <0-1>                   
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_PIN                           GPIO_PIN_2
+// 					<o> Degree <0-1>                
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_DEGREE                        45
+// 					<o> Trust <0-1>                 
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_TRUST                         0
+// 				</h>
 // 			</h>
 // 			<h> ADC
 // 				<h> LED PWR

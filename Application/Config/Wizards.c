@@ -59,6 +59,30 @@
 // 			<h> Key
 // 				<o> Servo <1-4>
 #define APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL                        1
+// 				<h> Reset
+// 					<o> Clk <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_CLK                           __HAL_RCC_GPIOA_CLK_ENABLE
+// 					<o> Port <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_PORT                           GPIOA
+// 					<o> Pin <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_PIN                            GPIO_PIN_1
+// 					<o> Degree <0-180>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_DEGREE                         45
+// 					<o> Trust <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_RESET_TRUST                          0
+// 				</h>
+// 				<h> Factory
+// 					<o> Clk <0-1>
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_CLK                           __HAL_RCC_GPIOA_CLK_ENABLE
+// 					<o> Port <0-1>                  
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_PORT                          GPIOA
+// 					<o> Pin <0-1>                   
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_PIN                           GPIO_PIN_2
+// 					<o> Degree <0-180>                
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_DEGREE                        45
+// 					<o> Trust <0-1>                 
+#define APPLICATION_STAND_BOARD_1_KEY_FACTORY_TRUST                         0
+// 				</h>
 // 			</h>
 // 			<h> ADC
 // 				<h> LED PWR

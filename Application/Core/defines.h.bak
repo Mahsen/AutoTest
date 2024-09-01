@@ -23,8 +23,8 @@
 	
 #define OFFSETOF(Type, Field)                               ((unsigned long) &(((Type *) 0)->Field))
 	
-#define xString(s) String(s)
-#define String(s) #s
+#define xString(s)                                          String(s)
+#define String(s)                                           #s
 //----------------------------------------------------------
 #define     C_UNIC              * 1
 //----------------------------------------------------------

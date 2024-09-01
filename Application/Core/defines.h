@@ -41,6 +41,7 @@ typedef unsigned int    BOOL;
 //----------------------------------------------------------
 typedef void (*CallBack_Type)(void);
 typedef U32 (*CallBack_U32_Type)(void);
+typedef BOOL (*CallBack_BOOL_Type)(void);
 //----------------------------------------------------------
 #define     NULL_CHAR           0x00
 #define     CR_CHAR             0x0D

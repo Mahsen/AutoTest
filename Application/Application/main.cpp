@@ -18419,7 +18419,39 @@ class {
 							OP = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_OP_UART);
 							RS485 = new _MEDIA(APPLICATION_STAND_BOARD_1_MEDIA_RS485_UART);
 						};
-				} Media;						
+				} Media;	
+				class class_Keys {
+					public:
+						class_Keys(void) {
+							GPIO_InitTypeDef GPIO_InitStruct = {0};
+							/* Init Reset Pin */
+							APPLICATION_STAND_BOARD_1_KEY_RESET_CLK();
+							GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+							GPIO_InitStruct.Pull = GPIO_NOPULL;
+							GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+							GPIO_InitStruct.Pin = APPLICATION_STAND_BOARD_1_KEY_RESET_PIN;
+							HAL_GPIO_Init(APPLICATION_STAND_BOARD_1_KEY_RESET_PORT, &GPIO_InitStruct);
+							/* Init Factory pin */
+							APPLICATION_STAND_BOARD_1_KEY_FACTORY_CLK();
+							GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+							GPIO_InitStruct.Pull = GPIO_NOPULL;
+							GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+							GPIO_InitStruct.Pin = APPLICATION_STAND_BOARD_1_KEY_FACTORY_PIN;
+							HAL_GPIO_Init(APPLICATION_STAND_BOARD_1_KEY_FACTORY_PORT, &GPIO_InitStruct);	
+						};
+						static BOOL ReadReset(void) {
+							static BOOL Value = RESET;		
+							/* Read */							
+							Value = HAL_GPIO_ReadPin(APPLICATION_STAND_BOARD_1_KEY_RESET_PORT, APPLICATION_STAND_BOARD_1_KEY_RESET_PIN);
+							return Value;
+						}
+						static BOOL ReadFactory(void) {
+							static BOOL Value = RESET;	
+							/* Read */							
+							Value = HAL_GPIO_ReadPin(APPLICATION_STAND_BOARD_1_KEY_FACTORY_PORT, APPLICATION_STAND_BOARD_1_KEY_FACTORY_PIN);
+							return Value;
+						}
+				} Keys;					
 		} Board_1;
 	 class {
 			public:
@@ -18668,26 +18700,41 @@ class {
 			strcat(Data, "OK");
 		}
 		void CheckKeys(void** Argument) {
+			char Buffer[128];
 			/* Get Data from Argument[0] */
-			char *Data = (char*)Argument[0];
-			/* Get Data from Argument[0] */
-			int Channel = *((int*)Argument[1]);
-			
-			/* Press key RESET */
-			SERVO_Set_Pos(Channel, 45);
-			osDelay(500 MSec);
-			SERVO_Set_Pos(Channel, 90);
-			/* Read state key RESET */
-			/// MUST EDIT
-			/* Press key FACTORY */
-			SERVO_Set_Pos(Channel, 135);
-			osDelay(500 MSec);
-			SERVO_Set_Pos(Channel, 90);
-			/* Read state key FACTORY */
-			/// MUST EDIT
-			
-			/* Set report */
-			strcat(Data, "OK");
+			char *Data = (char*)Argument[0]; 	
+			/* Get Channel from Argument[1] */
+			int Channel = *((int**)((void*)Argument[1]))[0]; 
+			/* Get Values from Argument[1] */
+			sprintf(Data, "");	
+			for(U8 Index=1; Index<50; Index+=4) {
+				char* Name = ((char**)((void*)Argument[1]))[Index];
+				if(Name) {
+					/* Add Value */					
+					strcat(Data, Name);
+					strcat(Data, ":");
+					int Degree = *((int**)((void*)Argument[1]))[Index+1];
+					CallBack_BOOL_Type FunctionInput = ((CallBack_BOOL_Type*)((void*)Argument[1]))[Index+2]; 
+					bool Trust = *((bool**)((void*)Argument[1]))[Index+3];
+					SERVO_Set_Pos(Channel, Degree);
+					osDelay(200 MSec);
+					bool Input = FunctionInput();
+					if(Input == Trust) {
+						sprintf(Buffer, "OK[%s]", (Input)?"SET":"RESET");
+					}
+					else {
+						sprintf(Buffer, "ERROR[%s]", (Input)?"SET":"RESET");
+					}
+					osDelay(100 MSec);
+					SERVO_Set_Pos(Channel, 90);
+					osDelay(100 MSec);
+					strcat(Data, Buffer);
+					strcat(Data, " ");
+				}
+				else {
+					break;
+				}
+			}
 		}
 } TestCase;
 /************************************************** Functions *********************************************************/
@@ -19052,7 +19099,17 @@ void Application(void *argument) {
 		nullptr}, false);
 	Application_Test[0].Add((uint8_t*)"Modem", [](void** Argument){TestCase.CheckModem(Argument);}, nullptr, false);
 	Application_Test[0].Add((uint8_t*)"Flash", [](void** Argument){TestCase.CheckFlash(Argument);}, nullptr, false);
-	Application_Test[0].Add((uint8_t*)"Keys", [](void** Argument){TestCase.CheckKeys(Argument);}, new void*[]{(void*)(new int(APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL)), (void*)(new int(APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL))}, false);
+	Application_Test[0].Add((uint8_t*)"Keys", [](void** Argument){TestCase.CheckKeys(Argument);}, new void*[]{ \
+		(void*)(new int(APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL)), \
+		(void*)"Reset", \
+		(void*)(new int(APPLICATION_STAND_BOARD_1_KEY_RESET_DEGREE)), \
+		(void*)Stand.Board_1.Keys.ReadReset, \
+		(void*)(new bool(APPLICATION_STAND_BOARD_1_KEY_RESET_TRUST)), \
+		(void*)"Factory", \
+		(void*)(new int(APPLICATION_STAND_BOARD_1_KEY_FACTORY_DEGREE)), \
+		(void*)Stand.Board_1.Keys.ReadFactory, \
+		(void*)(new bool(APPLICATION_STAND_BOARD_1_KEY_FACTORY_TRUST)), \
+		nullptr}, false);
 	//Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, NULL, false);
 	/* TEST 2 */
 	//Application_Test[1].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-RIGHT", false);

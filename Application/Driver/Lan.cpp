@@ -92,7 +92,9 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 		Listen[NumberOfListen].Socket = netTCP_GetSocket ([](S32 socket, netTCP_Event event, const NET_ADDR *addr, const uint8_t *buf, U32 len)->U32{
 			switch (event) {
 				case netTCP_EventConnect: {
-					Lan.InUsed++;
+					if(Lan.InUsed<LAN_SIZEOF_LISTEN) {
+						Lan.InUsed++;
+					}
 					return 1;
 				}
 				case netTCP_EventEstablished: {
@@ -101,7 +103,9 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 				}
 				case netTCP_EventClosed: {
 					// Connection was properly closed
-					Lan.InUsed--;
+					if(Lan.InUsed>0) {
+						Lan.InUsed--;
+					}
 					break;		
 				}					
 				case netTCP_EventAborted: {
