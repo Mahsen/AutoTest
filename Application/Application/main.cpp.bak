@@ -9,7 +9,7 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/8/19
+    Last Update : 2024/1/9
 */
 /************************************************** Warnings **********************************************************/
 /*
@@ -18670,6 +18670,22 @@ class {
 		void CheckKeys(void** Argument) {
 			/* Get Data from Argument[0] */
 			char *Data = (char*)Argument[0];
+			/* Get Data from Argument[0] */
+			int Channel = *((int*)Argument[1]);
+			
+			/* Press key RESET */
+			SERVO_Set_Pos(Channel, 45);
+			osDelay(500 MSec);
+			SERVO_Set_Pos(Channel, 90);
+			/* Read state key RESET */
+			/// MUST EDIT
+			/* Press key FACTORY */
+			SERVO_Set_Pos(Channel, 135);
+			osDelay(500 MSec);
+			SERVO_Set_Pos(Channel, 90);
+			/* Read state key FACTORY */
+			/// MUST EDIT
+			
 			/* Set report */
 			strcat(Data, "OK");
 		}
@@ -18932,10 +18948,21 @@ int main (void) {
 /************************************************** Tasks *************************************************************/
 void Application(void *argument) {
 	/* Init Drivers */
+	/* Init Lan */
+	if(!Lan.SetLocal((U8*)APPLICATION_IP4_ADDR_DEFAULT, (U8*)APPLICATION_IP4_MASK_DEFAULT, (U8*)APPLICATION_IP4_GATEWAY_DEFAULT, (U8*)APPLICATION_IP4_PRIMARY_DNS_DEFAULT, (U8*)APPLICATION_IP4_SECONDARY_DNS_DEFAULT)) {
+		HAL_GPIO_WritePin(LED3_RED_GPIO_Port, LED3_RED_Pin, GPIO_PIN_SET);
+		osDelay(1 Sec);
+		__NVIC_SystemReset();
+	}
+	Lan.Init();
 	__init_UART();	
 	__init_ADC();
 	__init_ADMux();
 	__init_SERVO();
+	SERVO_Set_Pos(APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL, 90);
+	SERVO_Set_Pos(APPLICATION_STAND_BOARD_2_KEY_SERVO_CHANNEL, 90);
+	SERVO_Set_Pos(APPLICATION_STAND_BOARD_3_KEY_SERVO_CHANNEL, 90);
+	SERVO_Set_Pos(APPLICATION_STAND_BOARD_4_KEY_SERVO_CHANNEL, 90);
 	/* Add tests */
 	/* TEST 0 TOP-LEFT */
 	Application_Test[0].Add((uint8_t*)"Board", [](void** Argument){TestCase.ReturnArgument(Argument);}, new void*[]{ \
@@ -19021,7 +19048,7 @@ void Application(void *argument) {
 		nullptr}, false);
 	Application_Test[0].Add((uint8_t*)"Modem", [](void** Argument){TestCase.CheckModem(Argument);}, nullptr, false);
 	Application_Test[0].Add((uint8_t*)"Flash", [](void** Argument){TestCase.CheckFlash(Argument);}, nullptr, false);
-	Application_Test[0].Add((uint8_t*)"Keys", [](void** Argument){TestCase.CheckKeys(Argument);}, nullptr, false);
+	Application_Test[0].Add((uint8_t*)"Keys", [](void** Argument){TestCase.CheckKeys(Argument);}, new void*[]{(void*)(new int(APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL)), (void*)(new int(APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL))}, false);
 	//Application_Test[0].Add((uint8_t*)"Blink", &TEST_1_Blink, NULL, false);
 	/* TEST 2 */
 	//Application_Test[1].Add((uint8_t*)"Location", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)"TOP-RIGHT", false);
@@ -19041,17 +19068,14 @@ void Application(void *argument) {
 	//Application_Test[3].Add((uint8_t*)"Media", [](void** Argument){TestCase.CheckMedia(Argument);}, new void*[]{(void*)Stand.Board_4.Media.OP, (void*)Stand.Board_4.Media.RS485}, false);
 	//Application_Test[3].Add((uint8_t*)"HardwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_HARDWARE, false);
 	//Application_Test[3].Add((uint8_t*)"SoftwareVersion", [](void** Argument){TestCase.ReturnArgument(Argument);}, (void*)APPLICATION_VERSION_SOFTWARE, false);
-  /* Init Lan */
-//	if(!Lan.SetLocal((U8*)"192.168.70.220", (U8*)"255.255.255.0", (U8*)"192.168.70.1", (U8*)"192.168.3.2", (U8*)"8.8.8.8")) {
-//		osDelay(1 Sec);
-//		__NVIC_SystemReset();
-//	}
-	Lan.Init();
+  
+	
+	
+	
 	for(int Index=0; Index<LAN_SIZEOF_LISTEN; Index++) {
 		/* Add Lan listening */
 		Lan.AddListen((1001 + Index), [](S32 Socket, U8* Data, U32* Length)->bool{ return Application_Test[(Socket-1)].Pars(Data, Length);});
 	}
-
 	
 	
 	/*
@@ -19078,18 +19102,7 @@ void Application(void *argument) {
 	VUART *vuart = new VUART(new VUART::PINMAP(GPIOF, GPIO_PIN_8, GPIOF, GPIO_PIN_7));
 	vuart->Update(9600);
 	*/	
-	
-	SERVO_Set_Pos(1, 90);
-	osDelay(1 Sec);
-	SERVO_Set_Pos(1, 45);
-	osDelay(500 MSec);
-	SERVO_Set_Pos(1, 90);
-	osDelay(1 Sec);
-	SERVO_Set_Pos(1, 135);
-	osDelay(500 MSec);
-	SERVO_Set_Pos(1, 90);
-	osDelay(1 Sec);
-	
+
 	/* Blink LED */
 	while (1) {
     HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, GPIO_PIN_SET);

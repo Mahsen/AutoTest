@@ -16,12 +16,15 @@
 #define Sec                         	    	                 *1000000/TASK_MANAGER_OS_TICK
 
 #define TASK_MANAGER_MUTEXWAIT(x)                            while(x){osDelay(OneUnic);};x=1
-#define TASK_MANAGER_MUTEXRELEASE(x)                         x=1
+#define TASK_MANAGER_MUTEXRELEASE(x)                         x=0
 																					                   
 #define TASK_MANAGER_LOOPUNTIL(x)                            for(U32 LOOPUNTIL_time=0;(LOOPUNTIL_time<0xFFFFF)&&(x);LOOPUNTIL_time++){osDelay(OneUnic);}
 #define TASK_MANAGER_WHILEUNTIL(x)                           for(U32 LOOPUNTIL_time=0;(LOOPUNTIL_time<0xFFFFF)&&(x);LOOPUNTIL_time++){}
 	
 #define OFFSETOF(Type, Field)                               ((unsigned long) &(((Type *) 0)->Field))
+	
+#define xString(s) String(s)
+#define String(s) #s
 //----------------------------------------------------------
 #define     C_UNIC              * 1
 //----------------------------------------------------------

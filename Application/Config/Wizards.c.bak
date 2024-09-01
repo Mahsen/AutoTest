@@ -27,11 +27,39 @@
 // <<< Use Configuration Wizard in Context Menu >>>
 // <h> Config Wizards
 // 	<h> Application
+//     <s.15>IP Address
+//     <i>Static IPv4 Address in text representation
+//     <i>Default: "192.168.0.100"
+#define APPLICATION_IP4_ADDR_DEFAULT           "192.168.70.201"
+
+//     <s.15>Subnet mask
+//     <i>Local Subnet mask in text representation
+//     <i>Default: "255.255.255.0"
+#define APPLICATION_IP4_MASK_DEFAULT           "255.255.255.0"
+
+//     <s.15>Default Gateway
+//     <i>IP Address of Default Gateway in text representation
+//     <i>Default: "192.168.0.254"
+#define APPLICATION_IP4_GATEWAY_DEFAULT        "192.168.70.1"
+
+//     <s.15>Primary DNS Server
+//     <i>IP Address of Primary DNS Server in text representation
+//     <i>Default: "8.8.8.8"
+#define APPLICATION_IP4_PRIMARY_DNS_DEFAULT    "192.168.3.2"
+
+//     <s.15>Secondary DNS Server
+//     <i>IP Address of Secondary DNS Server in text representation
+//     <i>Default: "8.8.4.4"
+#define APPLICATION_IP4_SECONDARY_DNS_DEFAULT  "8.8.8.8"
 //  <s> Version Hardware 
-#define APPLICATION_VERSION_HARDWARE            	                         "h7.20240814"
+#define APPLICATION_VERSION_HARDWARE            	                         "h7.20240819"
 //  <s> Version Software
-#define APPLICATION_VERSION_SOFTWARE            	                         "s1.20240814"
+#define APPLICATION_VERSION_SOFTWARE            	                         "s1.20240819"
 // 		<h> Board_1
+// 			<h> Key
+// 				<o> Servo <1-4>
+#define APPLICATION_STAND_BOARD_1_KEY_SERVO_CHANNEL                        1
+// 			</h>
 // 			<h> ADC
 // 				<h> LED PWR
 //					<o> Multiplex <1-8>
@@ -162,6 +190,10 @@
 // 			</h>
 // 		</h>
 // 		<h> Board_2
+// 			<h> Key
+// 				<o> Servo <1-4>
+#define APPLICATION_STAND_BOARD_2_KEY_SERVO_CHANNEL                        2
+// 			</h>
 // 			<h> ADC
 //				<o> Multiplex <1-4>
 #define APPLICATION_STAND_BOARD_2_ADC_MULTIPLEX                            2
@@ -182,6 +214,10 @@
 // 			</h>
 // 		</h>
 // 		<h> Board_3
+// 			<h> Key
+// 				<o> Servo <1-4>
+#define APPLICATION_STAND_BOARD_3_KEY_SERVO_CHANNEL                        3
+// 			</h>
 // 			<h> ADC
 //				<o> Multiplex <1-4>
 #define APPLICATION_STAND_BOARD_3_ADC_MULTIPLEX                            3
@@ -202,6 +238,10 @@
 // 			</h>
 // 		</h>
 // 		<h> Board_4
+// 			<h> Key
+// 				<o> Servo <1-4>
+#define APPLICATION_STAND_BOARD_4_KEY_SERVO_CHANNEL                        4
+// 			</h>
 // 			<h> ADC
 //				<o> Multiplex <1-4>
 #define APPLICATION_STAND_BOARD_4_ADC_MULTIPLEX                            4

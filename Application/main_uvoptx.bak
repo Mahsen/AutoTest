@@ -148,7 +148,24 @@
           <Name>-U -O206 -S8 -C0 -P01 -N00("") -D00(00000000) -L00(0) -TO65554 -TC10000000 -TT10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC8000 -FN2 -FF0STM32H5xx_2M_0800.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32H563ZITx$CMSIS\Flash\STM32H5xx_2M_0800.FLM) -FF1STM32H5xx_2M_0C00.FLM -FS1C000000 -FL1200000 -FP1($$Device:STM32H563ZITx$CMSIS\Flash\STM32H5xx_2M_0C00.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>19068</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134290438</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\Application\main.cpp</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\main\Application/main.cpp\19068</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -189,6 +206,16 @@
           <count>7</count>
           <WinNumber>1</WinNumber>
           <ItemText>Channel</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>IP</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>LAN_IP4_Addr</ItemText>
         </Ww>
       </WatchWindow1>
       <ScvdPack>
@@ -363,7 +390,7 @@
 
   <Group>
     <GroupName>Class</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -419,7 +446,7 @@
 
   <Group>
     <GroupName>Config</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -447,6 +474,18 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>5</GroupNumber>
+      <FileNumber>14</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\Config\AddressRam.c</PathWithFileName>
+      <FilenameWithoutPath>AddressRam.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -457,7 +496,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>6</GroupNumber>
-      <FileNumber>14</FileNumber>
+      <FileNumber>15</FileNumber>
       <FileType>8</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -503,7 +542,7 @@
 
   <Group>
     <GroupName>::Network</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>1</RteFlg>

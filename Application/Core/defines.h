@@ -22,6 +22,9 @@
 #define TASK_MANAGER_WHILEUNTIL(x)                           for(U32 LOOPUNTIL_time=0;(LOOPUNTIL_time<0xFFFFF)&&(x);LOOPUNTIL_time++){}
 	
 #define OFFSETOF(Type, Field)                               ((unsigned long) &(((Type *) 0)->Field))
+	
+#define xString(s)                                          String(s)
+#define String(s)                                           #s
 //----------------------------------------------------------
 #define     C_UNIC              * 1
 //----------------------------------------------------------

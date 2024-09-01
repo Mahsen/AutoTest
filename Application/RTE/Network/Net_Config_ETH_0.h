@@ -40,27 +40,27 @@
 //     <s.15>IP Address
 //     <i>Static IPv4 Address in text representation
 //     <i>Default: "192.168.0.100"
-#define ETH0_IP4_ADDR           "192.168.70.201"
+#define ETH0_IP4_ADDR           "0.0.0.0"
 
 //     <s.15>Subnet mask
 //     <i>Local Subnet mask in text representation
 //     <i>Default: "255.255.255.0"
-#define ETH0_IP4_MASK           "255.255.255.0"
+#define ETH0_IP4_MASK           "0.0.0.0"
 
 //     <s.15>Default Gateway
 //     <i>IP Address of Default Gateway in text representation
 //     <i>Default: "192.168.0.254"
-#define ETH0_IP4_GATEWAY        "192.168.70.1"
+#define ETH0_IP4_GATEWAY        "0.0.0.0"
 
 //     <s.15>Primary DNS Server
 //     <i>IP Address of Primary DNS Server in text representation
 //     <i>Default: "8.8.8.8"
-#define ETH0_IP4_PRIMARY_DNS    "8.8.8.8"
+#define ETH0_IP4_PRIMARY_DNS    "0.0.0.0"
 
 //     <s.15>Secondary DNS Server
 //     <i>IP Address of Secondary DNS Server in text representation
 //     <i>Default: "8.8.4.4"
-#define ETH0_IP4_SECONDARY_DNS  "8.8.4.4"
+#define ETH0_IP4_SECONDARY_DNS  "0.0.0.0"
 
 //     <e>IP Fragmentation
 //     <i>This option enables fragmentation of outgoing IP datagrams,

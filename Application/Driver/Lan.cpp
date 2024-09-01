@@ -9,25 +9,29 @@
     Site : https://www.mahsen.ir
     Tel : +989124662703
     Email : info@mahsen.ir
-    Last Update : 2024/5/28
+    Last Update : 2024/1/9
 */
 /************************************************** Warnings **********************************************************/
 /*
 	this lines must added to file of "net_config.h"
-	#include "AddressFlash.c"
-	const char __attribute__((at(ADDRESSFLASH_ETH0_IP4_ADDR_SPECIAL))) ETH0_IP4_ADDR_SPECIAL[16] = ETH0_IP4_ADDR;
-	const char __attribute__((at(ADDRESSFLASH_ETH0_IP4_MASK_SPECIAL))) ETH0_IP4_MASK_SPECIAL[16] = ETH0_IP4_MASK;
-	const char __attribute__((at(ADDRESSFLASH_ETH0_IP4_GATEWAY_SPECIAL))) ETH0_IP4_GATEWAY_SPECIAL[16] = ETH0_IP4_GATEWAY;
-	const char __attribute__((at(ADDRESSFLASH_ETH0_IP4_PRIMARY_DNS_SPECIAL))) ETH0_IP4_PRIMARY_DNS_SPECIAL[16] = ETH0_IP4_PRIMARY_DNS;
-	const char __attribute__((at(ADDRESSFLASH_ETH0_IP4_SECONDARY_DNS_SPECIAL))) ETH0_IP4_SECONDARY_DNS_SPECIAL[16] = ETH0_IP4_SECONDARY_DNS;
+	#include "AddressRam.c"
+	#ifdef __cplusplus
+	extern "C" {
+	#endif
+	char LAN_IP4_Addr[16] __attribute__((section(ADDRESSRAM_LAN_IP4_ADDR)));
+	char LAN_IP4_Mask[16] __attribute__((section(ADDRESSRAM_LAN_IP4_MASK)));
+	char LAN_IP4_Gateway[16] __attribute__((section(ADDRESSRAM_LAN_IP4_GATEWAY)));
+	char LAN_IP4_Primary_DNS[16] __attribute__((section(ADDRESSRAM_LAN_IP4_PRIMARY_DNS)));
+	char LAN_IP4_Secondary_DNS[16] __attribute__((section(ADDRESSRAM_LAN_IP4_SECONDARY_DNS));
+	#ifdef __cplusplus
+	}
+	#endif
 */
 /************************************************** Wizards ***********************************************************/
 #include "Wizards.c"
 /************************************************** Includes **********************************************************/
 #include "stm32h5xx_hal.h"
 #include "lan.hpp"
-//#include "iap.h"
-#include "AddressFlash.c"
 /************************************************** Defineds **********************************************************/
 /*
     Nothing
@@ -42,9 +46,11 @@ ETH_DMADescTypeDef  DMARxDscrTab[ETH_RX_DESC_CNT]; /* Ethernet Rx DMA Descriptor
 ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx DMA Descriptors */
 ETH_HandleTypeDef   heth;
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*
-    Nothing
-*/
+extern char LAN_IP4_Addr[];
+extern char LAN_IP4_Mask[];
+extern char LAN_IP4_Gateway[];
+extern char LAN_IP4_Primary_DNS[];
+extern char LAN_IP4_Secondary_DNS[];
 /************************************************** Opjects ***********************************************************/
 LAN Lan;
 /************************************************** Functions *********************************************************/
@@ -162,26 +168,21 @@ bool LAN::AddListen(uint16_t Port, bool (*CallBack)(S32 Socket, U8* Data, U32* L
 	return false;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-extern const char ETH0_IP4_ADDR_SPECIAL[16];
-extern const char ETH0_IP4_MASK_SPECIAL[16];
-extern const char ETH0_IP4_GATEWAY_SPECIAL[16];
-extern const char ETH0_IP4_PRIMARY_DNS_SPECIAL[16];
-extern const char ETH0_IP4_SECONDARY_DNS_SPECIAL[16];
 void LAN::GetLocal(U8 *IP, U8 *Mask, U8 *GateWay, U8 *DNS1, U8 *DNS2) {
 	if(IP) {
-		strcpy((char*)IP, (char*)ETH0_IP4_ADDR_SPECIAL);
+		strcpy((char*)IP, (char*)LAN_IP4_Addr);
 	}
 	if(Mask) {
-		strcpy((char*)Mask, (char*)ETH0_IP4_MASK_SPECIAL);
+		strcpy((char*)Mask, (char*)LAN_IP4_Mask);
 	}
 	if(GateWay) {
-		strcpy((char*)GateWay, (char*)ETH0_IP4_GATEWAY_SPECIAL);
+		strcpy((char*)GateWay, (char*)LAN_IP4_Gateway);
 	}
 	if(DNS1) {
-		strcpy((char*)DNS1, (char*)ETH0_IP4_PRIMARY_DNS_SPECIAL);
+		strcpy((char*)DNS1, (char*)LAN_IP4_Primary_DNS);
 	}
 	if(DNS2) {
-		strcpy((char*)DNS2, (char*)ETH0_IP4_SECONDARY_DNS_SPECIAL);
+		strcpy((char*)DNS2, (char*)LAN_IP4_Secondary_DNS);
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -189,49 +190,38 @@ bool LAN::SetLocal(U8 *IP, U8 *Mask, U8 *GateWay, U8 *DNS1, U8 *DNS2) {
 	
 	U8 Buffer[256];
 	bool NotChange = true;
-	
-	memcpy(&Buffer[0], ETH0_IP4_ADDR_SPECIAL, sizeof(ETH0_IP4_ADDR_SPECIAL));
-	memcpy(&Buffer[16], ETH0_IP4_MASK_SPECIAL, sizeof(ETH0_IP4_MASK_SPECIAL));
-	memcpy(&Buffer[32], ETH0_IP4_GATEWAY_SPECIAL, sizeof(ETH0_IP4_GATEWAY_SPECIAL));
-	memcpy(&Buffer[48], ETH0_IP4_PRIMARY_DNS_SPECIAL, sizeof(ETH0_IP4_PRIMARY_DNS_SPECIAL));
-	memcpy(&Buffer[64], ETH0_IP4_SECONDARY_DNS_SPECIAL, sizeof(ETH0_IP4_SECONDARY_DNS_SPECIAL));
-	
+
 	if(IP) {
-		if(strcmp(ETH0_IP4_ADDR_SPECIAL, (char*)IP)) {
-			memcpy(&Buffer[0], IP, 16);
+		if(strcmp(LAN_IP4_Addr, (char*)IP)) {
+			memcpy(LAN_IP4_Addr, IP, 16);
 			NotChange = false;
 		}
 	}
 	if(Mask) {
-		if(strcmp(ETH0_IP4_MASK_SPECIAL, (char*)Mask)) {
-			memcpy(&Buffer[16], Mask, 16);
+		if(strcmp(LAN_IP4_Mask, (char*)Mask)) {
+			memcpy(LAN_IP4_Mask, Mask, 16);
 			NotChange = false;
 		}
 	}
 	if(GateWay) {
-		if(strcmp(ETH0_IP4_GATEWAY_SPECIAL, (char*)GateWay)) {
-			memcpy(&Buffer[32], GateWay, 16);
+		if(strcmp(LAN_IP4_Gateway, (char*)GateWay)) {
+			memcpy(LAN_IP4_Gateway, GateWay, 16);
 			NotChange = false;
 		}
 	}
 	if(DNS1) {
-		if(strcmp(ETH0_IP4_PRIMARY_DNS_SPECIAL, (char*)DNS1)) {
-			memcpy(&Buffer[48], DNS1, 16);
+		if(strcmp(LAN_IP4_Primary_DNS, (char*)DNS1)) {
+			memcpy(LAN_IP4_Primary_DNS, DNS1, 16);
 			NotChange = false;
 		}
 	}
 	if(DNS2) {
-		if(strcmp(ETH0_IP4_SECONDARY_DNS_SPECIAL, (char*)DNS2)) {
-			memcpy(&Buffer[64], DNS2, 16);
+		if(strcmp(LAN_IP4_Secondary_DNS, (char*)DNS2)) {
+			memcpy(LAN_IP4_Secondary_DNS, DNS2, 16);
 			NotChange = false;
 		}
 	}
-	
-//	if(!NotChange) {
-//		EraseSector((ADDRESSFLASH_ETH0_IP4_SPECIAL>>12), (ADDRESSFLASH_ETH0_IP4_SPECIAL>>12));
-//		CopyRAM2Flash((uint8_t*)ADDRESSFLASH_ETH0_IP4_SPECIAL, Buffer, IAP_WRITE_256);
-//	}
-	
+
 	return NotChange;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/

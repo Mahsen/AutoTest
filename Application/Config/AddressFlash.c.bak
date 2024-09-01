@@ -1,10 +1,58 @@
-
-
-
-#define ADDRESSFLASH_ETH0_IP4_SPECIAL                               0x0000B000
+/************************************************** Description *******************************************************/
+/*
+    File : Wizards.c
+    Programmer : Mohammad Lotfi
+    Used : defines
+    Design Pattern : Nothing
+    Types of memory : Nothing
+    Total Tread : Nothing
+    Site : https://www.mahsen.ir
+    Tel : +989124662703
+    Email : info@mahsen.ir
+    Last Update : 2024/8/14
+*/
+/************************************************** Warnings **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Wizards ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Includes **********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Defineds **********************************************************/
+#define ADDRESSFLASH_ETH0_IP4_SPECIAL                               0x80100000
 #define ADDRESSFLASH_ETH0_IP4_ADDR_SPECIAL                          ADDRESSFLASH_ETH0_IP4_SPECIAL
 #define ADDRESSFLASH_ETH0_IP4_MASK_SPECIAL                          ADDRESSFLASH_ETH0_IP4_ADDR_SPECIAL + 16
 #define ADDRESSFLASH_ETH0_IP4_GATEWAY_SPECIAL                       ADDRESSFLASH_ETH0_IP4_MASK_SPECIAL + 16
 #define ADDRESSFLASH_ETH0_IP4_PRIMARY_DNS_SPECIAL                   ADDRESSFLASH_ETH0_IP4_GATEWAY_SPECIAL + 16
 #define ADDRESSFLASH_ETH0_IP4_SECONDARY_DNS_SPECIAL                 ADDRESSFLASH_ETH0_IP4_PRIMARY_DNS_SPECIAL + 16
 #define ADDRESSFLASH_ETH0_IP4_RESERVED_SPECIAL                      ADDRESSFLASH_ETH0_IP4_SECONDARY_DNS_SPECIAL + 16
+/************************************************** Names *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Variables *********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Opjects ***********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Functions *********************************************************/
+/*
+    Nothing
+*/
+/************************************************** Tasks *************************************************************/
+/*
+    Nothing
+*/
+/************************************************** Vectors ***********************************************************/
+/*
+    Nothing
+*/
+/**********************************************************************************************************************/
